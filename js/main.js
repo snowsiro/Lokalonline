@@ -186,4 +186,56 @@
     }, { passive: true });
   }
 
+  // ── Promo popup ───────────────────────────────────────────────────
+  var TOTAL_SPOTS = 10;
+  var TAKEN_SPOTS = 0; // 실제 계약 수로 업데이트하세요
+
+  var overlay   = document.getElementById('promoOverlay');
+  var closeBtn  = document.getElementById('promoClose');
+  var dismissBtn = document.getElementById('promoDismiss');
+  var popupCta  = document.querySelector('.popup-cta');
+
+  function openPopup() {
+    if (!overlay) return;
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    // 잔여 자리 표시
+    var remaining = TOTAL_SPOTS - TAKEN_SPOTS;
+    var fillPct = (TAKEN_SPOTS / TOTAL_SPOTS) * 100;
+    var remainingEl = overlay.querySelector('.popup-spots-remaining');
+    var fillEl = overlay.querySelector('.popup-spots-fill');
+    if (remainingEl) remainingEl.textContent = remaining;
+    if (fillEl) setTimeout(function () { fillEl.style.width = fillPct + '%'; }, 100);
+
+    // 언어 반영
+    overlay.querySelectorAll('[data-de]').forEach(function (el) {
+      var text = el.getAttribute('data-' + currentLang);
+      if (text) el.textContent = text;
+    });
+  }
+
+  function closePopup() {
+    if (!overlay) return;
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+    sessionStorage.setItem('promoClosed', '1');
+  }
+
+  if (closeBtn)  closeBtn.addEventListener('click', closePopup);
+  if (dismissBtn) dismissBtn.addEventListener('click', closePopup);
+  if (overlay) {
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) closePopup();
+    });
+  }
+  if (popupCta) {
+    popupCta.addEventListener('click', closePopup);
+  }
+
+  // 세션당 1회만 표시 (닫은 경우 재표시 안 함)
+  if (!sessionStorage.getItem('promoClosed') && TAKEN_SPOTS < TOTAL_SPOTS) {
+    setTimeout(openPopup, 1800);
+  }
+
 })();
