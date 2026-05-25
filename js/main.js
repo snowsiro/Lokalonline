@@ -1,6 +1,176 @@
 (function () {
   'use strict';
 
+  var ADMIN_EMAIL = 'snowsiro@gmail.com';
+  var sbClient = window.supabase
+    ? window.supabase.createClient(
+        'https://vhnourjddnlslgabrasb.supabase.co',
+        'sb_publishable_y5l1cAZXoAj8xaSVXUkBfw_Pk9pxb6H'
+      )
+    : null;
+
+  // ── Auth state ────────────────────────────────────────────────────
+  function updateNavAuth(session) {
+    var openBtn  = document.getElementById('openAuthBtn');
+    var navUser  = document.getElementById('navUser');
+    var mobileLink = document.getElementById('mobileAuthLink');
+
+    if (session) {
+      var email = session.user.email;
+      var initial = email.charAt(0).toUpperCase();
+      if (openBtn)  openBtn.style.display = 'none';
+      if (navUser)  navUser.style.display = 'flex';
+      var initEl = document.getElementById('userInitial');
+      if (initEl) initEl.textContent = initial;
+      // 포털 링크 설정
+      var portalLink = document.getElementById('portalLink');
+      if (portalLink) {
+        portalLink.href = email === ADMIN_EMAIL ? '/admin/dashboard.html' : '/portal/dashboard.html';
+        portalLink.textContent = currentLang === 'en' ? 'My area' : 'Mein Bereich';
+      }
+      if (mobileLink) {
+        mobileLink.textContent = currentLang === 'en' ? 'My area' : 'Mein Bereich';
+        mobileLink.href = email === ADMIN_EMAIL ? '/admin/dashboard.html' : '/portal/dashboard.html';
+      }
+    } else {
+      if (openBtn)  openBtn.style.display = '';
+      if (navUser)  navUser.style.display = 'none';
+      if (mobileLink) {
+        mobileLink.textContent = currentLang === 'en' ? 'Sign in' : 'Anmelden';
+        mobileLink.href = '#';
+        mobileLink.onclick = function (e) { e.preventDefault(); openAuthModal('login'); };
+      }
+    }
+  }
+
+  if (sbClient) {
+    sbClient.auth.getSession().then(function (ref) {
+      updateNavAuth(ref.data.session);
+    });
+    sbClient.auth.onAuthStateChange(function (event, session) {
+      updateNavAuth(session);
+    });
+  }
+
+  // ── Auth modal ────────────────────────────────────────────────────
+  function openAuthModal(panel) {
+    var overlay = document.getElementById('authOverlay');
+    if (!overlay) return;
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    if (panel) switchPanel(panel);
+  }
+
+  function closeAuthModal() {
+    var overlay = document.getElementById('authOverlay');
+    if (overlay) overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function switchPanel(name) {
+    document.querySelectorAll('.auth-tab').forEach(function (t) {
+      t.classList.toggle('active', t.getAttribute('data-panel') === name);
+    });
+    document.querySelectorAll('.auth-panel').forEach(function (p) {
+      p.classList.toggle('active', p.id === 'panel' + name.charAt(0).toUpperCase() + name.slice(1));
+    });
+  }
+
+  var openAuthBtn = document.getElementById('openAuthBtn');
+  var closeAuth   = document.getElementById('closeAuth');
+  var authOverlay = document.getElementById('authOverlay');
+
+  if (openAuthBtn) openAuthBtn.addEventListener('click', function () { openAuthModal('login'); });
+  if (closeAuth)   closeAuth.addEventListener('click', closeAuthModal);
+  if (authOverlay) authOverlay.addEventListener('click', function (e) { if (e.target === authOverlay) closeAuthModal(); });
+
+  document.querySelectorAll('.auth-tab').forEach(function (tab) {
+    tab.addEventListener('click', function () { switchPanel(tab.getAttribute('data-panel')); });
+  });
+
+  // Login
+  var loginSubmitBtn = document.getElementById('loginSubmitBtn');
+  if (loginSubmitBtn) {
+    loginSubmitBtn.addEventListener('click', async function () {
+      var email    = document.getElementById('loginEmail').value.trim();
+      var password = document.getElementById('loginPassword').value;
+      var errEl    = document.getElementById('loginError');
+      errEl.classList.remove('show');
+      loginSubmitBtn.disabled = true; loginSubmitBtn.textContent = '…';
+
+      var { error } = await sbClient.auth.signInWithPassword({ email: email, password: password });
+      if (error) {
+        errEl.textContent = 'E-Mail oder Passwort falsch.';
+        errEl.classList.add('show');
+        loginSubmitBtn.disabled = false;
+        loginSubmitBtn.textContent = currentLang === 'en' ? 'Sign in' : 'Anmelden';
+      } else {
+        closeAuthModal();
+        var dest = email === ADMIN_EMAIL ? '/admin/dashboard.html' : '/portal/dashboard.html';
+        location.href = dest;
+      }
+    });
+  }
+
+  // Signup
+  var signupSubmitBtn = document.getElementById('signupSubmitBtn');
+  if (signupSubmitBtn) {
+    signupSubmitBtn.addEventListener('click', async function () {
+      var name     = document.getElementById('signupName').value.trim();
+      var email    = document.getElementById('signupEmail').value.trim();
+      var password = document.getElementById('signupPassword').value;
+      var errEl    = document.getElementById('signupError');
+      var okEl     = document.getElementById('signupSuccess');
+      errEl.classList.remove('show');
+      okEl.style.display = 'none';
+
+      if (!name || !email || password.length < 6) {
+        errEl.textContent = currentLang === 'en' ? 'Please fill all fields (min. 6 char password).' : 'Bitte alle Felder ausfüllen (Passwort mind. 6 Zeichen).';
+        errEl.classList.add('show'); return;
+      }
+
+      signupSubmitBtn.disabled = true; signupSubmitBtn.textContent = '…';
+      var { error } = await sbClient.auth.signUp({ email: email, password: password, options: { data: { full_name: name } } });
+
+      if (error) {
+        errEl.textContent = error.message;
+        errEl.classList.add('show');
+      } else {
+        okEl.style.display = 'block';
+        document.getElementById('signupName').value = '';
+        document.getElementById('signupEmail').value = '';
+        document.getElementById('signupPassword').value = '';
+        // 바로 로그인 후 포털로
+        setTimeout(function () {
+          closeAuthModal();
+          location.href = '/portal/dashboard.html';
+        }, 1200);
+      }
+      signupSubmitBtn.disabled = false;
+      signupSubmitBtn.textContent = currentLang === 'en' ? 'Create account' : 'Konto erstellen';
+    });
+  }
+
+  // User dropdown toggle
+  var userMenuBtn  = document.getElementById('userMenuBtn');
+  var userDropdown = document.getElementById('userDropdown');
+  if (userMenuBtn && userDropdown) {
+    userMenuBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      userDropdown.classList.toggle('open');
+    });
+    document.addEventListener('click', function () { userDropdown.classList.remove('open'); });
+  }
+
+  // Signout
+  var signoutBtn = document.getElementById('signoutBtn');
+  if (signoutBtn) {
+    signoutBtn.addEventListener('click', async function () {
+      await sbClient.auth.signOut();
+      location.reload();
+    });
+  }
+
   // ── Language toggle ──────────────────────────────────────────────
   let currentLang = localStorage.getItem('lang') || 'de';
 
@@ -116,12 +286,6 @@
   // ── Contact form (Supabase) ───────────────────────────────────────
   var form = document.getElementById('contactForm');
   var successMsg = document.getElementById('formSuccess');
-  var sbClient = window.supabase
-    ? window.supabase.createClient(
-        'https://vhnourjddnlslgabrasb.supabase.co',
-        'sb_publishable_y5l1cAZXoAj8xaSVXUkBfw_Pk9pxb6H'
-      )
-    : null;
 
   if (form) {
     form.addEventListener('submit', async function (e) {

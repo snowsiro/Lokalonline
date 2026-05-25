@@ -38,7 +38,18 @@
       </ul>
       <div class="nav-actions">
         <button class="lang-toggle" id="langToggle" aria-label="Sprache wechseln">EN</button>
-        <a href="#contact" class="btn btn-primary btn-sm" data-de="Anfragen" data-en="Get started">Anfragen</a>
+        <!-- 비로그인 -->
+        <button class="btn btn-primary btn-sm" id="openAuthBtn" data-de="Anmelden" data-en="Sign in">Anmelden</button>
+        <!-- 로그인 후 -->
+        <div class="nav-user" id="navUser" style="display:none">
+          <button class="user-avatar-btn" id="userMenuBtn" aria-label="Benutzermenü">
+            <span id="userInitial">?</span>
+          </button>
+          <div class="user-dropdown" id="userDropdown">
+            <a href="#" id="portalLink" data-de="Mein Bereich" data-en="My area">Mein Bereich</a>
+            <button id="signoutBtn" data-de="Abmelden" data-en="Sign out">Abmelden</button>
+          </div>
+        </div>
       </div>
       <button class="nav-burger" id="navBurger" aria-label="Menü öffnen">
         <span></span><span></span><span></span>
@@ -49,8 +60,54 @@
       <a href="#how-it-works" data-de="Ablauf" data-en="How it works">Ablauf</a>
       <a href="#pricing" data-de="Preise" data-en="Pricing">Preise</a>
       <a href="#contact" data-de="Kontakt" data-en="Contact">Kontakt</a>
+      <a href="#" id="mobileAuthLink" data-de="Anmelden" data-en="Sign in">Anmelden</a>
     </div>
   </header>
+
+  <!-- ░░ AUTH MODAL ░░ -->
+  <div class="auth-overlay" id="authOverlay">
+    <div class="auth-modal">
+      <button class="auth-close" id="closeAuth" aria-label="Schließen">✕</button>
+      <div class="auth-logo">lokalonline<span class="dot">.</span>at</div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-panel="login" data-de="Anmelden" data-en="Sign in">Anmelden</button>
+        <button class="auth-tab" data-panel="signup" data-de="Registrieren" data-en="Sign up">Registrieren</button>
+      </div>
+      <!-- Login -->
+      <div class="auth-panel active" id="panelLogin">
+        <div class="auth-form-group">
+          <label data-de="E-Mail" data-en="Email">E-Mail</label>
+          <input type="email" id="loginEmail" placeholder="ihre@email.at" autocomplete="email" />
+        </div>
+        <div class="auth-form-group">
+          <label data-de="Passwort" data-en="Password">Passwort</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" />
+        </div>
+        <button class="btn btn-primary btn-full" id="loginSubmitBtn" data-de="Anmelden" data-en="Sign in">Anmelden</button>
+        <div class="auth-error" id="loginError"></div>
+      </div>
+      <!-- Signup -->
+      <div class="auth-panel" id="panelSignup">
+        <div class="auth-form-group">
+          <label data-de="Ihr Name" data-en="Your name">Ihr Name</label>
+          <input type="text" id="signupName" placeholder="Maria Mustermann" autocomplete="name" />
+        </div>
+        <div class="auth-form-group">
+          <label data-de="E-Mail" data-en="Email">E-Mail</label>
+          <input type="email" id="signupEmail" placeholder="ihre@email.at" autocomplete="email" />
+        </div>
+        <div class="auth-form-group">
+          <label data-de="Passwort (min. 6 Zeichen)" data-en="Password (min. 6 characters)">Passwort (min. 6 Zeichen)</label>
+          <input type="password" id="signupPassword" placeholder="••••••••" autocomplete="new-password" />
+        </div>
+        <button class="btn btn-primary btn-full" id="signupSubmitBtn" data-de="Konto erstellen" data-en="Create account">Konto erstellen</button>
+        <div class="auth-error" id="signupError"></div>
+        <div class="auth-success" id="signupSuccess" style="display:none" data-de="✓ Konto erstellt! Sie können sich jetzt anmelden." data-en="✓ Account created! You can now sign in.">
+          ✓ Konto erstellt! Sie können sich jetzt anmelden.
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ░░ HERO ░░ -->
   <section class="hero" id="hero">
