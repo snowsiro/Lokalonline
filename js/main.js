@@ -144,6 +144,17 @@
         errEl.textContent = error.message;
         errEl.classList.add('show');
       } else {
+        // signups 테이블에도 기록 (어드민 확인용, 오류 무시)
+        sbClient.from('signups').insert([{
+          email: email,
+          name: meta.full_name,
+          business: meta.business,
+          phone: meta.phone,
+          address: meta.address,
+          instagram: meta.instagram,
+          website: meta.website
+        }]).then(function () {});
+
         okEl.style.display = 'block';
         document.getElementById('signupName').value = '';
         document.getElementById('signupEmail').value = '';
