@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — lokalonline.at</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="admin-header">
+    <span class="admin-logo">lokalonline<span>.at</span> Admin</span>
+    <div class="admin-header-right">
+      <span class="admin-user" id="adminUser"></span>
+      <button class="btn btn-ghost btn-sm" id="logoutBtn">Abmelden</button>
+    </div>
+  </header>
+
+  <!-- Stats -->
+  <div class="admin-stats">
+    <div class="stat-card">
+      <div class="stat-number" id="statNew">—</div>
+      <div class="stat-label">Neue Anfragen</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="statTotal">—</div>
+      <div class="stat-label">Anfragen gesamt</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="statClients">—</div>
+      <div class="stat-label">Aktive Kunden</div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="admin-main">
+    <div class="admin-tabs">
+      <button class="tab-btn active" data-tab="inquiries">
+        Anfragen <span class="badge-count" id="newBadge" style="display:none"></span>
+      </button>
+      <button class="tab-btn" data-tab="clients">Kunden</button>
+    </div>
+
+    <!-- Anfragen Tab -->
+    <div class="tab-content active" id="tab-inquiries">
+      <div class="table-toolbar">
+        <div class="filter-group">
+          <button class="filter-btn active" data-status="all">Alle</button>
+          <button class="filter-btn" data-status="new">Neu</button>
+          <button class="filter-btn" data-status="contacted">Kontaktiert</button>
+          <button class="filter-btn" data-status="converted">Konvertiert</button>
+          <button class="filter-btn" data-status="rejected">Abgelehnt</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Datum</th>
+              <th>Name</th>
+              <th>Betrieb</th>
+              <th>E-Mail</th>
+              <th>Plan</th>
+              <th>Status</th>
+              <th>Aktionen</th>
+            </tr>
+          </thead>
+          <tbody id="inquiriesBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Kunden Tab -->
+    <div class="tab-content" id="tab-clients">
+      <div class="table-toolbar">
+        <div></div>
+        <button class="btn btn-primary" id="addClientBtn">+ Kunden hinzufügen</button>
+      </div>
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Name / Betrieb</th>
+              <th>Plan</th>
+              <th>Abrechnung</th>
+              <th>Seite</th>
+              <th>Status</th>
+              <th>Nächste Zahlung</th>
+              <th>Aktionen</th>
+            </tr>
+          </thead>
+          <tbody id="clientsBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inquiry Detail Modal -->
+  <div class="modal-overlay" id="inquiryOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Anfrage Details</span>
+        <button class="modal-close" data-close="inquiryOverlay">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-grid" id="inquiryInfo"></div>
+        <div id="inquiryMsgWrap" style="display:none">
+          <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);display:block;margin-bottom:6px">Nachricht</label>
+          <div class="message-box" id="inquiryMsg"></div>
+        </div>
+        <hr class="divider" />
+        <div class="form-group">
+          <label>Status</label>
+          <select id="inquiryStatus">
+            <option value="new">Neu</option>
+            <option value="contacted">Kontaktiert</option>
+            <option value="converted">Konvertiert</option>
+            <option value="rejected">Abgelehnt</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Notizen</label>
+          <textarea id="inquiryNotes" placeholder="Interne Notizen…"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger btn-sm" id="deleteInquiryBtn">Löschen</button>
+        <button class="btn btn-outline" data-close="inquiryOverlay">Abbrechen</button>
+        <button class="btn btn-primary" id="saveInquiryBtn">Speichern</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Client Add/Edit Modal -->
+  <div class="modal-overlay" id="clientOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title" id="clientModalTitle">Kunden hinzufügen</span>
+        <button class="modal-close" data-close="clientOverlay">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="clientId" />
+        <div class="form-row">
+          <div class="form-group">
+            <label>Name *</label>
+            <input type="text" id="clientName" placeholder="Maria Mustermann" />
+          </div>
+          <div class="form-group">
+            <label>Betriebsname *</label>
+            <input type="text" id="clientBusiness" placeholder="Café Wien" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>E-Mail *</label>
+            <input type="email" id="clientEmail" placeholder="maria@example.at" />
+          </div>
+          <div class="form-group">
+            <label>Telefon</label>
+            <input type="tel" id="clientPhone" placeholder="+43 660 000 00 00" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Plan *</label>
+            <select id="clientPlan">
+              <option value="basis">Basis — €19/Monat</option>
+              <option value="standard">Standard — €39/Monat</option>
+              <option value="premium">Premium — €69/Monat</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Abrechnung</label>
+            <select id="clientBilling">
+              <option value="monthly">Monatlich</option>
+              <option value="yearly">Jährlich</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Startdatum</label>
+            <input type="date" id="clientStartDate" />
+          </div>
+          <div class="form-group">
+            <label>Nächste Zahlung</label>
+            <input type="date" id="clientNextBilling" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Seiten-URL</label>
+          <input type="text" id="clientPageUrl" placeholder="lokalonline.at/cafewien" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Status</label>
+            <select id="clientStatus">
+              <option value="active">Aktiv</option>
+              <option value="inactive">Inaktiv</option>
+              <option value="cancelled">Gekündigt</option>
+            </select>
+          </div>
+          <div class="form-group" style="display:flex;align-items:flex-end;padding-bottom:2px">
+            <div class="checkbox-row">
+              <input type="checkbox" id="clientSetupFeeWaived" />
+              <label for="clientSetupFeeWaived">Einrichtungsgebühr erlassen</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Notizen</label>
+          <textarea id="clientNotes" placeholder="Interne Notizen…"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger btn-sm" id="deleteClientBtn" style="display:none">Löschen</button>
+        <button class="btn btn-outline" data-close="clientOverlay">Abbrechen</button>
+        <button class="btn btn-primary" id="saveClientBtn">Speichern</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

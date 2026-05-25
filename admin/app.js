@@ -1,0 +1,324 @@
+(function () {
+  'use strict';
+
+  var SUPABASE_URL = 'https://vhnourjddnlslgabrasb.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_y5l1cAZXoAj8xaSVXUkBfw_Pk9pxb6H';
+  var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  var currentInquiryId = null;
+  var inquiryFilter = 'all';
+
+  // ── Auth ─────────────────────────────────────────────────────────
+  sb.auth.getSession().then(function (ref) {
+    var session = ref.data.session;
+    if (!session) { location.href = 'index.html'; return; }
+    var userEl = document.getElementById('adminUser');
+    if (userEl) userEl.textContent = session.user.email;
+    init();
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', function () {
+    sb.auth.signOut().then(function () { location.href = 'index.html'; });
+  });
+
+  // ── Init ──────────────────────────────────────────────────────────
+  function init() {
+    loadStats();
+    loadInquiries();
+    bindTabs();
+    bindFilters();
+    bindModals();
+    bindClientForm();
+    bindInquiryForm();
+  }
+
+  // ── Stats ─────────────────────────────────────────────────────────
+  async function loadStats() {
+    var [inqRes, clientRes] = await Promise.all([
+      sb.from('inquiries').select('status'),
+      sb.from('clients').select('status')
+    ]);
+
+    var inquiries = inqRes.data || [];
+    var clients = clientRes.data || [];
+    var newCount = inquiries.filter(function (i) { return i.status === 'new'; }).length;
+
+    setText('statNew', newCount);
+    setText('statTotal', inquiries.length);
+    setText('statClients', clients.filter(function (c) { return c.status === 'active'; }).length);
+
+    var badge = document.getElementById('newBadge');
+    if (badge) {
+      badge.textContent = newCount;
+      badge.style.display = newCount > 0 ? 'inline-flex' : 'none';
+    }
+  }
+
+  // ── Inquiries ─────────────────────────────────────────────────────
+  async function loadInquiries() {
+    var query = sb.from('inquiries').select('*').order('created_at', { ascending: false });
+    if (inquiryFilter !== 'all') query = query.eq('status', inquiryFilter);
+
+    var { data, error } = await query;
+    var tbody = document.getElementById('inquiriesBody');
+    if (!tbody) return;
+
+    if (error || !data || data.length === 0) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Keine Anfragen gefunden.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = data.map(function (inq) {
+      return '<tr>' +
+        '<td>' + formatDate(inq.created_at) + '</td>' +
+        '<td><strong>' + esc(inq.name) + '</strong></td>' +
+        '<td>' + (inq.business ? esc(inq.business) : '<span style="color:var(--text-muted)">—</span>') + '</td>' +
+        '<td><a href="mailto:' + esc(inq.email) + '" style="color:var(--primary)">' + esc(inq.email) + '</a></td>' +
+        '<td>' + (inq.plan_interest ? '<span class="plan-tag">' + planLabel(inq.plan_interest) + '</span>' : '—') + '</td>' +
+        '<td>' + statusBadge(inq.status) + '</td>' +
+        '<td><button class="btn btn-outline btn-sm" onclick="openInquiry(\'' + inq.id + '\')">Details</button></td>' +
+        '</tr>';
+    }).join('');
+  }
+
+  window.openInquiry = async function (id) {
+    currentInquiryId = id;
+    var { data } = await sb.from('inquiries').select('*').eq('id', id).single();
+    if (!data) return;
+
+    var infoGrid = document.getElementById('inquiryInfo');
+    infoGrid.innerHTML =
+      infoItem('Name', esc(data.name)) +
+      infoItem('E-Mail', '<a href="mailto:' + esc(data.email) + '" style="color:var(--primary)">' + esc(data.email) + '</a>') +
+      infoItem('Betrieb', data.business || '—') +
+      infoItem('Telefon', data.phone || '—') +
+      infoItem('Plan', data.plan_interest ? planLabel(data.plan_interest) : '—') +
+      infoItem('Eingegangen', formatDate(data.created_at));
+
+    var msgWrap = document.getElementById('inquiryMsgWrap');
+    var msgEl = document.getElementById('inquiryMsg');
+    if (data.message) {
+      msgEl.textContent = data.message;
+      msgWrap.style.display = 'block';
+    } else {
+      msgWrap.style.display = 'none';
+    }
+
+    document.getElementById('inquiryStatus').value = data.status;
+    document.getElementById('inquiryNotes').value = data.notes || '';
+    openModal('inquiryOverlay');
+  };
+
+  function bindInquiryForm() {
+    document.getElementById('saveInquiryBtn').addEventListener('click', async function () {
+      if (!currentInquiryId) return;
+      var { error } = await sb.from('inquiries').update({
+        status: document.getElementById('inquiryStatus').value,
+        notes: document.getElementById('inquiryNotes').value
+      }).eq('id', currentInquiryId);
+
+      if (!error) {
+        closeModal('inquiryOverlay');
+        showToast('Gespeichert');
+        loadInquiries();
+        loadStats();
+      }
+    });
+
+    document.getElementById('deleteInquiryBtn').addEventListener('click', async function () {
+      if (!currentInquiryId) return;
+      if (!confirm('Anfrage wirklich löschen?')) return;
+      await sb.from('inquiries').delete().eq('id', currentInquiryId);
+      closeModal('inquiryOverlay');
+      showToast('Gelöscht');
+      loadInquiries();
+      loadStats();
+    });
+  }
+
+  // ── Clients ───────────────────────────────────────────────────────
+  async function loadClients() {
+    var { data, error } = await sb.from('clients').select('*').order('created_at', { ascending: false });
+    var tbody = document.getElementById('clientsBody');
+    if (!tbody) return;
+
+    if (error || !data || data.length === 0) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Noch keine Kunden vorhanden.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = data.map(function (c) {
+      return '<tr>' +
+        '<td><strong>' + esc(c.business_name) + '</strong><br><span style="color:var(--text-muted);font-size:12px">' + esc(c.name) + '</span></td>' +
+        '<td><span class="plan-tag">' + planLabel(c.plan) + '</span></td>' +
+        '<td>' + (c.billing_cycle === 'yearly' ? 'Jährlich' : 'Monatlich') + '</td>' +
+        '<td>' + (c.page_url ? '<a href="https://' + esc(c.page_url) + '" target="_blank" style="color:var(--primary)">' + esc(c.page_url) + '</a>' : '—') + '</td>' +
+        '<td>' + statusBadge(c.status) + '</td>' +
+        '<td>' + (c.next_billing ? formatDate(c.next_billing) : '—') + '</td>' +
+        '<td><button class="btn btn-outline btn-sm" onclick="openClient(\'' + c.id + '\')">Bearbeiten</button></td>' +
+        '</tr>';
+    }).join('');
+  }
+
+  window.openClient = async function (id) {
+    var { data } = await sb.from('clients').select('*').eq('id', id).single();
+    if (!data) return;
+    fillClientModal(data);
+    document.getElementById('clientModalTitle').textContent = 'Kunden bearbeiten';
+    document.getElementById('deleteClientBtn').style.display = 'inline-flex';
+    openModal('clientOverlay');
+  };
+
+  function fillClientModal(data) {
+    document.getElementById('clientId').value = data ? data.id : '';
+    document.getElementById('clientName').value = data ? data.name : '';
+    document.getElementById('clientBusiness').value = data ? data.business_name : '';
+    document.getElementById('clientEmail').value = data ? data.email : '';
+    document.getElementById('clientPhone').value = data ? (data.phone || '') : '';
+    document.getElementById('clientPlan').value = data ? data.plan : 'basis';
+    document.getElementById('clientBilling').value = data ? data.billing_cycle : 'monthly';
+    document.getElementById('clientStartDate').value = data ? (data.start_date || '') : '';
+    document.getElementById('clientNextBilling').value = data ? (data.next_billing || '') : '';
+    document.getElementById('clientPageUrl').value = data ? (data.page_url || '') : '';
+    document.getElementById('clientStatus').value = data ? data.status : 'active';
+    document.getElementById('clientSetupFeeWaived').checked = data ? data.setup_fee_waived : false;
+    document.getElementById('clientNotes').value = data ? (data.notes || '') : '';
+  }
+
+  function bindClientForm() {
+    document.getElementById('addClientBtn').addEventListener('click', function () {
+      fillClientModal(null);
+      document.getElementById('clientModalTitle').textContent = 'Kunden hinzufügen';
+      document.getElementById('deleteClientBtn').style.display = 'none';
+      openModal('clientOverlay');
+    });
+
+    document.getElementById('saveClientBtn').addEventListener('click', async function () {
+      var name = document.getElementById('clientName').value.trim();
+      var business = document.getElementById('clientBusiness').value.trim();
+      var email = document.getElementById('clientEmail').value.trim();
+      if (!name || !business || !email) { showToast('Pflichtfelder ausfüllen'); return; }
+
+      var payload = {
+        name: name,
+        business_name: business,
+        email: email,
+        phone: document.getElementById('clientPhone').value.trim() || null,
+        plan: document.getElementById('clientPlan').value,
+        billing_cycle: document.getElementById('clientBilling').value,
+        setup_fee_waived: document.getElementById('clientSetupFeeWaived').checked,
+        start_date: document.getElementById('clientStartDate').value || null,
+        next_billing: document.getElementById('clientNextBilling').value || null,
+        page_url: document.getElementById('clientPageUrl').value.trim() || null,
+        status: document.getElementById('clientStatus').value,
+        notes: document.getElementById('clientNotes').value.trim() || null
+      };
+
+      var id = document.getElementById('clientId').value;
+      var error;
+      if (id) {
+        ({ error } = await sb.from('clients').update(payload).eq('id', id));
+      } else {
+        ({ error } = await sb.from('clients').insert([payload]));
+      }
+
+      if (!error) {
+        closeModal('clientOverlay');
+        showToast(id ? 'Gespeichert' : 'Kunde hinzugefügt');
+        loadClients();
+        loadStats();
+      } else {
+        showToast('Fehler: ' + error.message);
+      }
+    });
+
+    document.getElementById('deleteClientBtn').addEventListener('click', async function () {
+      var id = document.getElementById('clientId').value;
+      if (!id || !confirm('Kunden wirklich löschen?')) return;
+      await sb.from('clients').delete().eq('id', id);
+      closeModal('clientOverlay');
+      showToast('Gelöscht');
+      loadClients();
+      loadStats();
+    });
+  }
+
+  // ── Tabs ──────────────────────────────────────────────────────────
+  function bindTabs() {
+    document.querySelectorAll('.tab-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var tab = btn.getAttribute('data-tab');
+        document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+        document.querySelectorAll('.tab-content').forEach(function (c) { c.classList.remove('active'); });
+        btn.classList.add('active');
+        document.getElementById('tab-' + tab).classList.add('active');
+        if (tab === 'clients') loadClients();
+        if (tab === 'inquiries') loadInquiries();
+      });
+    });
+  }
+
+  // ── Filters ───────────────────────────────────────────────────────
+  function bindFilters() {
+    document.querySelectorAll('.filter-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.filter-btn').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        inquiryFilter = btn.getAttribute('data-status');
+        loadInquiries();
+      });
+    });
+  }
+
+  // ── Modals ────────────────────────────────────────────────────────
+  function bindModals() {
+    document.querySelectorAll('[data-close]').forEach(function (btn) {
+      btn.addEventListener('click', function () { closeModal(btn.getAttribute('data-close')); });
+    });
+    document.querySelectorAll('.modal-overlay').forEach(function (overlay) {
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) closeModal(overlay.id);
+      });
+    });
+  }
+
+  function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
+
+  // ── Helpers ───────────────────────────────────────────────────────
+  function formatDate(str) {
+    if (!str) return '—';
+    return new Date(str).toLocaleDateString('de-AT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  }
+
+  function statusBadge(status) {
+    var labels = { new: 'Neu', contacted: 'Kontaktiert', converted: 'Konvertiert', rejected: 'Abgelehnt', active: 'Aktiv', inactive: 'Inaktiv', cancelled: 'Gekündigt' };
+    return '<span class="badge badge-' + status + '">' + (labels[status] || status) + '</span>';
+  }
+
+  function planLabel(plan) {
+    return { basis: 'Basis', standard: 'Standard', premium: 'Premium', unsure: 'Unsicher' }[plan] || plan;
+  }
+
+  function infoItem(label, value) {
+    return '<div class="info-item"><label>' + label + '</label><span>' + value + '</span></div>';
+  }
+
+  function setText(id, val) { var el = document.getElementById(id); if (el) el.textContent = val; }
+
+  function esc(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  var toastTimer;
+  function showToast(msg) {
+    var el = document.getElementById('toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.remove('show'); }, 2500);
+  }
+
+})();

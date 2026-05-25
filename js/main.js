@@ -113,49 +113,49 @@
     });
   }
 
-  // ── Contact form ──────────────────────────────────────────────────
+  // ── Contact form (Supabase) ───────────────────────────────────────
   var form = document.getElementById('contactForm');
   var successMsg = document.getElementById('formSuccess');
+  var sbClient = window.supabase
+    ? window.supabase.createClient(
+        'https://vhnourjddnlslgabrasb.supabase.co',
+        'sb_publishable_y5l1cAZXoAj8xaSVXUkBfw_Pk9pxb6H'
+      )
+    : null;
 
   if (form) {
-    form.addEventListener('submit', function (e) {
-      var action = form.getAttribute('action');
-      // If still using placeholder, prevent submission and show notice
-      if (action && action.includes('REPLACE_ME')) {
-        e.preventDefault();
-        if (successMsg) {
-          successMsg.querySelector('span').textContent =
-            currentLang === 'en'
-              ? '⚠ Form not yet configured. Please contact us directly.'
-              : '⚠ Formular noch nicht konfiguriert. Bitte kontaktieren Sie uns direkt.';
-          successMsg.classList.add('show');
-        }
-        return;
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var submitBtn = form.querySelector('button[type="submit"]');
+      if (submitBtn) { submitBtn.disabled = true; }
+
+      var payload = {
+        name: form.name.value.trim(),
+        business: form.business.value.trim() || null,
+        email: form.email.value.trim(),
+        phone: form.phone.value.trim() || null,
+        plan_interest: form.plan.value || null,
+        message: form.message.value.trim() || null,
+        status: 'new'
+      };
+
+      var ok = false;
+      if (sbClient) {
+        var ref = await sbClient.from('inquiries').insert([payload]);
+        ok = !ref.error;
       }
 
-      e.preventDefault();
-      var data = new FormData(form);
-
-      fetch(form.action, {
-        method: 'POST',
-        body: data,
-        headers: { 'Accept': 'application/json' }
-      })
-        .then(function (res) {
-          if (res.ok) {
-            form.reset();
-            if (successMsg) successMsg.classList.add('show');
-          } else {
-            throw new Error('Network response was not ok');
-          }
-        })
-        .catch(function () {
-          alert(
-            currentLang === 'en'
-              ? 'Something went wrong. Please try again or contact us directly.'
-              : 'Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.'
-          );
-        });
+      if (ok) {
+        form.reset();
+        if (successMsg) successMsg.classList.add('show');
+      } else {
+        alert(
+          currentLang === 'en'
+            ? 'Something went wrong. Please try again or contact us directly.'
+            : 'Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.'
+        );
+      }
+      if (submitBtn) { submitBtn.disabled = false; }
     });
   }
 
