@@ -200,14 +200,6 @@
     overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
 
-    // 잔여 자리 표시
-    var remaining = TOTAL_SPOTS - TAKEN_SPOTS;
-    var fillPct = (TAKEN_SPOTS / TOTAL_SPOTS) * 100;
-    var remainingEl = overlay.querySelector('.popup-spots-remaining');
-    var fillEl = overlay.querySelector('.popup-spots-fill');
-    if (remainingEl) remainingEl.textContent = remaining;
-    if (fillEl) setTimeout(function () { fillEl.style.width = fillPct + '%'; }, 100);
-
     // 언어 반영
     overlay.querySelectorAll('[data-de]').forEach(function (el) {
       var text = el.getAttribute('data-' + currentLang);
