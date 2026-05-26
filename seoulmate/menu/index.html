@@ -1101,13 +1101,25 @@ function markHasPhoto(id, url){
 
 // ── GITHUB API (via Supabase Edge Function) ──
 async function ghPutFile(path, contentBase64, message){
-  var r = await fetch(EDGE_FN, {
-    method: 'POST',
-    headers: { 'Authorization': 'Bearer ' + SB_ANON, 'apikey': SB_ANON, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'put-file', path: path, content: contentBase64, message: message })
-  });
-  var d = await r.json();
-  return d.ok === true;
+  try {
+    var r = await fetch(EDGE_FN, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + SB_ANON, 'apikey': SB_ANON, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'put-file', path: path, content: contentBase64, message: message })
+    });
+    var text = await r.text();
+    try {
+      var d = JSON.parse(text);
+      if(!d.ok) { toast('❌ ' + (d.error || 'Fehler: ' + r.status)); return false; }
+      return true;
+    } catch(e) {
+      toast('❌ Server: ' + text.substring(0,80));
+      return false;
+    }
+  } catch(e) {
+    toast('❌ Netzwerk: ' + e.message);
+    return false;
+  }
 }
 
 async function saveDataJson(){
