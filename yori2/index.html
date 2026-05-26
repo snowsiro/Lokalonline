@@ -889,7 +889,7 @@ footer {
     btn.disabled=true; btn.style.opacity='0.4';
     try{
       var dateStr=date?date.replace('-','. ')+'.':new Date().toLocaleDateString('de-AT',{year:'numeric',month:'long'});
-      var {error}=await sb.from('reviews').insert([{client_slug:CLIENT_SLUG,name:name,text:text,stars:stars,date:dateStr}]);
+      var {error}=await sb.from('reviews').insert([{client_slug:CLIENT_SLUG,name:name,text:text,stars:stars,date:dateStr,approved:true}]);
       if(error) throw error;
       var noMsg=document.getElementById('noReviews');
       if(noMsg) noMsg.remove();
