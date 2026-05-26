@@ -1,0 +1,1039 @@
+<html lang="de"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seoulmate — Speisekarte</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Serif+Display:ital@0;1&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#ffffff;--surface:#f8f7f5;--border:#e8e4de;--text:#141210;--muted:#9a9080;--accent:#d42b2b;--tag-spicy-bg:#fff0f0;--tag-spicy:#c82020;--tag-veg-bg:#f0f7f0;--tag-veg:#2d7a2d;--tag-hot-bg:#fff5f0;--tag-hot:#e05510}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans','Noto Sans KR',sans-serif;font-weight:400;-webkit-font-smoothing:antialiased}
+
+/* ADMIN BANNER */
+.admin-banner{background:#1a1a1a;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:46px;font-size:0.75rem;gap:12px}
+.admin-banner.hidden{display:none}
+.admin-banner-left{display:flex;align-items:center;gap:10px}
+.admin-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;flex-shrink:0;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.admin-label{font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:#4ade80}
+.admin-sub{color:#888}
+.admin-exit-btn{border:1px solid #444;background:transparent;color:#aaa;font-family:'DM Sans',sans-serif;font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:5px 12px;border-radius:4px;cursor:pointer;transition:all 0.15s;white-space:nowrap}
+.admin-exit-btn:hover{border-color:#fff;color:#fff}
+
+/* HEADER */
+.site-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:64px}
+.brand{font-family:'DM Serif Display',serif;font-size:1.35rem;letter-spacing:-0.01em;color:var(--text);white-space:nowrap}
+.brand span{color:var(--accent)}
+.header-right{display:flex;align-items:center;gap:12px}
+.lang-switcher{display:flex;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:3px}
+.lang-btn{border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);padding:6px 12px;border-radius:4px;cursor:pointer;transition:all 0.18s}
+.lang-btn:hover:not(.active){color:var(--text);background:rgba(0,0,0,0.04)}
+.lang-btn.active{background:var(--text);color:#fff}
+.admin-toggle-btn{border:1px solid var(--border);background:transparent;font-family:'DM Sans',sans-serif;font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:7px 13px;border-radius:6px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:5px}
+.admin-toggle-btn:hover{border-color:var(--text);color:var(--text)}
+.admin-toggle-btn.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.home-link{font-size:0.72rem;font-weight:500;letter-spacing:0.06em;color:var(--muted);text-decoration:none;padding:7px 12px;border:1px solid var(--border);border-radius:6px;transition:all 0.15s}
+.home-link:hover{color:var(--text);border-color:var(--text)}
+
+/* NAV */
+.section-nav{display:flex;overflow-x:auto;border-bottom:1px solid var(--border);padding:0 32px;background:var(--bg);scrollbar-width:none}
+.section-nav::-webkit-scrollbar{display:none}
+.nav-tab{border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:500;letter-spacing:0.04em;color:var(--muted);padding:14px 18px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.18s}
+.nav-tab:hover{color:var(--text)}
+.nav-tab.active{color:var(--text);border-bottom-color:var(--accent)}
+
+/* LAYOUT */
+.page-wrap{max-width:1080px;margin:0 auto;padding:0 32px 80px;animation:fadeIn 0.5s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* SECTIONS */
+.menu-section{padding-top:56px}
+.section-eyebrow{font-size:0.68rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.section-title{font-family:'DM Serif Display',serif;font-size:clamp(1.6rem,4vw,2.4rem);letter-spacing:-0.02em;line-height:1;color:var(--text);margin-bottom:4px}
+.section-note{font-size:0.78rem;color:var(--muted);font-style:italic;margin-bottom:32px;margin-top:6px}
+.section-divider{height:1px;background:var(--border)}
+
+/* GRID */
+.items-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));gap:0}
+.menu-item{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:20px 0;border-bottom:1px solid var(--border)}
+.menu-item:last-child{border-bottom:none}
+.items-grid .menu-item:nth-child(odd){padding-right:32px}
+.items-grid .menu-item:nth-child(even){padding-left:32px;border-left:1px solid var(--border)}
+.item-body{flex:1;min-width:0}
+.item-code{font-size:0.68rem;font-weight:600;letter-spacing:0.1em;color:var(--muted);margin-bottom:3px}
+
+/* ITEM NAME */
+.item-name{font-family:'DM Serif Display',serif;font-size:1.05rem;letter-spacing:-0.01em;color:var(--text);line-height:1.25;display:inline-flex;align-items:center;gap:8px}
+.item-ko{font-size:0.78rem;font-style:italic;color:var(--muted);font-family:'Noto Sans KR','DM Sans',sans-serif;margin-top:2px;display:block;font-weight:300}
+.item-desc{font-size:0.8rem;color:var(--muted);line-height:1.55;margin-top:4px;font-weight:300}
+.item-tags{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap}
+.tag{font-size:0.62rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:2px 7px;border-radius:3px}
+.tag-scharf{background:var(--tag-spicy-bg);color:var(--tag-spicy)}
+.tag-pikant{background:var(--tag-hot-bg);color:var(--tag-hot)}
+.tag-veg{background:var(--tag-veg-bg);color:var(--tag-veg)}
+.tag-vegan{background:var(--tag-veg-bg);color:var(--tag-veg)}
+.item-price-wrap{text-align:right;flex-shrink:0;padding-top:2px}
+.item-price{font-family:'DM Serif Display',serif;font-size:1.05rem;color:var(--text);white-space:nowrap}
+.item-price-sm{font-size:0.72rem;color:var(--muted);margin-top:2px;white-space:nowrap}
+
+/* SPECIAL / KFC SIZE TABLE */
+.special-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-top:24px}
+.special-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:24px}
+.special-card .item-name{font-size:1.1rem}
+.size-table{width:100%;border-collapse:collapse;margin-top:14px}
+.size-table th{font-size:0.62rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);padding:5px 8px;text-align:center;border-bottom:1px solid var(--border)}
+.size-table td{font-size:0.88rem;font-weight:300;padding:8px 8px;text-align:center;border-bottom:1px solid var(--border);color:var(--text)}
+.size-table tr:last-child td{border-bottom:none}
+.size-table td:first-child{font-weight:500;color:var(--muted);font-size:0.78rem;letter-spacing:0.06em}
+.size-label{font-family:'DM Serif Display',serif;font-size:1rem;color:var(--text)}
+
+/* EXTRAS */
+.extras-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0}
+
+/* LEGEND */
+.legend{display:flex;gap:20px;flex-wrap:wrap;padding:20px 0;border-top:1px solid var(--border);margin-top:48px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--muted)}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-scharf{background:var(--tag-spicy)}.dot-pikant{background:var(--tag-hot)}.dot-veg{background:#4CAF50}.dot-vegan{background:#2d7a2d}
+
+/* FOOTER */
+.footer{text-align:center;font-size:0.75rem;color:var(--muted);line-height:1.8;padding:32px 0 0;border-top:1px solid var(--border);margin-top:48px}
+
+/* LANG */
+[data-lang]{display:none}
+body.lang-ko [data-lang="ko"],body.lang-en [data-lang="en"],body.lang-de [data-lang="de"]{display:block}
+span[data-lang],.inline[data-lang]{display:none!important}
+body.lang-ko span[data-lang="ko"],body.lang-ko .inline[data-lang="ko"],body.lang-en span[data-lang="en"],body.lang-en .inline[data-lang="en"],body.lang-de span[data-lang="de"],body.lang-de .inline[data-lang="de"]{display:inline!important}
+
+/* PHOTO MODAL */
+.photo-modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(10,8,6,0.86);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity 0.22s}
+.photo-modal-overlay.open{opacity:1;pointer-events:all}
+.photo-modal{background:var(--bg);border-radius:12px;overflow:hidden;max-width:520px;width:100%;box-shadow:0 40px 100px rgba(0,0,0,0.4);transform:translateY(14px) scale(0.97);transition:transform 0.28s cubic-bezier(0.34,1.56,0.64,1)}
+.photo-modal-overlay.open .photo-modal{transform:translateY(0) scale(1)}
+.photo-modal-img-wrap{width:100%;aspect-ratio:4/3;overflow:hidden;background:var(--surface)}
+.photo-modal-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity 0.2s}
+.photo-modal-footer{padding:16px 20px 18px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.photo-modal-title{font-family:'DM Serif Display',serif;font-size:1.1rem;letter-spacing:-0.01em;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.photo-modal-close{border:1px solid var(--border);background:transparent;border-radius:6px;padding:7px 14px;font-family:'DM Sans',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:all 0.15s;flex-shrink:0}
+.photo-modal-close:hover{background:var(--text);color:#fff;border-color:var(--text)}
+
+/* TOAST */
+.save-toast{position:fixed;bottom:28px;right:28px;z-index:999;background:#1a1a1a;color:#fff;border-radius:8px;padding:12px 20px;font-size:0.78rem;font-weight:600;letter-spacing:0.04em;box-shadow:0 8px 32px rgba(0,0,0,0.25);transform:translateY(20px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none}
+.save-toast.show{transform:translateY(0);opacity:1}
+
+/* PASSWORD MODAL */
+.pw-overlay{position:fixed;inset:0;z-index:600;background:rgba(10,8,6,0.8);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity 0.2s}
+.pw-overlay.open{opacity:1;pointer-events:all}
+.pw-box{background:var(--bg);border-radius:12px;padding:36px 32px 28px;width:100%;max-width:360px;box-shadow:0 32px 80px rgba(0,0,0,0.35);transform:translateY(12px) scale(0.97);transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1)}
+.pw-overlay.open .pw-box{transform:translateY(0) scale(1)}
+.pw-icon{font-size:1.8rem;margin-bottom:12px}
+.pw-title{font-family:'DM Serif Display',serif;font-size:1.3rem;letter-spacing:-0.01em;color:var(--text);margin-bottom:4px}
+.pw-sub{font-size:0.78rem;color:var(--muted);margin-bottom:24px}
+.pw-input-wrap{position:relative;margin-bottom:8px}
+.pw-input{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:11px 44px 11px 14px;font-family:'DM Sans',sans-serif;font-size:0.92rem;color:var(--text);background:var(--bg);outline:none;transition:border-color 0.15s}
+.pw-input:focus{border-color:var(--text)}
+.pw-input.error{border-color:#c82020;animation:shake 0.35s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:1rem;padding:2px;transition:color 0.15s}
+.pw-toggle:hover{color:var(--text)}
+.pw-error-msg{font-size:0.72rem;color:#c82020;height:18px;margin-bottom:16px;letter-spacing:0.02em}
+.pw-btn{width:100%;background:var(--text);color:#fff;border:none;border-radius:7px;padding:12px;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:opacity 0.15s}
+.pw-btn:hover{opacity:0.85}
+.pw-cancel{display:block;text-align:center;margin-top:14px;font-size:0.75rem;color:var(--muted);cursor:pointer;transition:color 0.15s}
+.pw-cancel:hover{color:var(--text)}
+
+/* ADMIN EDIT */
+.admin-edit-btn{display:none;margin-bottom:8px;border:1px dashed var(--accent);background:rgba(212,43,43,0.06);color:var(--accent);font-family:'DM Sans',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:5px 10px;border-radius:4px;cursor:pointer;transition:all 0.15s;width:fit-content}
+.admin-edit-btn:hover{background:var(--accent);color:#fff}
+body.admin-mode .admin-edit-btn{display:inline-block}
+.admin-sec-btn{display:none;margin-bottom:12px;border:1px dashed #888;background:rgba(0,0,0,0.04);color:#555;font-family:'DM Sans',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:5px 10px;border-radius:4px;cursor:pointer;transition:all 0.15s}
+.admin-sec-btn:hover{background:#555;color:#fff}
+body.admin-mode .admin-sec-btn{display:inline-block}
+body.admin-mode .menu-item{position:relative;border:1px dashed rgba(212,43,43,0.2);border-radius:4px;padding:12px!important}
+
+@media(max-width:700px){
+  .site-header,.section-nav,.page-wrap{padding-left:16px;padding-right:16px}
+  .site-header{padding:0 16px;height:56px}
+  .items-grid{grid-template-columns:1fr}
+  .items-grid .menu-item:nth-child(even){border-left:none;padding-left:0}
+  .items-grid .menu-item:nth-child(odd){padding-right:0}
+  .special-grid,.extras-grid{grid-template-columns:1fr}
+  .brand{font-size:1.05rem}
+  .admin-banner{padding:0 16px}
+  .admin-sub{display:none}
+  .admin-toggle-btn{display:none}
+  .lang-btn{padding:5px 8px;font-size:0.65rem}
+  .home-link{display:none}
+}
+</style>
+</head>
+<body class="lang-de">
+
+<!-- ADMIN BANNER -->
+<div class="admin-banner hidden" id="adminBanner">
+  <div class="admin-banner-left">
+    <div class="admin-dot"></div>
+    <span class="admin-label">Admin</span>
+    <span class="admin-sub">— Admin-Modus aktiv · 편집 모드 활성화</span>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <button class="admin-exit-btn" onclick="setAdminMode(false)">
+      <span data-lang="de">Beenden</span><span data-lang="en">Exit</span><span data-lang="ko">종료</span>
+    </button>
+  </div>
+</div>
+
+<!-- PHOTO VIEWER MODAL -->
+<div class="photo-modal-overlay" id="photoModal" onclick="handleModalClick(event)">
+  <div class="photo-modal">
+    <div class="photo-modal-img-wrap" id="photoModalImgWrap"><img id="photoModalImg" src="" alt=""></div>
+    <div class="photo-modal-footer">
+      <div class="photo-modal-title" id="photoModalTitle"></div>
+      <button class="photo-modal-close" onclick="closePhotoModal()">
+        <span data-lang="de">Schließen</span><span data-lang="en">Close</span><span data-lang="ko">닫기</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="save-toast" id="saveToast"></div>
+
+<!-- PASSWORD MODAL -->
+<div class="pw-overlay" id="pwOverlay" onclick="handlePwOverlayClick(event)">
+  <div class="pw-box">
+    <div class="pw-icon">🔐</div>
+    <div class="pw-title">Admin-Zugang</div>
+    <div class="pw-sub">관리자 비밀번호를 입력하세요</div>
+    <div class="pw-input-wrap">
+      <input class="pw-input" id="pwInput" type="password" placeholder="Passwort" onkeydown="if(event.key==='Enter')checkPassword()">
+      <button class="pw-toggle" id="pwToggle" onclick="togglePwVisibility()" tabindex="-1">👁</button>
+    </div>
+    <div class="pw-error-msg" id="pwError"></div>
+    <button class="pw-btn" onclick="checkPassword()">확인 / Bestätigen</button>
+    <span class="pw-cancel" onclick="closePwModal()">취소 / Abbrechen</span>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="brand">Seoulmate <span>Korean Bistro</span></div>
+  <div class="header-right">
+    <a href="/seoulmate/" class="home-link">← Startseite</a>
+    <div class="lang-switcher">
+      <button class="lang-btn" onclick="setLang('ko')">한국어</button>
+      <button class="lang-btn" onclick="setLang('en')">English</button>
+      <button class="lang-btn active" onclick="setLang('de')">Deutsch</button>
+    </div>
+    <button class="admin-toggle-btn" id="adminToggleBtn" onclick="toggleAdminMode()" title="Admin Mode">
+      ⚙︎&nbsp;<span data-lang="de">Admin</span><span data-lang="en">Admin</span><span data-lang="ko">관리자</span>
+    </button>
+  </div>
+</header>
+
+<!-- SECTION NAV -->
+<nav class="section-nav">
+  <button class="nav-tab active" onclick="scrollToSection('tteokbokki')">Tteokbokki</button>
+  <button class="nav-tab" onclick="scrollToSection('noodle')">Noodle</button>
+  <button class="nav-tab" onclick="scrollToSection('chicken')">Chicken</button>
+  <button class="nav-tab" onclick="scrollToSection('cupbap')">Cupbap</button>
+  <button class="nav-tab" onclick="scrollToSection('gimbap')">Gimbap</button>
+  <button class="nav-tab" onclick="scrollToSection('side')">Side</button>
+</nav>
+
+<div class="page-wrap">
+
+<!-- ═══ TTEOKBOKKI ═══ -->
+<section class="menu-section" id="tteokbokki">
+  <div class="section-eyebrow">01</div>
+  <div class="section-title"><span data-lang="de">Tteokbokki</span><span data-lang="en">Tteokbokki</span><span data-lang="ko">떡볶이</span></div>
+  <div class="section-note">
+    <span data-lang="de">Koreanische Reiskuchen und Fischkuchen in würziger Sauce (Vegane Optionen erhältlich)</span>
+    <span data-lang="en">Korean rice cakes and fish cakes in a spicy sauce (Vegan options available)</span>
+    <span data-lang="ko">한국식 떡과 어묵을 매콤한 소스에 (비건 옵션 가능)</span>
+  </div>
+  <div class="section-divider"></div>
+  <div class="items-grid">
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Original</div>
+        <div class="item-desc">
+          <span data-lang="de">Original Tteokbokki mit einem gekochten Ei</span>
+          <span data-lang="en">Original Tteokbokki with a boiled egg</span>
+          <span data-lang="ko">오리지널 떡볶이, 삶은 달걀 포함</span>
+        </div>
+        <div class="item-tags"><span class="tag tag-scharf">Scharf</span></div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 10,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Cheese <span style="color:#f59e0b;font-size:0.75rem">★</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Original Tteokbokki mit geschmolzenem Käse</span>
+          <span data-lang="en">Original Tteokbokki topped with melted cheese</span>
+          <span data-lang="ko">오리지널 떡볶이 위에 녹인 치즈</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Rosé <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></div>
+        <div class="item-desc">
+          <span data-lang="de">In einer cremigen, würzigen Sauce mit Hähnchenwurst</span>
+          <span data-lang="en">In a creamy, spicy sauce with chicken sausage</span>
+          <span data-lang="ko">크리미하고 매콤한 소스에 닭 소시지</span>
+        </div>
+        <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
+    </div>
+
+  </div>
+  <div class="section-note" style="margin-top:16px">
+    <span data-lang="de">+ Size up! +€ 5 &nbsp;|&nbsp; + Ramyun Nudeln +€ 3 &nbsp;|&nbsp; + Udon Nudeln +€ 3</span>
+    <span data-lang="en">+ Size up! +€ 5 &nbsp;|&nbsp; + Ramyun Noodles +€ 3 &nbsp;|&nbsp; + Udon Noodles +€ 3</span>
+    <span data-lang="ko">+ 사이즈업 +€ 5 &nbsp;|&nbsp; + 라면 사리 +€ 3 &nbsp;|&nbsp; + 우동 사리 +€ 3</span>
+  </div>
+</section>
+
+<!-- ═══ NOODLE ═══ -->
+<section class="menu-section" id="noodle">
+  <div class="section-eyebrow">02</div>
+  <div class="section-title"><span data-lang="de">Noodle</span><span data-lang="en">Noodle</span><span data-lang="ko">누들</span></div>
+  <div class="section-note">
+    <span data-lang="de">Koreanische Nudeln (Vegane Optionen erhältlich)</span>
+    <span data-lang="en">Korean noodles (Vegan options available)</span>
+    <span data-lang="ko">한국식 면 요리 (비건 옵션 가능)</span>
+  </div>
+  <div class="section-divider"></div>
+  <div class="items-grid">
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Japchae <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Gebratene Glasnudeln mit Gemüse</span>
+          <span data-lang="en">Stir-fried glass noodles with vegetables</span>
+          <span data-lang="ko">채소를 넣은 볶음 당면</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 9,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Kimchi Japchae <span style="color:#f59e0b;font-size:0.75rem">★</span> <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Gebratene Glasnudeln mit Kimchi</span>
+          <span data-lang="en">Stir-fried glass noodles with kimchi</span>
+          <span data-lang="ko">김치를 넣은 볶음 당면</span>
+        </div>
+        <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 10,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Cheese Ramyeon <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Koreanisches Ramyeon mit Käse</span>
+          <span data-lang="en">Korean Ramyeon with cheese</span>
+          <span data-lang="ko">치즈 라면</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 9,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Kimchi Ramyeon <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Koreanisches Ramyeon mit Kimchi</span>
+          <span data-lang="en">Korean Ramyeon with Kimchi</span>
+          <span data-lang="ko">김치 라면</span>
+        </div>
+        <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 9,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Mandu Ramyeon <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Koreanisches Ramyeon mit Knödeln</span>
+          <span data-lang="en">Korean Ramyeon with dumplings</span>
+          <span data-lang="ko">만두 라면</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 10,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Kimchi Udon <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Warme Kimchi-Nudelsuppe</span>
+          <span data-lang="en">Warm kimchi noodle soup</span>
+          <span data-lang="ko">따뜻한 김치 우동 국물</span>
+        </div>
+        <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Bulgogi Udon</div>
+        <div class="item-desc">
+          <span data-lang="de">Warme Bulgogi-Nudelsuppe</span>
+          <span data-lang="en">Warm bulgogi noodle soup</span>
+          <span data-lang="ko">따뜻한 불고기 우동 국물</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 12,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Kimchi Guksu <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Nudeln mit Kimchi in würzig-scharfer Kimchi-Sauce</span>
+          <span data-lang="en">Noodles with kimchi in a spicy-Kimchi sauce</span>
+          <span data-lang="ko">매콤한 김치 소스 국수</span>
+        </div>
+        <div class="item-tags"><span class="tag tag-scharf">Scharf</span></div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Soy Guksu <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Nudeln in hausgemachter Sojasoße, garniert mit Mukeunji</span>
+          <span data-lang="en">Noodles in homemade soy sauce topped with mukeunji</span>
+          <span data-lang="ko">직접 만든 간장 소스 국수, 묵은지 토핑</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ KOREAN FRIED CHICKEN ═══ -->
+<section class="menu-section" id="chicken">
+  <div class="section-eyebrow">03</div>
+  <div class="section-title">
+    <span data-lang="de">Korean Fried Chicken <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></span>
+    <span data-lang="en">Korean Fried Chicken <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></span>
+    <span data-lang="ko">한국식 프라이드 치킨 <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></span>
+  </div>
+  <div class="section-note">
+    <span data-lang="de">Wähle deine Sauce / Wähle Wings oder Boneless</span>
+    <span data-lang="en">Choose your sauce / Choose Wings or Boneless</span>
+    <span data-lang="ko">소스 선택 / Wings 또는 Boneless 선택</span>
+  </div>
+  <div class="section-divider"></div>
+
+  <div class="special-grid">
+
+    <div class="special-card">
+      <div class="item-name">SEOULMATE <span style="color:#f59e0b;font-size:0.75rem">★</span></div>
+      <div class="item-desc" style="margin-top:6px">
+        <span data-lang="de">Soy Garlic Spicy</span>
+        <span data-lang="en">Soy Garlic Spicy</span>
+        <span data-lang="ko">간장 갈릭 스파이시</span>
+      </div>
+    </div>
+
+    <div class="special-card">
+      <div class="item-name">SWEET SPICY</div>
+      <div class="item-desc" style="margin-top:6px">
+        <span data-lang="de">Sweet &amp; Spicy</span>
+        <span data-lang="en">Sweet &amp; Spicy</span>
+        <span data-lang="ko">스위트 스파이시</span>
+      </div>
+    </div>
+
+    <div class="special-card">
+      <div class="item-name">FRIED</div>
+      <div class="item-desc" style="margin-top:6px">
+        <span data-lang="de">Original</span>
+        <span data-lang="en">Original</span>
+        <span data-lang="ko">오리지널</span>
+      </div>
+    </div>
+
+    <div class="special-card">
+      <div class="item-name">CREAMY SPICY</div>
+      <div class="item-desc" style="margin-top:6px">
+        <span data-lang="de">Creamy Spicy (+€1)</span>
+        <span data-lang="en">Creamy Spicy (+€1)</span>
+        <span data-lang="ko">크리미 스파이시 (+€1)</span>
+      </div>
+    </div>
+
+    <div class="special-card">
+      <div class="item-name">HOT SPICY</div>
+      <div class="item-desc" style="margin-top:6px">
+        <span data-lang="de">Sweet &amp; Hot Spicy</span>
+        <span data-lang="en">Sweet &amp; Hot Spicy</span>
+        <span data-lang="ko">스위트 핫 스파이시</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="margin-top:28px;overflow-x:auto">
+    <table class="size-table" style="min-width:340px">
+      <thead>
+        <tr>
+          <th></th>
+          <th><span data-lang="de">Wings</span><span data-lang="en">Wings</span><span data-lang="ko">윙</span></th>
+          <th><span data-lang="de">Boneless</span><span data-lang="en">Boneless</span><span data-lang="ko">순살</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span data-lang="de">Small</span><span data-lang="en">Small</span><span data-lang="ko">스몰</span></td>
+          <td><span data-lang="de">8 Stk. — € 11,–</span><span data-lang="en">8 pcs — € 11,–</span><span data-lang="ko">8개 — € 11,–</span></td>
+          <td><span data-lang="de">5 Stk. — € 11,–</span><span data-lang="en">5 pcs — € 11,–</span><span data-lang="ko">5개 — € 11,–</span></td>
+        </tr>
+        <tr>
+          <td><span data-lang="de">Large</span><span data-lang="en">Large</span><span data-lang="ko">라지</span></td>
+          <td><span data-lang="de">12 Stk. — € 16,–</span><span data-lang="en">12 pcs — € 16,–</span><span data-lang="ko">12개 — € 16,–</span></td>
+          <td><span data-lang="de">8 Stk. — € 16,–</span><span data-lang="en">8 pcs — € 16,–</span><span data-lang="ko">8개 — € 16,–</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-note" style="margin-top:16px">
+    <span data-lang="de">+ Reis € 2 &nbsp;|&nbsp; + Kimchi € 4 &nbsp;|&nbsp; + Yuzu Coleslaw Salat € 5</span>
+    <span data-lang="en">+ Rice € 2 &nbsp;|&nbsp; + Kimchi € 4 &nbsp;|&nbsp; + Yuzu Coleslaw Salad € 5</span>
+    <span data-lang="ko">+ 밥 € 2 &nbsp;|&nbsp; + 김치 € 4 &nbsp;|&nbsp; + 유자 코올슬로 샐러드 € 5</span>
+  </div>
+</section>
+
+<!-- ═══ CUPBAP ═══ -->
+<section class="menu-section" id="cupbap">
+  <div class="section-eyebrow">04</div>
+  <div class="section-title"><span data-lang="de">Cupbap</span><span data-lang="en">Cupbap</span><span data-lang="ko">컵밥</span></div>
+  <div class="section-note">
+    <span data-lang="de">Koreanische Reisschüssel</span>
+    <span data-lang="en">Korean rice bowl</span>
+    <span data-lang="ko">한국식 컵밥</span>
+  </div>
+  <div class="section-divider"></div>
+  <div class="items-grid">
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Bulgogi</div>
+        <div class="item-desc">
+          <span data-lang="de">Mariniertes Rindfleisch und Gemüse</span>
+          <span data-lang="en">Marinated beef and vegetables</span>
+          <span data-lang="ko">불고기와 채소</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 12,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Spicy Dakgalbi <span style="color:#f59e0b;font-size:0.75rem">★</span> <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Würziges gebratenes Hähnchen mit Gemüse</span>
+          <span data-lang="en">Stir-fried spicy chicken with vegetables</span>
+          <span data-lang="ko">매콤한 닭갈비와 채소</span>
+        </div>
+        <div class="item-tags"><span class="tag tag-scharf">Scharf</span></div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 12,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Seoulmate Chicken</div>
+        <div class="item-desc">
+          <span data-lang="de">Seoulmate Chicken, Ei</span>
+          <span data-lang="en">Seoulmate Chicken, egg</span>
+          <span data-lang="ko">씰메이트 치킨, 달걀</span>
+        </div>
+        <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 12,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Spicy Tofu <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Würziges gebratenes Tofu mit Gemüse</span>
+          <span data-lang="en">Stir-fried spicy Tofu with vegetables</span>
+          <span data-lang="ko">매콤한 두부볶음과 채소</span>
+        </div>
+        <div class="item-tags"><span class="tag tag-scharf">Scharf</span></div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 12,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Tuna Mayo</div>
+        <div class="item-desc">
+          <span data-lang="de">Thunfisch Mayo mit Ei, Nori</span>
+          <span data-lang="en">Tuna mayo with egg, Nori</span>
+          <span data-lang="ko">참치마요, 달걀, 노리</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Kimchi Tuna</div>
+        <div class="item-desc">
+          <span data-lang="de">Gebratenes Kimchi mit Thunfisch, Ei, Nori, Mayo</span>
+          <span data-lang="en">Stir-fried kimchi with tuna, egg, Nori, Mayo</span>
+          <span data-lang="ko">볶음 김치, 참치, 달걀, 노리, 마요</span>
+        </div>
+        <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Kimchi Rice <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Gebratener Kimchi-Reis, Nori</span>
+          <span data-lang="en">Stir-fried kimchi rice, Nori</span>
+          <span data-lang="ko">볶음 김치밥, 노리</span>
+        </div>
+        <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ GIMBAP ═══ -->
+<section class="menu-section" id="gimbap">
+  <div class="section-eyebrow">05</div>
+  <div class="section-title"><span data-lang="de">Gimbap</span><span data-lang="en">Gimbap</span><span data-lang="ko">김밥</span></div>
+  <div class="section-note">
+    <span data-lang="de">Koreanische Reisrollen</span>
+    <span data-lang="en">Korean rice rolls</span>
+    <span data-lang="ko">한국식 김밥</span>
+  </div>
+  <div class="section-divider"></div>
+  <div class="items-grid">
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Original <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Schinken, Möhre, Ei, Gurke, Danmuji</span>
+          <span data-lang="en">Ham, carrot, egg, cucumber, danmuji</span>
+          <span data-lang="ko">햄, 당근, 달걀, 오이, 단무지</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 9,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Veggie <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Möhre, Ei, Gurke, Danmuji</span>
+          <span data-lang="en">Carrot, egg, cucumber, danmuji</span>
+          <span data-lang="ko">당근, 달걀, 오이, 단무지</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 9,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Ham &amp; Cheese <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Schinken, Käse, Möhre, Ei, Gurke, Danmuji</span>
+          <span data-lang="en">Ham, Cheese, carrot, egg, cucumber, danmuji</span>
+          <span data-lang="ko">햄, 치즈, 당근, 달걀, 오이, 단무지</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 10,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Tuna Mayo <span style="color:#f59e0b;font-size:0.75rem">★</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Thunfisch &amp; Mayo, Ei, Möhre, Gurke</span>
+          <span data-lang="en">Tuna &amp; mayo, egg, carrot, cucumber</span>
+          <span data-lang="ko">참치마요, 달걀, 당근, 오이</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Mukeunji (Kimchi) Veggie <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Mukeunji (Gereifter Kimchi), Möhre, Ei, Gurke</span>
+          <span data-lang="en">Mukeunji (Aged kimchi), carrot, egg, cucumber</span>
+          <span data-lang="ko">묵은지, 당근, 달걀, 오이</span>
+        </div>
+        <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Mukeunji (Kimchi)</div>
+        <div class="item-desc">
+          <span data-lang="de">Mukeunji (Gereifter Kimchi), Thunfisch &amp; Mayo, Möhre, Ei</span>
+          <span data-lang="en">Mukeunji (Aged kimchi), tuna &amp; mayo, carrot, egg</span>
+          <span data-lang="ko">묵은지, 참치마요, 당근, 달걀</span>
+        </div>
+        <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 12,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Bulgogi</div>
+        <div class="item-desc">
+          <span data-lang="de">Bulgogi, Möhre, Ei, Gurke, Danmuji</span>
+          <span data-lang="en">Bulgogi, carrot, egg, cucumber, danmuji</span>
+          <span data-lang="ko">불고기, 당근, 달걀, 오이, 단무지</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 12,–</div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ SIDE MENU ═══ -->
+<section class="menu-section" id="side">
+  <div class="section-eyebrow">06</div>
+  <div class="section-title"><span data-lang="de">Side Menu</span><span data-lang="en">Side Menu</span><span data-lang="ko">사이드</span></div>
+  <div class="section-note">
+    <span data-lang="de">Koreanische Beilagen</span>
+    <span data-lang="en">Korean side dishes</span>
+    <span data-lang="ko">한국식 사이드 메뉴</span>
+  </div>
+  <div class="section-divider"></div>
+  <div class="extras-grid">
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Kimchi <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Koreanisches fermentiertes Weißkohl</span>
+          <span data-lang="en">Korean fermented Cabbage</span>
+          <span data-lang="ko">한국식 발효 배추 김치</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 4,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Yuzu Coleslaw Salad <span style="color:#f59e0b;font-size:0.75rem">★</span> <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Kohl- &amp; Möhrensalat mit Yuzu-Dressing</span>
+          <span data-lang="en">Cabbage &amp; carrot salad with yuzu dressing</span>
+          <span data-lang="ko">양배추 &amp; 당근 샐러드, 유자 드레싱</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 5,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Tteok-kochi <span style="color:#f59e0b;font-size:0.75rem">★</span> <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Gegrillter Reiskuchen-Spieß, süß-scharfe Sauce</span>
+          <span data="en">Grilled rice cake skewer, sweet-spicy sauce</span>
+          <span data-lang="en">Grilled rice cake skewer, sweet-spicy sauce</span>
+          <span data-lang="ko">구운 떡꼬치, 달콤 매콤 소스</span>
+        </div>
+        <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 5,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Yuzu Cucumber Salad <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Gurkensalat, hausgemachtes Yuzu-Dressing</span>
+          <span data-lang="en">Cucumber salad, homemade yuzu dressing</span>
+          <span data-lang="ko">오이 샐러드, 직접 만든 유자 드레싱</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 5,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">So-Tteok So-Tteok <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Gegrillter Reiskuchen &amp; Hähnchenwurst-Spieß, süß-scharfe Sauce</span>
+          <span data-lang="en">Grilled rice cake &amp; chicken sausage skewer, sweet-spicy sauce</span>
+          <span data-lang="ko">구운 떡 &amp; 닭 소시지 꼬치, 달콤 매콤 소스</span>
+        </div>
+        <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 5,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Cold Tofu <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Tofu mit hausgemachter Sojasoße</span>
+          <span data-lang="en">Tofu with homemade Soy sauce</span>
+          <span data-lang="ko">두부, 직접 만든 간장 소스</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 5,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Fried Mandu</div>
+        <div class="item-desc">
+          <span data-lang="de">Hähnchen / Kimchi Hähnchen / Bulgogi / Tofu <span class="tag tag-veg">Veg</span> — Knusprig frittierte Knödel, 4 Stk.</span>
+          <span data-lang="en">Chicken / Kimchi Chicken / Bulgogi / Tofu <span class="tag tag-veg">Veg</span> — Fried crispy dumplings, 4 pcs.</span>
+          <span data-lang="ko">치킨 / 김치 치킨 / 불고기 / 두부 <span class="tag tag-veg">Veg</span> — 바삭한 군만두 4개</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 5,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Yachae-Jeon <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Vegane Gemüsepfannkuchen, 2 Stk.</span>
+          <span data-lang="en">Vegan vegetable pancakes, 2 pcs.</span>
+          <span data-lang="ko">비건 야채전 2개</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 6,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Gimmari / Spicy Gimmari <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Frittierte Glasnudelrollen, 4 Stk.</span>
+          <span data-lang="en">Fried glass noodle-rolls, 4 pcs.</span>
+          <span data-lang="ko">튀긴 당면 김말이 4개</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 6,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Kimchi-Jeon</div>
+        <div class="item-desc">
+          <span data-lang="de">Mini-Kimchi-Pfannkuchen mit Tintenfisch, 4 Stk.</span>
+          <span data-lang="en">Mini Kimchi pancakes with squid, 4 pcs.</span>
+          <span data-lang="ko">미니 김치전 (오징어 포함) 4개</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 7,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Steamed Mandu Kimchi / Spicy <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Gedämpfte würzige Veggie-Knödel, 6 Stk.</span>
+          <span data-lang="en">Steamed spicy veggie dumplings, 6 pcs.</span>
+          <span data-lang="ko">쪄낸 매콤 야채 만두 6개</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 6,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Tofu Kimchi <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Heißes Tofu mit gebratenem Kimchi</span>
+          <span data-lang="en">Hot Tofu with grilled Kimchi</span>
+          <span data-lang="ko">따뜻한 두부에 구운 김치</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 8,–</div></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-body">
+        <div class="item-name">Kimchi 500g <span class="tag tag-veg">Veg</span></div>
+        <div class="item-desc">
+          <span data-lang="de">Kimchi zum Mitnehmen, 500g</span>
+          <span data-lang="en">Kimchi to go, 500g</span>
+          <span data-lang="ko">김치 500g (포장)</span>
+        </div>
+      </div>
+      <div class="item-price-wrap"><div class="item-price">€ 8,–</div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot dot-pikant"></div><span data-lang="de">Pikant</span><span data-lang="en">Mildly Spicy</span><span data-lang="ko">약간 매움</span></div>
+  <div class="legend-item"><div class="legend-dot dot-scharf"></div><span data-lang="de">Scharf</span><span data-lang="en">Spicy</span><span data-lang="ko">매움</span></div>
+  <div class="legend-item"><div class="legend-dot dot-veg"></div><span data-lang="de">Vegetarisch</span><span data-lang="en">Vegetarian</span><span data-lang="ko">채식</span></div>
+</div>
+<div class="footer">
+  <span data-lang="de">Alle Preise in Euro inkl. MwSt. / Preise freibleibend.<br>Eine Kopie der kompletten Allergenliste ist beim Servicepersonal erhältlich.</span>
+  <span data-lang="en">All prices in EUR incl. VAT. Prices subject to change.<br>A complete allergen list is available from our service staff.</span>
+  <span data-lang="ko">모든 가격은 부가세 포함입니다. / 가격은 변동될 수 있습니다.<br>알레르기 정보는 직원에게 문의해 주세요.</span>
+</div>
+</div>
+
+<script>
+// ── ADMIN PASSWORD ──
+const ADMIN_PW = 'Seoulmate24';
+
+// 모바일: 브랜드명 5번 탭으로 어드민 접근
+(function(){
+  var taps = 0, timer;
+  var brand = document.querySelector('.brand');
+  if(!brand) return;
+  brand.addEventListener('click', function(){
+    taps++;
+    clearTimeout(timer);
+    if(taps >= 5){ taps = 0; toggleAdminMode(); return; }
+    timer = setTimeout(function(){ taps = 0; }, 1500);
+  });
+})();
+
+function toggleAdminMode(){
+  if(document.body.classList.contains('admin-mode')) setAdminMode(false);
+  else openPwModal();
+}
+
+function setAdminMode(on){
+  document.body.classList.toggle('admin-mode', on);
+  document.getElementById('adminBanner').classList.toggle('hidden', !on);
+  document.getElementById('adminToggleBtn').classList.toggle('active', on);
+}
+
+// ── PHOTO MODAL (placeholder, no cloudinary in this version) ──
+function closePhotoModal(){
+  document.getElementById('photoModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function handleModalClick(e){
+  if(e.target === document.getElementById('photoModal')) closePhotoModal();
+}
+
+// ── PASSWORD MODAL ──
+function openPwModal(){
+  const overlay = document.getElementById('pwOverlay');
+  const input   = document.getElementById('pwInput');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  input.value = '';
+  document.getElementById('pwError').textContent = '';
+  input.classList.remove('error');
+  setTimeout(function(){ input.focus(); }, 100);
+}
+function closePwModal(){
+  document.getElementById('pwOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function handlePwOverlayClick(e){
+  if(e.target === document.getElementById('pwOverlay')) closePwModal();
+}
+function togglePwVisibility(){
+  const input = document.getElementById('pwInput');
+  const btn   = document.getElementById('pwToggle');
+  if(input.type === 'password'){ input.type = 'text'; btn.textContent = '🙈'; }
+  else { input.type = 'password'; btn.textContent = '👁'; }
+}
+function checkPassword(){
+  const input = document.getElementById('pwInput');
+  const errEl = document.getElementById('pwError');
+  if(input.value === ADMIN_PW){
+    closePwModal();
+    setAdminMode(true);
+  } else {
+    input.classList.add('error');
+    errEl.textContent = '비밀번호가 틀렸습니다 / Falsches Passwort';
+    input.value = '';
+    setTimeout(function(){ input.classList.remove('error'); }, 400);
+    setTimeout(function(){ input.focus(); }, 50);
+  }
+}
+
+// ── TOAST ──
+let toastTimer;
+function toast(msg){
+  const el = document.getElementById('saveToast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2400);
+}
+
+// ── LANG ──
+function setLang(lang){
+  const isAdmin = document.body.classList.contains('admin-mode');
+  document.body.className = 'lang-' + lang + (isAdmin ? ' admin-mode' : '');
+  document.querySelectorAll('.lang-btn').forEach(function(b,i){
+    b.classList.toggle('active', ['ko','en','de'][i] === lang);
+  });
+}
+
+// ── NAV ──
+function scrollToSection(id){
+  const el = document.getElementById(id);
+  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
+  event.currentTarget.classList.add('active');
+}
+const secs = ['tteokbokki','noodle','chicken','cupbap','gimbap','side'];
+const obs = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){
+      const i = secs.indexOf(e.target.id);
+      document.querySelectorAll('.nav-tab').forEach(function(t,j){ t.classList.toggle('active', i===j); });
+    }
+  });
+}, {rootMargin:'-30% 0px -60% 0px'});
+secs.forEach(function(id){ const el = document.getElementById(id); if(el) obs.observe(el); });
+
+// ── KEYBOARD ──
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape'){
+    if(document.getElementById('pwOverlay').classList.contains('open')) closePwModal();
+    else closePhotoModal();
+  }
+});
+</script>
+
+</body></html>
