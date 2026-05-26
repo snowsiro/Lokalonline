@@ -131,7 +131,21 @@
       '<tbody>' + historyRows + '</tbody>' +
       '</table></div></div>';
 
-    content.innerHTML = infoCard + requestForm + historyCard;
+    // 후기 관리 카드
+    var reviewCard = await buildReviewCard(client);
+
+    content.innerHTML = infoCard + requestForm + historyCard + reviewCard;
+
+    // 후기 삭제 이벤트
+    content.querySelectorAll('.delete-review-btn').forEach(function (btn) {
+      btn.addEventListener('click', async function () {
+        var id = btn.getAttribute('data-id');
+        if (!confirm('Bewertung wirklich löschen?')) return;
+        var { error } = await sb.from('reviews').delete().eq('id', id);
+        if (!error) { showToast('Gelöscht'); init(); }
+        else showToast('Fehler beim Löschen.');
+      });
+    });
 
     // 폼 제출
     document.getElementById('requestForm').addEventListener('submit', async function (e) {
@@ -159,6 +173,44 @@
       }
       btn.disabled = false; btn.textContent = 'Anfrage absenden';
     });
+  }
+
+  // ── 후기 관리 카드 ────────────────────────────────────────────────
+  async function buildReviewCard(client) {
+    if (!client.page_url) return '';
+
+    // page_url 마지막 세그먼트를 slug로 사용 (예: lokalonline.at/yori2 → yori2)
+    var slug = client.page_url.replace(/\/$/, '').split('/').pop();
+    if (!slug) return '';
+
+    var { data: reviews } = await sb
+      .from('reviews')
+      .select('*')
+      .eq('client_slug', slug)
+      .order('created_at', { ascending: false });
+
+    var rows = '';
+    if (reviews && reviews.length > 0) {
+      rows = reviews.map(function (r) {
+        var stars = '★'.repeat(r.stars) + '☆'.repeat(5 - r.stars);
+        return '<tr>' +
+          '<td>' + formatDate(r.created_at) + '</td>' +
+          '<td><strong>' + esc(r.name) + '</strong></td>' +
+          '<td style="color:#f59e0b;letter-spacing:1px">' + stars + '</td>' +
+          '<td style="max-width:240px;word-break:break-word;font-size:13px">"' + esc(r.text) + '"</td>' +
+          '<td><button class="btn btn-danger btn-sm delete-review-btn" data-id="' + r.id + '">Löschen</button></td>' +
+          '</tr>';
+      }).join('');
+    } else {
+      rows = '<tr class="empty-row"><td colspan="5">Noch keine Bewertungen.</td></tr>';
+    }
+
+    return '<div class="info-card">' +
+      '<h2>Meine Bewertungen</h2>' +
+      '<div class="table-wrap"><table class="admin-table">' +
+      '<thead><tr><th>Datum</th><th>Name</th><th>Sterne</th><th>Kommentar</th><th>Aktionen</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody>' +
+      '</table></div></div>';
   }
 
   // ── Stripe 결제 버튼 ──────────────────────────────────────────────
