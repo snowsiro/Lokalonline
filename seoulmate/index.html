@@ -549,6 +549,56 @@ footer {
   --img-iroom: url('img/iroom.jpg');
   --img-ihall: url('img/slide2.jpg');
 }
+
+/* ── SEOULMATE BRAND THEME ─────────────────────────────────────────── */
+:root { --red: #C8291F; }
+
+/* About: 다크 차콜 배경 (블랙보드 느낌) */
+.about-text { background: #1A1614; }
+.about-text .section-tag { color: rgba(255,255,255,0.38); }
+.about-text .section-tag::before { background: rgba(255,255,255,0.38); }
+.about-text .about-headline { color: #F5F2EE; }
+.about-text .about-headline em { color: rgba(245,242,238,0.48); }
+.about-text .about-body { color: rgba(245,242,238,0.44); }
+.about-text .stat-row { border-top-color: rgba(255,255,255,0.1); border-bottom-color: rgba(255,255,255,0.1); }
+.about-text .stat { border-right-color: rgba(255,255,255,0.1); }
+.about-text .stat-n { color: #F5F2EE; }
+.about-text .stat-l { color: rgba(245,242,238,0.38); }
+.about-text .btn-link { color: #F5F2EE; border-bottom-color: rgba(245,242,238,0.35); }
+.about-text .btn-link:hover { color: var(--red); border-bottom-color: var(--red); }
+
+/* Menu band: 인테리어 딥레드 */
+.menu-band { background: #7A0F0F; }
+.menu-band-bg { opacity: 0.06; }
+
+/* Reservation: 딥레드 배경 */
+.reservation-section { background: #8B1212; }
+.res-text .section-tag { color: rgba(255,255,255,0.38); }
+.res-text .section-tag::before { background: rgba(255,255,255,0.38); }
+.res-text .res-headline { color: #F5F2EE; }
+.res-text .res-note { color: rgba(245,242,238,0.48); }
+.res-text .res-divider { background: rgba(255,255,255,0.18); }
+.res-text .res-quick a { color: rgba(245,242,238,0.5); }
+.res-text .res-quick a:hover { color: #F5F2EE; }
+.res-form .form-lbl { color: rgba(255,255,255,0.45); }
+.res-form .form-input,
+.res-form .form-select,
+.res-form .form-textarea { border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.07); color: #F5F2EE; }
+.res-form .form-input::placeholder,
+.res-form .form-textarea::placeholder { color: rgba(245,242,238,0.3); }
+.res-form .form-input:focus,
+.res-form .form-select:focus,
+.res-form .form-textarea:focus { border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.1); }
+.res-form p[style] { color: rgba(245,242,238,0.35) !important; }
+
+/* Intro strip: 번호에 레드 틴트 */
+.intro-num { color: rgba(200,41,31,0.22); }
+
+/* Hero 슬라이드 오버레이에 따뜻한 레드 틴트 추가 */
+.slide-overlay {
+  background: linear-gradient(to right, rgba(20,4,4,0.68) 0%, rgba(80,10,10,0.22) 60%, transparent 100%);
+}
+/* ─────────────────────────────────────────────────────────────────── */
 </style>
 </head>
 <body>
