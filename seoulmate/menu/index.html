@@ -164,6 +164,31 @@ body.admin-mode .menu-item{position:relative;border:1px dashed rgba(212,43,43,0.
   .lang-btn{padding:5px 8px;font-size:0.65rem}
   .home-link{display:none}
 }
+
+/* PHOTO ZONES */
+.admin-photo-zone{display:none;margin-top:12px}
+body.admin-mode .admin-photo-zone{display:block}
+.photo-preview-wrap{position:relative;width:100%;max-width:200px;aspect-ratio:4/3;border-radius:6px;overflow:hidden;border:2px dashed var(--border);background:var(--surface);cursor:pointer;transition:border-color 0.2s}
+.photo-preview-wrap:hover{border-color:#999}
+.photo-preview-wrap.has-img{border-style:solid;border-color:var(--border)}
+.photo-preview-img{width:100%;height:100%;object-fit:cover;display:none}
+.photo-preview-wrap.has-img .photo-preview-img{display:block}
+.photo-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;pointer-events:none}
+.photo-preview-wrap.has-img .photo-placeholder{display:none}
+.photo-placeholder-icon{font-size:1.3rem;opacity:0.3}
+.photo-placeholder-text{font-size:0.62rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--muted)}
+.photo-upload-input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.photo-actions{display:none;margin-top:6px;gap:6px}
+.photo-preview-wrap.has-img ~ .photo-actions{display:flex}
+.photo-action-btn{font-family:'DM Sans',sans-serif;font-size:0.65rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;border-radius:4px;padding:5px 10px;cursor:pointer;transition:all 0.15s;border:none}
+.photo-change-btn{background:var(--surface);color:var(--muted);border:1px solid var(--border)}
+.photo-change-btn:hover{background:var(--text);color:#fff;border-color:var(--text)}
+.photo-delete-btn{background:#fff0f0;color:#c82020;border:1px solid #ffd0d0}
+.photo-delete-btn:hover{background:#c82020;color:#fff}
+.photo-badge{display:none;font-size:0.58rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:2px 6px;border-radius:3px;background:#f0f7f0;color:#2d7a2d;font-family:'DM Sans',sans-serif;flex-shrink:0;vertical-align:middle;margin-left:4px}
+.has-photo .photo-badge{display:inline}
+body:not(.admin-mode) .has-photo{cursor:pointer;text-decoration:underline dotted var(--border);text-underline-offset:3px}
+body:not(.admin-mode) .has-photo:hover{color:var(--accent);text-decoration-color:var(--accent)}
 </style>
 </head>
 <body class="lang-de">
@@ -254,40 +279,46 @@ body.admin-mode .menu-item{position:relative;border:1px dashed rgba(212,43,43,0.
   <div class="section-divider"></div>
   <div class="items-grid">
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="ttbk-original">
       <div class="item-body">
-        <div class="item-name">Original</div>
+        <button class="admin-edit-btn" onclick="openEditor('ttbk-original')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Original</span></div>
         <div class="item-desc">
-          <span data-lang="de">Original Tteokbokki mit einem gekochten Ei</span>
-          <span data-lang="en">Original Tteokbokki with a boiled egg</span>
-          <span data-lang="ko">오리지널 떡볶이, 삶은 달걀 포함</span>
+          <span data-lang="de" class="item-desc-text">Original Tteokbokki mit einem gekochten Ei</span>
+          <span data-lang="en" class="item-desc-text">Original Tteokbokki with a boiled egg</span>
+          <span data-lang="ko" class="item-desc-text">오리지널 떡볶이, 삶은 달걀 포함</span>
         </div>
         <div class="item-tags"><span class="tag tag-scharf">Scharf</span></div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 10,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="ttbk-cheese">
       <div class="item-body">
-        <div class="item-name">Cheese <span style="color:#f59e0b;font-size:0.75rem">★</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('ttbk-cheese')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Cheese</span> <span style="color:#f59e0b;font-size:0.75rem">★</span></div>
         <div class="item-desc">
-          <span data-lang="de">Original Tteokbokki mit geschmolzenem Käse</span>
-          <span data-lang="en">Original Tteokbokki topped with melted cheese</span>
-          <span data-lang="ko">오리지널 떡볶이 위에 녹인 치즈</span>
+          <span data-lang="de" class="item-desc-text">Original Tteokbokki mit geschmolzenem Käse</span>
+          <span data-lang="en" class="item-desc-text">Original Tteokbokki topped with melted cheese</span>
+          <span data-lang="ko" class="item-desc-text">오리지널 떡볶이 위에 녹인 치즈</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="ttbk-rose">
       <div class="item-body">
-        <div class="item-name">Rosé <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('ttbk-rose')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Rosé</span> <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></div>
         <div class="item-desc">
-          <span data-lang="de">In einer cremigen, würzigen Sauce mit Hähnchenwurst</span>
-          <span data-lang="en">In a creamy, spicy sauce with chicken sausage</span>
-          <span data-lang="ko">크리미하고 매콤한 소스에 닭 소시지</span>
+          <span data-lang="de" class="item-desc-text">In einer cremigen, würzigen Sauce mit Hähnchenwurst</span>
+          <span data-lang="en" class="item-desc-text">In a creamy, spicy sauce with chicken sausage</span>
+          <span data-lang="ko" class="item-desc-text">크리미하고 매콤한 소스에 닭 소시지</span>
         </div>
         <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
     </div>
@@ -312,114 +343,132 @@ body.admin-mode .menu-item{position:relative;border:1px dashed rgba(212,43,43,0.
   <div class="section-divider"></div>
   <div class="items-grid">
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="noodle-japchae">
       <div class="item-body">
-        <div class="item-name">Japchae <span class="tag tag-veg">Veg</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('noodle-japchae')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Japchae</span> <span class="tag tag-veg">Veg</span></div>
         <div class="item-desc">
-          <span data-lang="de">Gebratene Glasnudeln mit Gemüse</span>
-          <span data-lang="en">Stir-fried glass noodles with vegetables</span>
-          <span data-lang="ko">채소를 넣은 볶음 당면</span>
+          <span data-lang="de" class="item-desc-text">Gebratene Glasnudeln mit Gemüse</span>
+          <span data-lang="en" class="item-desc-text">Stir-fried glass noodles with vegetables</span>
+          <span data-lang="ko" class="item-desc-text">채소를 넣은 볶음 당면</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 9,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="noodle-kimchi-japchae">
       <div class="item-body">
-        <div class="item-name">Kimchi Japchae <span style="color:#f59e0b;font-size:0.75rem">★</span> <span class="tag tag-veg">Veg</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('noodle-kimchi-japchae')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Kimchi Japchae</span> <span style="color:#f59e0b;font-size:0.75rem">★</span> <span class="tag tag-veg">Veg</span></div>
         <div class="item-desc">
-          <span data-lang="de">Gebratene Glasnudeln mit Kimchi</span>
-          <span data-lang="en">Stir-fried glass noodles with kimchi</span>
-          <span data-lang="ko">김치를 넣은 볶음 당면</span>
+          <span data-lang="de" class="item-desc-text">Gebratene Glasnudeln mit Kimchi</span>
+          <span data-lang="en" class="item-desc-text">Stir-fried glass noodles with kimchi</span>
+          <span data-lang="ko" class="item-desc-text">김치를 넣은 볶음 당면</span>
         </div>
         <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 10,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="noodle-cheese-ramyeon">
       <div class="item-body">
-        <div class="item-name">Cheese Ramyeon <span class="tag tag-veg">Veg</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('noodle-cheese-ramyeon')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Cheese Ramyeon</span> <span class="tag tag-veg">Veg</span></div>
         <div class="item-desc">
-          <span data-lang="de">Koreanisches Ramyeon mit Käse</span>
-          <span data-lang="en">Korean Ramyeon with cheese</span>
-          <span data-lang="ko">치즈 라면</span>
+          <span data-lang="de" class="item-desc-text">Koreanisches Ramyeon mit Käse</span>
+          <span data-lang="en" class="item-desc-text">Korean Ramyeon with cheese</span>
+          <span data-lang="ko" class="item-desc-text">치즈 라면</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 9,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="noodle-kimchi-ramyeon">
       <div class="item-body">
-        <div class="item-name">Kimchi Ramyeon <span class="tag tag-veg">Veg</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('noodle-kimchi-ramyeon')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Kimchi Ramyeon</span> <span class="tag tag-veg">Veg</span></div>
         <div class="item-desc">
-          <span data-lang="de">Koreanisches Ramyeon mit Kimchi</span>
-          <span data-lang="en">Korean Ramyeon with Kimchi</span>
-          <span data-lang="ko">김치 라면</span>
+          <span data-lang="de" class="item-desc-text">Koreanisches Ramyeon mit Kimchi</span>
+          <span data-lang="en" class="item-desc-text">Korean Ramyeon with Kimchi</span>
+          <span data-lang="ko" class="item-desc-text">김치 라면</span>
         </div>
         <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 9,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="noodle-mandu-ramyeon">
       <div class="item-body">
-        <div class="item-name">Mandu Ramyeon <span class="tag tag-veg">Veg</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('noodle-mandu-ramyeon')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Mandu Ramyeon</span> <span class="tag tag-veg">Veg</span></div>
         <div class="item-desc">
-          <span data-lang="de">Koreanisches Ramyeon mit Knödeln</span>
-          <span data-lang="en">Korean Ramyeon with dumplings</span>
-          <span data-lang="ko">만두 라면</span>
+          <span data-lang="de" class="item-desc-text">Koreanisches Ramyeon mit Knödeln</span>
+          <span data-lang="en" class="item-desc-text">Korean Ramyeon with dumplings</span>
+          <span data-lang="ko" class="item-desc-text">만두 라면</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 10,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="noodle-kimchi-udon">
       <div class="item-body">
-        <div class="item-name">Kimchi Udon <span class="tag tag-veg">Veg</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('noodle-kimchi-udon')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Kimchi Udon</span> <span class="tag tag-veg">Veg</span></div>
         <div class="item-desc">
-          <span data-lang="de">Warme Kimchi-Nudelsuppe</span>
-          <span data-lang="en">Warm kimchi noodle soup</span>
-          <span data-lang="ko">따뜻한 김치 우동 국물</span>
+          <span data-lang="de" class="item-desc-text">Warme Kimchi-Nudelsuppe</span>
+          <span data-lang="en" class="item-desc-text">Warm kimchi noodle soup</span>
+          <span data-lang="ko" class="item-desc-text">따뜻한 김치 우동 국물</span>
         </div>
         <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="noodle-bulgogi-udon">
       <div class="item-body">
-        <div class="item-name">Bulgogi Udon</div>
+        <button class="admin-edit-btn" onclick="openEditor('noodle-bulgogi-udon')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Bulgogi Udon</span></div>
         <div class="item-desc">
-          <span data-lang="de">Warme Bulgogi-Nudelsuppe</span>
-          <span data-lang="en">Warm bulgogi noodle soup</span>
-          <span data-lang="ko">따뜻한 불고기 우동 국물</span>
+          <span data-lang="de" class="item-desc-text">Warme Bulgogi-Nudelsuppe</span>
+          <span data-lang="en" class="item-desc-text">Warm bulgogi noodle soup</span>
+          <span data-lang="ko" class="item-desc-text">따뜻한 불고기 우동 국물</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 12,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="noodle-kimchi-guksu">
       <div class="item-body">
-        <div class="item-name">Kimchi Guksu <span class="tag tag-veg">Veg</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('noodle-kimchi-guksu')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Kimchi Guksu</span> <span class="tag tag-veg">Veg</span></div>
         <div class="item-desc">
-          <span data-lang="de">Nudeln mit Kimchi in würzig-scharfer Kimchi-Sauce</span>
-          <span data-lang="en">Noodles with kimchi in a spicy-Kimchi sauce</span>
-          <span data-lang="ko">매콤한 김치 소스 국수</span>
+          <span data-lang="de" class="item-desc-text">Nudeln mit Kimchi in würzig-scharfer Kimchi-Sauce</span>
+          <span data-lang="en" class="item-desc-text">Noodles with kimchi in a spicy-Kimchi sauce</span>
+          <span data-lang="ko" class="item-desc-text">매콤한 김치 소스 국수</span>
         </div>
         <div class="item-tags"><span class="tag tag-scharf">Scharf</span></div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="noodle-soy-guksu">
       <div class="item-body">
-        <div class="item-name">Soy Guksu <span class="tag tag-veg">Veg</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('noodle-soy-guksu')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Soy Guksu</span> <span class="tag tag-veg">Veg</span></div>
         <div class="item-desc">
-          <span data-lang="de">Nudeln in hausgemachter Sojasoße, garniert mit Mukeunji</span>
-          <span data-lang="en">Noodles in homemade soy sauce topped with mukeunji</span>
-          <span data-lang="ko">직접 만든 간장 소스 국수, 묵은지 토핑</span>
+          <span data-lang="de" class="item-desc-text">Nudeln in hausgemachter Sojasoße, garniert mit Mukeunji</span>
+          <span data-lang="en" class="item-desc-text">Noodles in homemade soy sauce topped with mukeunji</span>
+          <span data-lang="ko" class="item-desc-text">직접 만든 간장 소스 국수, 묵은지 토핑</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
     </div>
@@ -444,48 +493,53 @@ body.admin-mode .menu-item{position:relative;border:1px dashed rgba(212,43,43,0.
 
   <div class="special-grid">
 
-    <div class="special-card">
-      <div class="item-name">SEOULMATE <span style="color:#f59e0b;font-size:0.75rem">★</span></div>
+    <div class="special-card" data-id="chicken-seoulmate">
+      <button class="admin-edit-btn" onclick="openEditor('chicken-seoulmate')">✏️ 수정</button>
+      <div class="item-name"><span class="item-name-text">SEOULMATE</span> <span style="color:#f59e0b;font-size:0.75rem">★</span></div>
       <div class="item-desc" style="margin-top:6px">
-        <span data-lang="de">Soy Garlic Spicy</span>
-        <span data-lang="en">Soy Garlic Spicy</span>
-        <span data-lang="ko">간장 갈릭 스파이시</span>
+        <span data-lang="de" class="item-desc-text">Soy Garlic Spicy</span>
+        <span data-lang="en" class="item-desc-text">Soy Garlic Spicy</span>
+        <span data-lang="ko" class="item-desc-text">간장 갈릭 스파이시</span>
       </div>
     </div>
 
-    <div class="special-card">
-      <div class="item-name">SWEET SPICY</div>
+    <div class="special-card" data-id="chicken-sweet-spicy">
+      <button class="admin-edit-btn" onclick="openEditor('chicken-sweet-spicy')">✏️ 수정</button>
+      <div class="item-name"><span class="item-name-text">SWEET SPICY</span></div>
       <div class="item-desc" style="margin-top:6px">
-        <span data-lang="de">Sweet &amp; Spicy</span>
-        <span data-lang="en">Sweet &amp; Spicy</span>
-        <span data-lang="ko">스위트 스파이시</span>
+        <span data-lang="de" class="item-desc-text">Sweet &amp; Spicy</span>
+        <span data-lang="en" class="item-desc-text">Sweet &amp; Spicy</span>
+        <span data-lang="ko" class="item-desc-text">스위트 스파이시</span>
       </div>
     </div>
 
-    <div class="special-card">
-      <div class="item-name">FRIED</div>
+    <div class="special-card" data-id="chicken-fried">
+      <button class="admin-edit-btn" onclick="openEditor('chicken-fried')">✏️ 수정</button>
+      <div class="item-name"><span class="item-name-text">FRIED</span></div>
       <div class="item-desc" style="margin-top:6px">
-        <span data-lang="de">Original</span>
-        <span data-lang="en">Original</span>
-        <span data-lang="ko">오리지널</span>
+        <span data-lang="de" class="item-desc-text">Original</span>
+        <span data-lang="en" class="item-desc-text">Original</span>
+        <span data-lang="ko" class="item-desc-text">오리지널</span>
       </div>
     </div>
 
-    <div class="special-card">
-      <div class="item-name">CREAMY SPICY</div>
+    <div class="special-card" data-id="chicken-creamy-spicy">
+      <button class="admin-edit-btn" onclick="openEditor('chicken-creamy-spicy')">✏️ 수정</button>
+      <div class="item-name"><span class="item-name-text">CREAMY SPICY</span></div>
       <div class="item-desc" style="margin-top:6px">
-        <span data-lang="de">Creamy Spicy (+€1)</span>
-        <span data-lang="en">Creamy Spicy (+€1)</span>
-        <span data-lang="ko">크리미 스파이시 (+€1)</span>
+        <span data-lang="de" class="item-desc-text">Creamy Spicy (+€1)</span>
+        <span data-lang="en" class="item-desc-text">Creamy Spicy (+€1)</span>
+        <span data-lang="ko" class="item-desc-text">크리미 스파이시 (+€1)</span>
       </div>
     </div>
 
-    <div class="special-card">
-      <div class="item-name">HOT SPICY</div>
+    <div class="special-card" data-id="chicken-hot-spicy">
+      <button class="admin-edit-btn" onclick="openEditor('chicken-hot-spicy')">✏️ 수정</button>
+      <div class="item-name"><span class="item-name-text">HOT SPICY</span></div>
       <div class="item-desc" style="margin-top:6px">
-        <span data-lang="de">Sweet &amp; Hot Spicy</span>
-        <span data-lang="en">Sweet &amp; Hot Spicy</span>
-        <span data-lang="ko">스위트 핫 스파이시</span>
+        <span data-lang="de" class="item-desc-text">Sweet &amp; Hot Spicy</span>
+        <span data-lang="en" class="item-desc-text">Sweet &amp; Hot Spicy</span>
+        <span data-lang="ko" class="item-desc-text">스위트 핫 스파이시</span>
       </div>
     </div>
 
@@ -534,91 +588,105 @@ body.admin-mode .menu-item{position:relative;border:1px dashed rgba(212,43,43,0.
   <div class="section-divider"></div>
   <div class="items-grid">
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="cupbap-bulgogi">
       <div class="item-body">
-        <div class="item-name">Bulgogi</div>
+        <button class="admin-edit-btn" onclick="openEditor('cupbap-bulgogi')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Bulgogi</span></div>
         <div class="item-desc">
-          <span data-lang="de">Mariniertes Rindfleisch und Gemüse</span>
-          <span data-lang="en">Marinated beef and vegetables</span>
-          <span data-lang="ko">불고기와 채소</span>
+          <span data-lang="de" class="item-desc-text">Mariniertes Rindfleisch und Gemüse</span>
+          <span data-lang="en" class="item-desc-text">Marinated beef and vegetables</span>
+          <span data-lang="ko" class="item-desc-text">불고기와 채소</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 12,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="cupbap-dakgalbi">
       <div class="item-body">
-        <div class="item-name">Spicy Dakgalbi <span style="color:#f59e0b;font-size:0.75rem">★</span> <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('cupbap-dakgalbi')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Spicy Dakgalbi</span> <span style="color:#f59e0b;font-size:0.75rem">★</span> <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></div>
         <div class="item-desc">
-          <span data-lang="de">Würziges gebratenes Hähnchen mit Gemüse</span>
-          <span data-lang="en">Stir-fried spicy chicken with vegetables</span>
-          <span data-lang="ko">매콤한 닭갈비와 채소</span>
+          <span data-lang="de" class="item-desc-text">Würziges gebratenes Hähnchen mit Gemüse</span>
+          <span data-lang="en" class="item-desc-text">Stir-fried spicy chicken with vegetables</span>
+          <span data-lang="ko" class="item-desc-text">매콤한 닭갈비와 채소</span>
         </div>
         <div class="item-tags"><span class="tag tag-scharf">Scharf</span></div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 12,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="cupbap-sm-chicken">
       <div class="item-body">
-        <div class="item-name">Seoulmate Chicken</div>
+        <button class="admin-edit-btn" onclick="openEditor('cupbap-sm-chicken')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Seoulmate Chicken</span></div>
         <div class="item-desc">
-          <span data-lang="de">Seoulmate Chicken, Ei</span>
-          <span data-lang="en">Seoulmate Chicken, egg</span>
-          <span data-lang="ko">씰메이트 치킨, 달걀</span>
+          <span data-lang="de" class="item-desc-text">Seoulmate Chicken, Ei</span>
+          <span data-lang="en" class="item-desc-text">Seoulmate Chicken, egg</span>
+          <span data-lang="ko" class="item-desc-text">씰메이트 치킨, 달걀</span>
         </div>
         <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 12,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="cupbap-tofu">
       <div class="item-body">
-        <div class="item-name">Spicy Tofu <span class="tag tag-veg">Veg</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('cupbap-tofu')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Spicy Tofu</span> <span class="tag tag-veg">Veg</span></div>
         <div class="item-desc">
-          <span data-lang="de">Würziges gebratenes Tofu mit Gemüse</span>
-          <span data-lang="en">Stir-fried spicy Tofu with vegetables</span>
-          <span data-lang="ko">매콤한 두부볶음과 채소</span>
+          <span data-lang="de" class="item-desc-text">Würziges gebratenes Tofu mit Gemüse</span>
+          <span data-lang="en" class="item-desc-text">Stir-fried spicy Tofu with vegetables</span>
+          <span data-lang="ko" class="item-desc-text">매콤한 두부볶음과 채소</span>
         </div>
         <div class="item-tags"><span class="tag tag-scharf">Scharf</span></div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 12,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="cupbap-tuna-mayo">
       <div class="item-body">
-        <div class="item-name">Tuna Mayo</div>
+        <button class="admin-edit-btn" onclick="openEditor('cupbap-tuna-mayo')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Tuna Mayo</span></div>
         <div class="item-desc">
-          <span data-lang="de">Thunfisch Mayo mit Ei, Nori</span>
-          <span data-lang="en">Tuna mayo with egg, Nori</span>
-          <span data-lang="ko">참치마요, 달걀, 노리</span>
+          <span data-lang="de" class="item-desc-text">Thunfisch Mayo mit Ei, Nori</span>
+          <span data-lang="en" class="item-desc-text">Tuna mayo with egg, Nori</span>
+          <span data-lang="ko" class="item-desc-text">참치마요, 달걀, 노리</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="cupbap-kimchi-tuna">
       <div class="item-body">
-        <div class="item-name">Kimchi Tuna</div>
+        <button class="admin-edit-btn" onclick="openEditor('cupbap-kimchi-tuna')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Kimchi Tuna</span></div>
         <div class="item-desc">
-          <span data-lang="de">Gebratenes Kimchi mit Thunfisch, Ei, Nori, Mayo</span>
-          <span data-lang="en">Stir-fried kimchi with tuna, egg, Nori, Mayo</span>
-          <span data-lang="ko">볶음 김치, 참치, 달걀, 노리, 마요</span>
+          <span data-lang="de" class="item-desc-text">Gebratenes Kimchi mit Thunfisch, Ei, Nori, Mayo</span>
+          <span data-lang="en" class="item-desc-text">Stir-fried kimchi with tuna, egg, Nori, Mayo</span>
+          <span data-lang="ko" class="item-desc-text">볶음 김치, 참치, 달걀, 노리, 마요</span>
         </div>
         <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="cupbap-kimchi-rice">
       <div class="item-body">
-        <div class="item-name">Kimchi Rice <span class="tag tag-veg">Veg</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('cupbap-kimchi-rice')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Kimchi Rice</span> <span class="tag tag-veg">Veg</span></div>
         <div class="item-desc">
-          <span data-lang="de">Gebratener Kimchi-Reis, Nori</span>
-          <span data-lang="en">Stir-fried kimchi rice, Nori</span>
-          <span data-lang="ko">볶음 김치밥, 노리</span>
+          <span data-lang="de" class="item-desc-text">Gebratener Kimchi-Reis, Nori</span>
+          <span data-lang="en" class="item-desc-text">Stir-fried kimchi rice, Nori</span>
+          <span data-lang="ko" class="item-desc-text">볶음 김치밥, 노리</span>
         </div>
         <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
     </div>
@@ -638,88 +706,102 @@ body.admin-mode .menu-item{position:relative;border:1px dashed rgba(212,43,43,0.
   <div class="section-divider"></div>
   <div class="items-grid">
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="gimbap-original">
       <div class="item-body">
-        <div class="item-name">Original <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('gimbap-original')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Original</span> <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></div>
         <div class="item-desc">
-          <span data-lang="de">Schinken, Möhre, Ei, Gurke, Danmuji</span>
-          <span data-lang="en">Ham, carrot, egg, cucumber, danmuji</span>
-          <span data-lang="ko">햄, 당근, 달걀, 오이, 단무지</span>
+          <span data-lang="de" class="item-desc-text">Schinken, Möhre, Ei, Gurke, Danmuji</span>
+          <span data-lang="en" class="item-desc-text">Ham, carrot, egg, cucumber, danmuji</span>
+          <span data-lang="ko" class="item-desc-text">햄, 당근, 달걀, 오이, 단무지</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 9,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="gimbap-veggie">
       <div class="item-body">
-        <div class="item-name">Veggie <span class="tag tag-veg">Veg</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('gimbap-veggie')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Veggie</span> <span class="tag tag-veg">Veg</span></div>
         <div class="item-desc">
-          <span data-lang="de">Möhre, Ei, Gurke, Danmuji</span>
-          <span data-lang="en">Carrot, egg, cucumber, danmuji</span>
-          <span data-lang="ko">당근, 달걀, 오이, 단무지</span>
+          <span data-lang="de" class="item-desc-text">Möhre, Ei, Gurke, Danmuji</span>
+          <span data-lang="en" class="item-desc-text">Carrot, egg, cucumber, danmuji</span>
+          <span data-lang="ko" class="item-desc-text">당근, 달걀, 오이, 단무지</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 9,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="gimbap-ham-cheese">
       <div class="item-body">
-        <div class="item-name">Ham &amp; Cheese <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('gimbap-ham-cheese')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Ham &amp; Cheese</span> <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></div>
         <div class="item-desc">
-          <span data-lang="de">Schinken, Käse, Möhre, Ei, Gurke, Danmuji</span>
-          <span data-lang="en">Ham, Cheese, carrot, egg, cucumber, danmuji</span>
-          <span data-lang="ko">햄, 치즈, 당근, 달걀, 오이, 단무지</span>
+          <span data-lang="de" class="item-desc-text">Schinken, Käse, Möhre, Ei, Gurke, Danmuji</span>
+          <span data-lang="en" class="item-desc-text">Ham, Cheese, carrot, egg, cucumber, danmuji</span>
+          <span data-lang="ko" class="item-desc-text">햄, 치즈, 당근, 달걀, 오이, 단무지</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 10,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="gimbap-tuna-mayo">
       <div class="item-body">
-        <div class="item-name">Tuna Mayo <span style="color:#f59e0b;font-size:0.75rem">★</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('gimbap-tuna-mayo')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Tuna Mayo</span> <span style="color:#f59e0b;font-size:0.75rem">★</span></div>
         <div class="item-desc">
-          <span data-lang="de">Thunfisch &amp; Mayo, Ei, Möhre, Gurke</span>
-          <span data-lang="en">Tuna &amp; mayo, egg, carrot, cucumber</span>
-          <span data-lang="ko">참치마요, 달걀, 당근, 오이</span>
+          <span data-lang="de" class="item-desc-text">Thunfisch &amp; Mayo, Ei, Möhre, Gurke</span>
+          <span data-lang="en" class="item-desc-text">Tuna &amp; mayo, egg, carrot, cucumber</span>
+          <span data-lang="ko" class="item-desc-text">참치마요, 달걀, 당근, 오이</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="gimbap-mukeunji">
       <div class="item-body">
-        <div class="item-name">Mukeunji (Kimchi) Veggie <span class="tag tag-veg">Veg</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('gimbap-mukeunji')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Mukeunji (Kimchi) Veggie</span> <span class="tag tag-veg">Veg</span></div>
         <div class="item-desc">
-          <span data-lang="de">Mukeunji (Gereifter Kimchi), Möhre, Ei, Gurke</span>
-          <span data-lang="en">Mukeunji (Aged kimchi), carrot, egg, cucumber</span>
-          <span data-lang="ko">묵은지, 당근, 달걀, 오이</span>
+          <span data-lang="de" class="item-desc-text">Mukeunji (Gereifter Kimchi), Möhre, Ei, Gurke</span>
+          <span data-lang="en" class="item-desc-text">Mukeunji (Aged kimchi), carrot, egg, cucumber</span>
+          <span data-lang="ko" class="item-desc-text">묵은지, 당근, 달걀, 오이</span>
         </div>
         <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 11,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="gimbap-mukeunji-tuna">
       <div class="item-body">
-        <div class="item-name">Mukeunji (Kimchi)</div>
+        <button class="admin-edit-btn" onclick="openEditor('gimbap-mukeunji-tuna')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Mukeunji (Kimchi)</span></div>
         <div class="item-desc">
-          <span data-lang="de">Mukeunji (Gereifter Kimchi), Thunfisch &amp; Mayo, Möhre, Ei</span>
-          <span data-lang="en">Mukeunji (Aged kimchi), tuna &amp; mayo, carrot, egg</span>
-          <span data-lang="ko">묵은지, 참치마요, 당근, 달걀</span>
+          <span data-lang="de" class="item-desc-text">Mukeunji (Gereifter Kimchi), Thunfisch &amp; Mayo, Möhre, Ei</span>
+          <span data-lang="en" class="item-desc-text">Mukeunji (Aged kimchi), tuna &amp; mayo, carrot, egg</span>
+          <span data-lang="ko" class="item-desc-text">묵은지, 참치마요, 당근, 달걀</span>
         </div>
         <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 12,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="gimbap-bulgogi">
       <div class="item-body">
-        <div class="item-name">Bulgogi</div>
+        <button class="admin-edit-btn" onclick="openEditor('gimbap-bulgogi')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Bulgogi</span></div>
         <div class="item-desc">
-          <span data-lang="de">Bulgogi, Möhre, Ei, Gurke, Danmuji</span>
-          <span data-lang="en">Bulgogi, carrot, egg, cucumber, danmuji</span>
-          <span data-lang="ko">불고기, 당근, 달걀, 오이, 단무지</span>
+          <span data-lang="de" class="item-desc-text">Bulgogi, Möhre, Ei, Gurke, Danmuji</span>
+          <span data-lang="en" class="item-desc-text">Bulgogi, carrot, egg, cucumber, danmuji</span>
+          <span data-lang="ko" class="item-desc-text">불고기, 당근, 달걀, 오이, 단무지</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 12,–</div></div>
     </div>
@@ -739,161 +821,187 @@ body.admin-mode .menu-item{position:relative;border:1px dashed rgba(212,43,43,0.
   <div class="section-divider"></div>
   <div class="extras-grid">
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="side-kimchi">
       <div class="item-body">
-        <div class="item-name">Kimchi <span class="tag tag-veg">Veg</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('side-kimchi')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Kimchi</span> <span class="tag tag-veg">Veg</span></div>
         <div class="item-desc">
-          <span data-lang="de">Koreanisches fermentiertes Weißkohl</span>
-          <span data-lang="en">Korean fermented Cabbage</span>
-          <span data-lang="ko">한국식 발효 배추 김치</span>
+          <span data-lang="de" class="item-desc-text">Koreanisches fermentiertes Weißkohl</span>
+          <span data-lang="en" class="item-desc-text">Korean fermented Cabbage</span>
+          <span data-lang="ko" class="item-desc-text">한국식 발효 배추 김치</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 4,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="side-yuzu-coleslaw">
       <div class="item-body">
-        <div class="item-name">Yuzu Coleslaw Salad <span style="color:#f59e0b;font-size:0.75rem">★</span> <span class="tag tag-veg">Veg</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('side-yuzu-coleslaw')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Yuzu Coleslaw Salad</span> <span style="color:#f59e0b;font-size:0.75rem">★</span> <span class="tag tag-veg">Veg</span></div>
         <div class="item-desc">
-          <span data-lang="de">Kohl- &amp; Möhrensalat mit Yuzu-Dressing</span>
-          <span data-lang="en">Cabbage &amp; carrot salad with yuzu dressing</span>
-          <span data-lang="ko">양배추 &amp; 당근 샐러드, 유자 드레싱</span>
+          <span data-lang="de" class="item-desc-text">Kohl- &amp; Möhrensalat mit Yuzu-Dressing</span>
+          <span data-lang="en" class="item-desc-text">Cabbage &amp; carrot salad with yuzu dressing</span>
+          <span data-lang="ko" class="item-desc-text">양배추 &amp; 당근 샐러드, 유자 드레싱</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 5,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="side-tteok-kochi">
       <div class="item-body">
-        <div class="item-name">Tteok-kochi <span style="color:#f59e0b;font-size:0.75rem">★</span> <span class="tag tag-veg">Veg</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('side-tteok-kochi')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Tteok-kochi</span> <span style="color:#f59e0b;font-size:0.75rem">★</span> <span class="tag tag-veg">Veg</span></div>
         <div class="item-desc">
-          <span data-lang="de">Gegrillter Reiskuchen-Spieß, süß-scharfe Sauce</span>
+          <span data-lang="de" class="item-desc-text">Gegrillter Reiskuchen-Spieß, süß-scharfe Sauce</span>
           <span data="en">Grilled rice cake skewer, sweet-spicy sauce</span>
-          <span data-lang="en">Grilled rice cake skewer, sweet-spicy sauce</span>
-          <span data-lang="ko">구운 떡꼬치, 달콤 매콤 소스</span>
+          <span data-lang="en" class="item-desc-text">Grilled rice cake skewer, sweet-spicy sauce</span>
+          <span data-lang="ko" class="item-desc-text">구운 떡꼬치, 달콤 매콤 소스</span>
         </div>
         <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 5,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="side-yuzu-cucumber">
       <div class="item-body">
-        <div class="item-name">Yuzu Cucumber Salad <span class="tag tag-veg">Veg</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('side-yuzu-cucumber')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Yuzu Cucumber Salad</span> <span class="tag tag-veg">Veg</span></div>
         <div class="item-desc">
-          <span data-lang="de">Gurkensalat, hausgemachtes Yuzu-Dressing</span>
-          <span data-lang="en">Cucumber salad, homemade yuzu dressing</span>
-          <span data-lang="ko">오이 샐러드, 직접 만든 유자 드레싱</span>
+          <span data-lang="de" class="item-desc-text">Gurkensalat, hausgemachtes Yuzu-Dressing</span>
+          <span data-lang="en" class="item-desc-text">Cucumber salad, homemade yuzu dressing</span>
+          <span data-lang="ko" class="item-desc-text">오이 샐러드, 직접 만든 유자 드레싱</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 5,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="side-so-tteok">
       <div class="item-body">
-        <div class="item-name">So-Tteok So-Tteok <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('side-so-tteok')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">So-Tteok So-Tteok</span> <span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:0.6rem;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;font-weight:700">HALAL</span></div>
         <div class="item-desc">
-          <span data-lang="de">Gegrillter Reiskuchen &amp; Hähnchenwurst-Spieß, süß-scharfe Sauce</span>
-          <span data-lang="en">Grilled rice cake &amp; chicken sausage skewer, sweet-spicy sauce</span>
-          <span data-lang="ko">구운 떡 &amp; 닭 소시지 꼬치, 달콤 매콤 소스</span>
+          <span data-lang="de" class="item-desc-text">Gegrillter Reiskuchen &amp; Hähnchenwurst-Spieß, süß-scharfe Sauce</span>
+          <span data-lang="en" class="item-desc-text">Grilled rice cake &amp; chicken sausage skewer, sweet-spicy sauce</span>
+          <span data-lang="ko" class="item-desc-text">구운 떡 &amp; 닭 소시지 꼬치, 달콤 매콤 소스</span>
         </div>
         <div class="item-tags"><span class="tag tag-pikant">Pikant</span></div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 5,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="side-cold-tofu">
       <div class="item-body">
-        <div class="item-name">Cold Tofu <span class="tag tag-veg">Veg</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('side-cold-tofu')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Cold Tofu</span> <span class="tag tag-veg">Veg</span></div>
         <div class="item-desc">
-          <span data-lang="de">Tofu mit hausgemachter Sojasoße</span>
-          <span data-lang="en">Tofu with homemade Soy sauce</span>
-          <span data-lang="ko">두부, 직접 만든 간장 소스</span>
+          <span data-lang="de" class="item-desc-text">Tofu mit hausgemachter Sojasoße</span>
+          <span data-lang="en" class="item-desc-text">Tofu with homemade Soy sauce</span>
+          <span data-lang="ko" class="item-desc-text">두부, 직접 만든 간장 소스</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 5,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="side-fried-mandu">
       <div class="item-body">
-        <div class="item-name">Fried Mandu</div>
+        <button class="admin-edit-btn" onclick="openEditor('side-fried-mandu')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Fried Mandu</span></div>
         <div class="item-desc">
-          <span data-lang="de">Hähnchen / Kimchi Hähnchen / Bulgogi / Tofu <span class="tag tag-veg">Veg</span> — Knusprig frittierte Knödel, 4 Stk.</span>
-          <span data-lang="en">Chicken / Kimchi Chicken / Bulgogi / Tofu <span class="tag tag-veg">Veg</span> — Fried crispy dumplings, 4 pcs.</span>
-          <span data-lang="ko">치킨 / 김치 치킨 / 불고기 / 두부 <span class="tag tag-veg">Veg</span> — 바삭한 군만두 4개</span>
+          <span data-lang="de" class="item-desc-text">Hähnchen / Kimchi Hähnchen / Bulgogi / Tofu <span class="tag tag-veg">Veg</span> — Knusprig frittierte Knödel, 4 Stk.</span>
+          <span data-lang="en" class="item-desc-text">Chicken / Kimchi Chicken / Bulgogi / Tofu <span class="tag tag-veg">Veg</span> — Fried crispy dumplings, 4 pcs.</span>
+          <span data-lang="ko" class="item-desc-text">치킨 / 김치 치킨 / 불고기 / 두부 <span class="tag tag-veg">Veg</span> — 바삭한 군만두 4개</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 5,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="side-yachae-jeon">
       <div class="item-body">
-        <div class="item-name">Yachae-Jeon <span class="tag tag-veg">Veg</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('side-yachae-jeon')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Yachae-Jeon</span> <span class="tag tag-veg">Veg</span></div>
         <div class="item-desc">
-          <span data-lang="de">Vegane Gemüsepfannkuchen, 2 Stk.</span>
-          <span data-lang="en">Vegan vegetable pancakes, 2 pcs.</span>
-          <span data-lang="ko">비건 야채전 2개</span>
+          <span data-lang="de" class="item-desc-text">Vegane Gemüsepfannkuchen, 2 Stk.</span>
+          <span data-lang="en" class="item-desc-text">Vegan vegetable pancakes, 2 pcs.</span>
+          <span data-lang="ko" class="item-desc-text">비건 야채전 2개</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 6,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="side-gimmari">
       <div class="item-body">
-        <div class="item-name">Gimmari / Spicy Gimmari <span class="tag tag-veg">Veg</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('side-gimmari')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Gimmari / Spicy Gimmari</span> <span class="tag tag-veg">Veg</span></div>
         <div class="item-desc">
-          <span data-lang="de">Frittierte Glasnudelrollen, 4 Stk.</span>
-          <span data-lang="en">Fried glass noodle-rolls, 4 pcs.</span>
-          <span data-lang="ko">튀긴 당면 김말이 4개</span>
+          <span data-lang="de" class="item-desc-text">Frittierte Glasnudelrollen, 4 Stk.</span>
+          <span data-lang="en" class="item-desc-text">Fried glass noodle-rolls, 4 pcs.</span>
+          <span data-lang="ko" class="item-desc-text">튀긴 당면 김말이 4개</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 6,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="side-kimchi-jeon">
       <div class="item-body">
-        <div class="item-name">Kimchi-Jeon</div>
+        <button class="admin-edit-btn" onclick="openEditor('side-kimchi-jeon')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Kimchi-Jeon</span></div>
         <div class="item-desc">
-          <span data-lang="de">Mini-Kimchi-Pfannkuchen mit Tintenfisch, 4 Stk.</span>
-          <span data-lang="en">Mini Kimchi pancakes with squid, 4 pcs.</span>
-          <span data-lang="ko">미니 김치전 (오징어 포함) 4개</span>
+          <span data-lang="de" class="item-desc-text">Mini-Kimchi-Pfannkuchen mit Tintenfisch, 4 Stk.</span>
+          <span data-lang="en" class="item-desc-text">Mini Kimchi pancakes with squid, 4 pcs.</span>
+          <span data-lang="ko" class="item-desc-text">미니 김치전 (오징어 포함) 4개</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 7,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="side-steamed-mandu">
       <div class="item-body">
-        <div class="item-name">Steamed Mandu Kimchi / Spicy <span class="tag tag-veg">Veg</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('side-steamed-mandu')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Steamed Mandu Kimchi / Spicy</span> <span class="tag tag-veg">Veg</span></div>
         <div class="item-desc">
-          <span data-lang="de">Gedämpfte würzige Veggie-Knödel, 6 Stk.</span>
-          <span data-lang="en">Steamed spicy veggie dumplings, 6 pcs.</span>
-          <span data-lang="ko">쪄낸 매콤 야채 만두 6개</span>
+          <span data-lang="de" class="item-desc-text">Gedämpfte würzige Veggie-Knödel, 6 Stk.</span>
+          <span data-lang="en" class="item-desc-text">Steamed spicy veggie dumplings, 6 pcs.</span>
+          <span data-lang="ko" class="item-desc-text">쪄낸 매콤 야채 만두 6개</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 6,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="side-tofu-kimchi">
       <div class="item-body">
-        <div class="item-name">Tofu Kimchi <span class="tag tag-veg">Veg</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('side-tofu-kimchi')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Tofu Kimchi</span> <span class="tag tag-veg">Veg</span></div>
         <div class="item-desc">
-          <span data-lang="de">Heißes Tofu mit gebratenem Kimchi</span>
-          <span data-lang="en">Hot Tofu with grilled Kimchi</span>
-          <span data-lang="ko">따뜻한 두부에 구운 김치</span>
+          <span data-lang="de" class="item-desc-text">Heißes Tofu mit gebratenem Kimchi</span>
+          <span data-lang="en" class="item-desc-text">Hot Tofu with grilled Kimchi</span>
+          <span data-lang="ko" class="item-desc-text">따뜻한 두부에 구운 김치</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 8,–</div></div>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item" data-id="side-kimchi-500g">
       <div class="item-body">
-        <div class="item-name">Kimchi 500g <span class="tag tag-veg">Veg</span></div>
+        <button class="admin-edit-btn" onclick="openEditor('side-kimchi-500g')">✏️ 수정</button>
+        <div class="item-name"><span class="item-name-text">Kimchi 500g</span> <span class="tag tag-veg">Veg</span></div>
         <div class="item-desc">
-          <span data-lang="de">Kimchi zum Mitnehmen, 500g</span>
-          <span data-lang="en">Kimchi to go, 500g</span>
-          <span data-lang="ko">김치 500g (포장)</span>
+          <span data-lang="de" class="item-desc-text">Kimchi zum Mitnehmen, 500g</span>
+          <span data-lang="en" class="item-desc-text">Kimchi to go, 500g</span>
+          <span data-lang="ko" class="item-desc-text">김치 500g (포장)</span>
         </div>
+        <div class="admin-photo-zone"></div>
       </div>
       <div class="item-price-wrap"><div class="item-price">€ 8,–</div></div>
     </div>
@@ -915,8 +1023,16 @@ body.admin-mode .menu-item{position:relative;border:1px dashed rgba(212,43,43,0.
 </div>
 
 <script>
-// ── ADMIN PASSWORD ──
-const ADMIN_PW = 'Seoulmate24';
+// ── CONFIG ──
+var GH_TOKEN = ''; // User fills this in GitHub editor
+var GH_REPO  = 'snowsiro/Lokalonline';
+var GH_BRANCH = 'main';
+var DATA_PATH = 'seoulmate/menu/data.json';
+var IMG_DIR   = 'seoulmate/menu/img/';
+var ADMIN_PW  = 'seoulmate2024'; // keep existing password
+
+var photos    = {};
+var overrides = {};
 
 // 모바일: 브랜드명 5번 탭으로 어드민 접근
 (function(){
@@ -931,109 +1047,271 @@ const ADMIN_PW = 'Seoulmate24';
   });
 })();
 
-function toggleAdminMode(){
-  if(document.body.classList.contains('admin-mode')) setAdminMode(false);
-  else openPwModal();
+// ── LOAD DATA ON START ──
+async function loadData(){
+  try {
+    var r = await fetch('https://raw.githubusercontent.com/' + GH_REPO + '/' + GH_BRANCH + '/' + DATA_PATH + '?t=' + Date.now());
+    if(r.ok){
+      var d = await r.json();
+      photos    = d.photos    || {};
+      overrides = d.overrides || {};
+      applyOverrides();
+      applyPhotos();
+    }
+  } catch(e){}
 }
 
+function applyOverrides(){
+  for(var id in overrides){
+    var o = overrides[id];
+    var el = document.querySelector('[data-id="' + id + '"]');
+    if(!el) continue;
+    if(o.name){
+      var nameEl = el.querySelector('.item-name-text');
+      if(nameEl) nameEl.textContent = o.name;
+    }
+    if(o.price){
+      var priceEl = el.querySelector('.item-price');
+      if(priceEl) priceEl.textContent = o.price;
+    }
+    if(o.desc_de){ var d = el.querySelector('[data-lang="de"].item-desc-text'); if(d) d.textContent = o.desc_de; }
+    if(o.desc_en){ var d = el.querySelector('[data-lang="en"].item-desc-text'); if(d) d.textContent = o.desc_en; }
+    if(o.desc_ko){ var d = el.querySelector('[data-lang="ko"].item-desc-text'); if(d) d.textContent = o.desc_ko; }
+  }
+}
+
+function applyPhotos(){
+  for(var id in photos){
+    markHasPhoto(id, photos[id]);
+    var zone = document.querySelector('[data-id="' + id + '"] .admin-photo-zone');
+    if(zone) buildZone(zone, id);
+  }
+}
+
+function markHasPhoto(id, url){
+  var el = document.querySelector('[data-id="' + id + '"] .item-name');
+  if(el){
+    el.classList.add('has-photo');
+    el.setAttribute('onclick', 'openPhoto("' + id + '", this)');
+    if(!el.querySelector('.photo-badge')) el.insertAdjacentHTML('beforeend', '<span class="photo-badge">📷 Foto</span>');
+  }
+}
+
+// ── GITHUB API ──
+async function ghGetFile(path){
+  var r = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + path + '?ref=' + GH_BRANCH, {
+    headers: { 'Authorization': 'Bearer ' + GH_TOKEN, 'Accept': 'application/vnd.github+json' }
+  });
+  if(r.status === 404) return null;
+  return r.ok ? await r.json() : null;
+}
+
+async function ghPutFile(path, contentBase64, message, sha){
+  var body = { message: message, content: contentBase64, branch: GH_BRANCH };
+  if(sha) body.sha = sha;
+  var r = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + path, {
+    method: 'PUT',
+    headers: { 'Authorization': 'Bearer ' + GH_TOKEN, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  return r.ok;
+}
+
+async function saveDataJson(){
+  if(!GH_TOKEN){ toast('⚠️ GitHub Token nicht konfiguriert'); return false; }
+  var content = JSON.stringify({ photos: photos, overrides: overrides }, null, 2);
+  var b64 = btoa(unescape(encodeURIComponent(content)));
+  var existing = await ghGetFile(DATA_PATH);
+  var sha = existing ? existing.sha : undefined;
+  return await ghPutFile(DATA_PATH, b64, 'Update menu data', sha);
+}
+
+// ── PHOTO UPLOAD ──
+function buildZone(zone, id){
+  var url = photos[id] || null;
+  zone.innerHTML = '';
+  var wrap = document.createElement('div');
+  wrap.className = 'photo-preview-wrap' + (url ? ' has-img' : '');
+  wrap.innerHTML =
+    '<div class="photo-placeholder"><div class="photo-placeholder-icon">📷</div><div class="photo-placeholder-text">Foto hochladen</div></div>' +
+    '<img class="photo-preview-img" src="' + (url||'') + '" alt="">' +
+    '<input type="file" accept="image/*" class="photo-upload-input">';
+  zone.appendChild(wrap);
+
+  wrap.querySelector('input').addEventListener('change', function(e){
+    var file = e.target.files[0];
+    if(!file || !GH_TOKEN){ toast('⚠️ Token fehlt'); return; }
+    toast('⏳ Hochladen...');
+    var reader = new FileReader();
+    reader.onload = async function(ev){
+      // Compress to max 800px wide
+      var img = new Image();
+      img.onload = async function(){
+        var canvas = document.createElement('canvas');
+        var MAX = 800;
+        var scale = Math.min(1, MAX / Math.max(img.width, img.height));
+        canvas.width  = Math.round(img.width  * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        var b64 = canvas.toDataURL('image/jpeg', 0.82).split(',')[1];
+        var path = IMG_DIR + id + '.jpg';
+        var existing = await ghGetFile(path);
+        var ok = await ghPutFile(path, b64, 'Add photo: ' + id, existing ? existing.sha : undefined);
+        if(ok){
+          var url = 'https://lokalonline.at/' + path + '?t=' + Date.now();
+          photos[id] = 'https://lokalonline.at/' + path;
+          await saveDataJson();
+          markHasPhoto(id, photos[id]);
+          buildZone(zone, id);
+          toast('✅ Foto gespeichert!');
+        } else {
+          toast('❌ Fehler beim Hochladen');
+        }
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  if(url){
+    var actions = document.createElement('div');
+    actions.className = 'photo-actions';
+    var changeBtn = document.createElement('button');
+    changeBtn.className = 'photo-action-btn photo-change-btn';
+    changeBtn.textContent = '교체';
+    changeBtn.onclick = function(){ wrap.querySelector('input').click(); };
+    var delBtn = document.createElement('button');
+    delBtn.className = 'photo-action-btn photo-delete-btn';
+    delBtn.textContent = '삭제';
+    delBtn.onclick = async function(){
+      delete photos[id];
+      await saveDataJson();
+      var nameEl = document.querySelector('[data-id="' + id + '"] .item-name');
+      if(nameEl){ nameEl.classList.remove('has-photo'); nameEl.removeAttribute('onclick'); var b = nameEl.querySelector('.photo-badge'); if(b) b.remove(); }
+      buildZone(zone, id);
+      toast('삭제됨');
+    };
+    actions.appendChild(changeBtn);
+    actions.appendChild(delBtn);
+    zone.appendChild(actions);
+  }
+}
+
+// ── ADMIN EDITOR ──
+function openEditor(id){
+  var el = document.querySelector('[data-id="' + id + '"]');
+  if(!el) return;
+  var nameText  = el.querySelector('.item-name-text') ? el.querySelector('.item-name-text').textContent : '';
+  var priceText = el.querySelector('.item-price') ? el.querySelector('.item-price').textContent : '';
+  var descDe = el.querySelector('[data-lang="de"].item-desc-text') ? el.querySelector('[data-lang="de"].item-desc-text').textContent : '';
+  var descEn = el.querySelector('[data-lang="en"].item-desc-text') ? el.querySelector('[data-lang="en"].item-desc-text').textContent : '';
+  var descKo = el.querySelector('[data-lang="ko"].item-desc-text') ? el.querySelector('[data-lang="ko"].item-desc-text').textContent : '';
+
+  var existing = document.getElementById('adminEditorModal');
+  if(existing) existing.remove();
+  var overlay = document.createElement('div');
+  overlay.id = 'adminEditorModal';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:700;background:rgba(10,8,6,0.8);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:24px;';
+  overlay.innerHTML = '<div style="background:var(--bg);border-radius:14px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 40px 100px rgba(0,0,0,0.4);">' +
+    '<div style="padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">' +
+    '<div style="font-family:\'DM Serif Display\',serif;font-size:1.1rem;">수정 / Bearbeiten</div>' +
+    '<button onclick="document.getElementById(\'adminEditorModal\').remove()" style="border:none;background:none;cursor:pointer;font-size:1.4rem;color:var(--muted);padding:4px;line-height:1">×</button></div>' +
+    '<div style="padding:20px 24px;">' +
+    '<div style="margin-bottom:14px"><label style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">이름 / Name</label><input id="ef_name" type="text" value="' + nameText.replace(/"/g,'&quot;') + '" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:9px 12px;font-family:\'DM Sans\',sans-serif;font-size:0.9rem;color:var(--text);background:var(--bg);outline:none"></div>' +
+    '<div style="margin-bottom:14px"><label style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Preis / 가격</label><input id="ef_price" type="text" value="' + priceText.replace(/"/g,'&quot;') + '" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:9px 12px;font-family:\'DM Sans\',sans-serif;font-size:0.9rem;color:var(--text);background:var(--bg);outline:none"></div>' +
+    '<div style="margin-bottom:14px"><label style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Beschreibung DE</label><textarea id="ef_desc_de" rows="2" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:9px 12px;font-family:\'DM Sans\',sans-serif;font-size:0.85rem;color:var(--text);background:var(--bg);outline:none;resize:vertical">' + descDe + '</textarea></div>' +
+    '<div style="margin-bottom:14px"><label style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Description EN</label><textarea id="ef_desc_en" rows="2" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:9px 12px;font-family:\'DM Sans\',sans-serif;font-size:0.85rem;color:var(--text);background:var(--bg);outline:none;resize:vertical">' + descEn + '</textarea></div>' +
+    '<div style="margin-bottom:20px"><label style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">설명 KO</label><textarea id="ef_desc_ko" rows="2" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:9px 12px;font-family:\'DM Sans\',sans-serif;font-size:0.85rem;color:var(--text);background:var(--bg);outline:none;resize:vertical">' + descKo + '</textarea></div>' +
+    '<button id="editorSaveBtn" style="width:100%;background:var(--text);color:#fff;border:none;border-radius:8px;padding:13px;font-family:\'DM Sans\',sans-serif;font-size:0.82rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer">💾 저장</button>' +
+    '<button onclick="document.getElementById(\'adminEditorModal\').remove()" style="width:100%;margin-top:8px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:11px;font-family:\'DM Sans\',sans-serif;font-size:0.78rem;font-weight:600;cursor:pointer">취소</button>' +
+    '</div></div>';
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.remove(); });
+
+  document.getElementById('editorSaveBtn').onclick = async function(){
+    this.textContent = '⏳ 저장 중...'; this.disabled = true;
+    var o = overrides[id] || {};
+    var n = document.getElementById('ef_name').value.trim();
+    var p = document.getElementById('ef_price').value.trim();
+    var dd = document.getElementById('ef_desc_de').value.trim();
+    var de = document.getElementById('ef_desc_en').value.trim();
+    var dk = document.getElementById('ef_desc_ko').value.trim();
+    if(n) o.name = n;
+    if(p) o.price = p;
+    if(dd) o.desc_de = dd;
+    if(de) o.desc_en = de;
+    if(dk) o.desc_ko = dk;
+    overrides[id] = o;
+    var ok = await saveDataJson();
+    if(ok){
+      applyOverrides();
+      toast('✅ 저장됨!');
+    } else {
+      toast('❌ 저장 실패');
+    }
+    overlay.remove();
+  };
+}
+
+// ── PHOTO MODAL ──
+function openPhoto(id, nameEl){
+  if(document.body.classList.contains('admin-mode')) return;
+  var url = photos[id]; if(!url) return;
+  var img = document.getElementById('photoModalImg');
+  var wrap = document.getElementById('photoModalImgWrap');
+  img.style.opacity='0';
+  if(wrap) wrap.classList.add('loading');
+  img.onload = function(){ img.style.opacity='1'; if(wrap) wrap.classList.remove('loading'); };
+  img.src = url;
+  var clone = nameEl.cloneNode(true);
+  var badge = clone.querySelector('.photo-badge'); if(badge) badge.remove();
+  document.getElementById('photoModalTitle').textContent = clone.textContent.trim();
+  document.getElementById('photoModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closePhotoModal(){ document.getElementById('photoModal').classList.remove('open'); document.body.style.overflow=''; }
+function handleModalClick(e){ if(e.target===document.getElementById('photoModal')) closePhotoModal(); }
+
+// ── ADMIN MODE ──
 function setAdminMode(on){
   document.body.classList.toggle('admin-mode', on);
   document.getElementById('adminBanner').classList.toggle('hidden', !on);
   document.getElementById('adminToggleBtn').classList.toggle('active', on);
-}
-
-// ── PHOTO MODAL (placeholder, no cloudinary in this version) ──
-function closePhotoModal(){
-  document.getElementById('photoModal').classList.remove('open');
-  document.body.style.overflow = '';
-}
-function handleModalClick(e){
-  if(e.target === document.getElementById('photoModal')) closePhotoModal();
-}
-
-// ── PASSWORD MODAL ──
-function openPwModal(){
-  const overlay = document.getElementById('pwOverlay');
-  const input   = document.getElementById('pwInput');
-  overlay.classList.add('open');
-  document.body.style.overflow = 'hidden';
-  input.value = '';
-  document.getElementById('pwError').textContent = '';
-  input.classList.remove('error');
-  setTimeout(function(){ input.focus(); }, 100);
-}
-function closePwModal(){
-  document.getElementById('pwOverlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
-function handlePwOverlayClick(e){
-  if(e.target === document.getElementById('pwOverlay')) closePwModal();
-}
-function togglePwVisibility(){
-  const input = document.getElementById('pwInput');
-  const btn   = document.getElementById('pwToggle');
-  if(input.type === 'password'){ input.type = 'text'; btn.textContent = '🙈'; }
-  else { input.type = 'password'; btn.textContent = '👁'; }
-}
-function checkPassword(){
-  const input = document.getElementById('pwInput');
-  const errEl = document.getElementById('pwError');
-  if(input.value === ADMIN_PW){
-    closePwModal();
-    setAdminMode(true);
-  } else {
-    input.classList.add('error');
-    errEl.textContent = '비밀번호가 틀렸습니다 / Falsches Passwort';
-    input.value = '';
-    setTimeout(function(){ input.classList.remove('error'); }, 400);
-    setTimeout(function(){ input.focus(); }, 50);
+  if(on){
+    document.querySelectorAll('[data-id]').forEach(function(el){
+      var zone = el.querySelector('.admin-photo-zone');
+      if(zone) buildZone(zone, el.getAttribute('data-id'));
+    });
   }
 }
+function toggleAdminMode(){
+  if(document.body.classList.contains('admin-mode')){ setAdminMode(false); }
+  else { openPwModal(); }
+}
+function openPwModal(){ var o=document.getElementById('pwOverlay'); o.classList.add('open'); document.body.style.overflow='hidden'; document.getElementById('pwInput').value=''; document.getElementById('pwError').textContent=''; setTimeout(function(){ document.getElementById('pwInput').focus(); },100); }
+function closePwModal(){ document.getElementById('pwOverlay').classList.remove('open'); document.body.style.overflow=''; }
+function handlePwOverlayClick(e){ if(e.target===document.getElementById('pwOverlay')) closePwModal(); }
+function togglePwVisibility(){ var i=document.getElementById('pwInput'),b=document.getElementById('pwToggle'); if(i.type==='password'){i.type='text';b.textContent='🙈';}else{i.type='password';b.textContent='👁';} }
+function checkPassword(){ var i=document.getElementById('pwInput'),e=document.getElementById('pwError'); if(i.value===ADMIN_PW){closePwModal();setAdminMode(true);}else{i.classList.add('error');e.textContent='비밀번호가 틀렸습니다';i.value='';setTimeout(function(){i.classList.remove('error');},400);setTimeout(function(){i.focus();},50);} }
 
 // ── TOAST ──
-let toastTimer;
-function toast(msg){
-  const el = document.getElementById('saveToast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2400);
-}
+var toastTimer;
+function toast(msg){ var el=document.getElementById('saveToast'); el.textContent=msg; el.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(function(){el.classList.remove('show');},2400); }
 
 // ── LANG ──
-function setLang(lang){
-  const isAdmin = document.body.classList.contains('admin-mode');
-  document.body.className = 'lang-' + lang + (isAdmin ? ' admin-mode' : '');
-  document.querySelectorAll('.lang-btn').forEach(function(b,i){
-    b.classList.toggle('active', ['ko','en','de'][i] === lang);
-  });
-}
+function setLang(lang){ var isAdmin=document.body.classList.contains('admin-mode'); document.body.className='lang-'+lang+(isAdmin?' admin-mode':''); document.querySelectorAll('.lang-btn').forEach(function(b,i){ b.classList.toggle('active',['ko','en','de'][i]===lang); }); }
 
 // ── NAV ──
-function scrollToSection(id){
-  const el = document.getElementById(id);
-  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
-  document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
-  event.currentTarget.classList.add('active');
-}
-const secs = ['tteokbokki','noodle','chicken','cupbap','gimbap','side'];
-const obs = new IntersectionObserver(function(entries){
-  entries.forEach(function(e){
-    if(e.isIntersecting){
-      const i = secs.indexOf(e.target.id);
-      document.querySelectorAll('.nav-tab').forEach(function(t,j){ t.classList.toggle('active', i===j); });
-    }
-  });
-}, {rootMargin:'-30% 0px -60% 0px'});
-secs.forEach(function(id){ const el = document.getElementById(id); if(el) obs.observe(el); });
+function scrollToSection(id){ document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'}); event.currentTarget.classList.add('active'); }
+var secs=['tteokbokki','noodle','chicken','cupbap','gimbap','side'];
+var obs=new IntersectionObserver(function(entries){ entries.forEach(function(e){ if(e.isIntersecting){ var i=secs.indexOf(e.target.id); document.querySelectorAll('.nav-tab').forEach(function(t,j){t.classList.toggle('active',i===j);}); } }); },{rootMargin:'-30% 0px -60% 0px'});
+secs.forEach(function(id){ var el=document.getElementById(id); if(el) obs.observe(el); });
 
 // ── KEYBOARD ──
-document.addEventListener('keydown', function(e){
-  if(e.key === 'Escape'){
-    if(document.getElementById('pwOverlay').classList.contains('open')) closePwModal();
-    else closePhotoModal();
-  }
-});
+document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ if(document.getElementById('pwOverlay').classList.contains('open')) closePwModal(); else if(document.getElementById('adminEditorModal')) document.getElementById('adminEditorModal').remove(); else closePhotoModal(); } });
+
+// ── INIT ──
+loadData();
 </script>
 
 </body></html>
