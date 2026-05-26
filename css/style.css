@@ -156,7 +156,7 @@ img { max-width: 100%; display: block; }
   overflow: hidden;
   display: none;
 }
-.user-dropdown.show { display: block; }
+.user-dropdown.open { display: block; }
 .user-dropdown a, .user-dropdown button {
   display: block;
   width: 100%;
@@ -265,6 +265,31 @@ img { max-width: 100%; display: block; }
   box-shadow: 0 8px 32px rgba(0,0,0,0.45);
 }
 .hero-circle:not(:first-child) { margin-left: -32px; }
+.hero-circle-link {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: block;
+}
+.hero-circle-link:hover { transform: scale(1.07) translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.55); z-index: 2; }
+.hero-circle-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(27,13,7,0.62);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  opacity: 0;
+  transition: opacity 0.2s;
+  border-radius: 50%;
+}
+.hero-circle-link:hover .hero-circle-label { opacity: 1; }
 .hero-circle-placeholder {
   width: 156px; height: 156px;
   border-radius: 50%;
@@ -640,6 +665,13 @@ img { max-width: 100%; display: block; }
   inset: 0;
   z-index: 200;
   pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+.popup-overlay.open {
+  opacity: 1;
+  visibility: visible;
 }
 .popup {
   position: fixed;
@@ -691,7 +723,33 @@ img { max-width: 100%; display: block; }
   line-height: 1.5;
 }
 /* hide unused popup parts */
-.popup-badge, .popup-sub, .popup-savings, .popup-actions, .popup-dismiss { display: none; }
+.popup-badge, .popup-sub, .popup-savings { display: none; }
+.popup-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+.popup-cta {
+  display: block;
+  background: #fff;
+  color: var(--orange);
+  font-weight: 700;
+  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: 100px;
+  text-align: center;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+.popup-cta:hover { opacity: 0.88; }
+.popup-dismiss {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.65);
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 4px;
+  text-align: center;
+  transition: color 0.15s;
+}
+.popup-dismiss:hover { color: #fff; }
 
 /* ===== AUTH MODAL ===== */
 .auth-overlay {
