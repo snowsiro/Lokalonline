@@ -1103,7 +1103,7 @@ function markHasPhoto(id, url){
 async function ghPutFile(path, contentBase64, message){
   var r = await fetch(EDGE_FN, {
     method: 'POST',
-    headers: { 'Authorization': 'Bearer ' + SB_ANON, 'Content-Type': 'application/json' },
+    headers: { 'Authorization': 'Bearer ' + SB_ANON, 'apikey': SB_ANON, 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'put-file', path: path, content: contentBase64, message: message })
   });
   var d = await r.json();
