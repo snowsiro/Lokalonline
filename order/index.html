@@ -168,6 +168,8 @@
       margin-bottom: 24px;
       line-height: 1.5;
     }
+    /* Honeypot */
+    .hp-field { opacity: 0; position: absolute; top: 0; left: 0; height: 0; width: 0; z-index: -1; }
     /* Form */
     .form-group { margin-bottom: 16px; }
     .form-group label {
@@ -416,6 +418,11 @@
 
     <!-- Card -->
     <div class="order-card" id="orderCard">
+
+      <!-- Honeypot (bots fill this, humans don't see it) -->
+      <div class="hp-field" aria-hidden="true">
+        <input type="text" id="hp_website" name="website" tabindex="-1" autocomplete="off" />
+      </div>
 
       <!-- Step 1 -->
       <div class="step-panel active" id="panelStep1">
@@ -950,6 +957,16 @@ So: Ruhetag"></textarea>
       errEl.style.display = 'none';
       btn.disabled = true;
       btn.innerHTML = '<span class="btn-spinner"></span>' + T[currentLang].submitting;
+
+      // Honeypot check — bots fill hidden fields, humans don't
+      if (document.getElementById('hp_website').value) {
+        await new Promise(function(r) { setTimeout(r, 1200); });
+        document.getElementById('orderCard').style.display = 'none';
+        document.getElementById('progressWrap').style.display = 'none';
+        document.getElementById('successPanel').classList.add('show');
+        applyLang(currentLang);
+        return;
+      }
 
       try {
         var orderId = crypto.randomUUID ? crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2));
