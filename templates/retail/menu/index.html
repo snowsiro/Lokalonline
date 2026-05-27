@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title id="pageTitle">Sortiment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="../data.js"></script>
+<script src="menu-data.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --primary: #E85D26;
+    --accent:  #E85D26;
+    --bg:      #FFFFFF;
+    --dark:    #0A0A0A;
+    --mid:     #6B6B6B;
+    --dim:     #9A9A9A;
+    --line:    #E8E8E8;
+    --font-heading: 'Space Grotesk', sans-serif;
+    --font-body:    'Inter', sans-serif;
+  }
+
+  body { background: var(--bg); color: var(--dark); font-family: var(--font-body); }
+
+  /* NAV */
+  .nav { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bottom: 1px solid var(--line); }
+  .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
+  .nav-logo { font-family: var(--font-heading); font-size: 1.1rem; font-weight: 700; letter-spacing: -0.03em; color: var(--dark); text-decoration: none; }
+  .nav-back { font-size: .85rem; color: var(--mid); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color .2s; }
+  .nav-back:hover { color: var(--primary); }
+  .lang-btn { background: none; border: 1px solid var(--line); color: var(--mid); padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: .8rem; font-family: var(--font-body); transition: all .2s; }
+  .lang-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+  /* HERO */
+  .menu-hero { background: var(--dark); color: #fff; padding: 64px 24px 48px; text-align: center; }
+  .menu-hero h1 { font-family: var(--font-heading); font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; letter-spacing: -0.04em; margin-bottom: 12px; }
+  .menu-hero p { color: rgba(255,255,255,.6); font-size: .95rem; }
+  .menu-hero .tag { display: inline-block; border: 1px solid rgba(255,255,255,.2); border-radius: 2px; padding: 4px 14px; font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 20px; color: rgba(255,255,255,.7); }
+
+  /* CATEGORY TABS */
+  .cat-tabs { background: var(--bg); border-bottom: 1px solid var(--line); position: sticky; top: 64px; z-index: 90; overflow-x: auto; scrollbar-width: none; }
+  .cat-tabs::-webkit-scrollbar { display: none; }
+  .cat-tabs-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; gap: 0; white-space: nowrap; }
+  .cat-tab { padding: 16px 20px; font-size: .9rem; font-weight: 500; color: var(--mid); cursor: pointer; border-bottom: 2px solid transparent; transition: all .2s; background: none; border-top: none; border-left: none; border-right: none; font-family: var(--font-body); }
+  .cat-tab.active { color: var(--dark); border-bottom-color: var(--primary); }
+  .cat-tab:hover { color: var(--dark); }
+
+  /* CONTENT */
+  .content { max-width: 1200px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  /* CATEGORY SECTION */
+  .cat-section { margin-bottom: 64px; scroll-margin-top: 130px; }
+  .cat-title { font-family: var(--font-heading); font-size: 1.5rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 4px; }
+  .cat-divider { width: 32px; height: 3px; background: var(--primary); margin: 12px 0 32px; }
+
+  /* PRODUCT GRID */
+  .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
+  .product-card { border: 1px solid var(--line); border-radius: 4px; overflow: hidden; transition: box-shadow .2s, transform .2s; }
+  .product-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,.08); transform: translateY(-2px); }
+  .product-img-wrap { position: relative; aspect-ratio: 3/4; overflow: hidden; background: #f5f5f5; }
+  .product-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+  .product-card:hover .product-img-wrap img { transform: scale(1.04); }
+  .product-badge { position: absolute; top: 12px; left: 12px; background: var(--primary); color: #fff; font-size: .7rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; padding: 4px 10px; border-radius: 2px; }
+  .product-body { padding: 20px; }
+  .product-name { font-family: var(--font-heading); font-size: 1rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .product-desc { font-size: .85rem; color: var(--mid); line-height: 1.5; margin-bottom: 12px; }
+  .product-price { font-family: var(--font-heading); font-weight: 700; color: var(--primary); font-size: 1rem; }
+
+  /* CONTACT */
+  .contact-strip { background: var(--dark); color: #fff; padding: 56px 24px; text-align: center; }
+  .contact-strip h2 { font-family: var(--font-heading); font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 8px; }
+  .contact-strip p { color: rgba(255,255,255,.6); margin-bottom: 28px; font-size: .95rem; }
+  .contact-links { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .contact-links a { color: #fff; text-decoration: none; border: 1px solid rgba(255,255,255,.2); padding: 10px 24px; border-radius: 3px; font-size: .9rem; transition: all .2s; }
+  .contact-links a:hover { border-color: var(--primary); background: var(--primary); }
+
+  @media (max-width: 600px) {
+    .product-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .product-body { padding: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="../" class="nav-logo" id="navLogo">Boutique</a>
+    <a href="../" class="nav-back" id="navBack">← <span data-de="Zurück" data-en="Back">Zurück</span></a>
+    <button class="lang-btn" onclick="toggleLang()">DE / EN</button>
+  </div>
+</nav>
+
+<section class="menu-hero">
+  <div class="tag" id="heroTag" data-de="Unser Sortiment" data-en="Our Collections">Unser Sortiment</div>
+  <h1 id="heroTitle" data-de="Kuratierte Mode &amp; Accessoires" data-en="Curated Fashion &amp; Accessories">Kuratierte Mode &amp; Accessoires</h1>
+  <p id="heroSub" data-de="Ausgewählte Stücke, handverlesen für Sie" data-en="Selected pieces, handpicked for you">Ausgewählte Stücke, handverlesen für Sie</p>
+</section>
+
+<div class="cat-tabs">
+  <div class="cat-tabs-inner" id="catTabs"></div>
+</div>
+
+<div class="content">
+  <div id="categorySections"></div>
+</div>
+
+<section class="contact-strip">
+  <h2 id="ctaTitle" data-de="Besuchen Sie uns" data-en="Visit Us">Besuchen Sie uns</h2>
+  <p id="ctaAddress"></p>
+  <div class="contact-links">
+    <a id="ctaPhone" href="#">Anrufen</a>
+    <a id="ctaMap" href="#" target="_blank" data-de="Anfahrt" data-en="Directions">Anfahrt</a>
+  </div>
+</section>
+
+<script>
+  var lang = localStorage.getItem('lang') || 'de';
+
+  function t(obj) {
+    if (!obj) return '';
+    if (typeof obj === 'string') return obj;
+    return obj[lang] || obj.de || '';
+  }
+
+  function toggleLang() {
+    lang = lang === 'de' ? 'en' : 'de';
+    localStorage.setItem('lang', lang);
+    applyLang();
+    renderCategories();
+  }
+
+  function applyLang() {
+    document.querySelectorAll('[data-de]').forEach(function(el) {
+      el.textContent = lang === 'de' ? el.dataset.de : el.dataset.en;
+    });
+    document.documentElement.lang = lang;
+  }
+
+  function applyCSSVars() {
+    if (!window.SITE_DATA) return;
+    var c = SITE_DATA.colors || {};
+    var root = document.documentElement;
+    if (c.primary) root.style.setProperty('--primary', c.primary);
+    if (c.accent)  root.style.setProperty('--accent',  c.accent);
+    if (c.bg)      root.style.setProperty('--bg',      c.bg);
+    if (c.dark)    root.style.setProperty('--dark',    c.dark);
+    if (c.mid)     root.style.setProperty('--mid',     c.mid);
+    if (c.dim)     root.style.setProperty('--dim',     c.dim);
+    if (c.line)    root.style.setProperty('--line',    c.line);
+    var f = SITE_DATA.fonts || {};
+    if (f.heading) root.style.setProperty('--font-heading', "'" + f.heading + "', sans-serif");
+    if (f.body)    root.style.setProperty('--font-body',    "'" + f.body + "', sans-serif");
+  }
+
+  function renderCategories() {
+    var data = window.MENU_DATA;
+    if (!data || !data.categories) return;
+
+    // Tabs
+    var tabsEl = document.getElementById('catTabs');
+    tabsEl.innerHTML = '';
+    data.categories.forEach(function(cat, i) {
+      var btn = document.createElement('button');
+      btn.className = 'cat-tab' + (i === 0 ? ' active' : '');
+      btn.textContent = t(cat.name);
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.cat-tab').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        var sec = document.getElementById('cat-' + i);
+        if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+      });
+      tabsEl.appendChild(btn);
+    });
+
+    // Sections
+    var sectionsEl = document.getElementById('categorySections');
+    sectionsEl.innerHTML = '';
+    data.categories.forEach(function(cat, i) {
+      var sec = document.createElement('div');
+      sec.className = 'cat-section';
+      sec.id = 'cat-' + i;
+
+      var title = document.createElement('h2');
+      title.className = 'cat-title';
+      title.textContent = t(cat.name);
+
+      var divider = document.createElement('div');
+      divider.className = 'cat-divider';
+
+      var grid = document.createElement('div');
+      grid.className = 'product-grid';
+
+      (cat.items || []).forEach(function(item) {
+        var card = document.createElement('div');
+        card.className = 'product-card';
+
+        var imgWrap = document.createElement('div');
+        imgWrap.className = 'product-img-wrap';
+        var img = document.createElement('img');
+        img.src = item.img || '';
+        img.alt = t(item.name);
+        imgWrap.appendChild(img);
+
+        if (item.badge) {
+          var badge = document.createElement('span');
+          badge.className = 'product-badge';
+          badge.textContent = t(item.badge);
+          imgWrap.appendChild(badge);
+        }
+
+        var body = document.createElement('div');
+        body.className = 'product-body';
+
+        var name = document.createElement('div');
+        name.className = 'product-name';
+        name.textContent = t(item.name);
+
+        var desc = document.createElement('div');
+        desc.className = 'product-desc';
+        desc.textContent = t(item.desc);
+
+        var price = document.createElement('div');
+        price.className = 'product-price';
+        price.textContent = item.price || '';
+
+        body.appendChild(name);
+        body.appendChild(desc);
+        body.appendChild(price);
+        card.appendChild(imgWrap);
+        card.appendChild(body);
+        grid.appendChild(card);
+      });
+
+      sec.appendChild(title);
+      sec.appendChild(divider);
+      sec.appendChild(grid);
+      sectionsEl.appendChild(sec);
+    });
+  }
+
+  function init() {
+    var d = window.SITE_DATA;
+    if (d) {
+      applyCSSVars();
+      document.getElementById('navLogo').textContent = d.name || 'Boutique';
+      document.title = (lang === 'de' ? 'Sortiment' : 'Collections') + ' — ' + (d.name || '');
+      if (d.address) document.getElementById('ctaAddress').textContent = d.address;
+      if (d.phone) {
+        var ph = document.getElementById('ctaPhone');
+        ph.href = 'tel:' + d.phone.replace(/\s/g,'');
+        ph.textContent = d.phone;
+      }
+      if (d.googleMapsUrl) document.getElementById('ctaMap').href = d.googleMapsUrl;
+    }
+    applyLang();
+    renderCategories();
+
+    // Intersection observer to highlight active tab
+    var sections = document.querySelectorAll('.cat-section');
+    var tabs = document.querySelectorAll('.cat-tab');
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          var idx = parseInt(entry.target.id.replace('cat-',''));
+          tabs.forEach(function(t, i) { t.classList.toggle('active', i === idx); });
+        }
+      });
+    }, { rootMargin: '-30% 0px -60% 0px' });
+    sections.forEach(function(s) { observer.observe(s); });
+  }
+
+  init();
+</script>
+</body>
+</html>

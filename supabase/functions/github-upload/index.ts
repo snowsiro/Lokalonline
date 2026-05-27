@@ -16,36 +16,62 @@ function json(data, status = 200) {
   });
 }
 
-serve(async (req) => {
+async function putFile(path: string, base64Content: string, message: string) {
+  const shaRes = await fetch(
+    `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`,
+    { headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, Accept: "application/vnd.github+json" } }
+  );
+  const shaData = shaRes.status === 404 ? null : await shaRes.json();
+  const sha = shaData ? shaData.sha : undefined;
+  const body: Record<string, string> = { message, content: base64Content, branch: GITHUB_BRANCH };
+  if (sha) body.sha = sha;
+  const r = await fetch(
+    `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,
+    {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    }
+  );
+  return r.ok;
+}
+
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
 
   try {
-    const { action, path, content, message } = await req.json();
+    const body = await req.json();
+    const { action } = body;
 
+    // Upload a text/binary file by base64 content
     if (action === "put-file") {
-      const shaRes = await fetch(
-        `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`,
+      const ok = await putFile(body.path, body.content, body.message || "Update file");
+      return json({ ok, url: `https://lokalonline.at/${body.path}` });
+    }
+
+    // Fetch a binary file from a URL and upload to GitHub
+    if (action === "copy-from-url") {
+      const imgRes = await fetch(body.source_url);
+      if (!imgRes.ok) return json({ error: "Failed to fetch source: " + body.source_url }, 400);
+      const buffer = await imgRes.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      let binary = "";
+      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+      const base64 = btoa(binary);
+      const ok = await putFile(body.dest_path, base64, body.message || "Upload image");
+      return json({ ok, url: `https://lokalonline.at/${body.dest_path}` });
+    }
+
+    // Get file content from GitHub
+    if (action === "get-file") {
+      const res = await fetch(
+        `https://api.github.com/repos/${GITHUB_REPO}/contents/${body.path}?ref=${GITHUB_BRANCH}`,
         { headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, Accept: "application/vnd.github+json" } }
       );
-      const shaData = shaRes.status === 404 ? null : await shaRes.json();
-      const sha = shaData ? shaData.sha : undefined;
-
-      const body = { message, content, branch: GITHUB_BRANCH };
-      if (sha) body.sha = sha;
-
-      const r = await fetch(
-        `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${GITHUB_TOKEN}`,
-            Accept: "application/vnd.github+json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        }
-      );
-      return json({ ok: r.ok, url: `https://lokalonline.at/${path}` });
+      if (res.status === 404) return json({ error: "File not found" }, 404);
+      const data = await res.json();
+      const decoded = atob(data.content.replace(/\n/g, ""));
+      return json({ content: decoded, sha: data.sha });
     }
 
     return json({ error: "Unknown action" }, 400);

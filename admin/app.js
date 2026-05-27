@@ -614,6 +614,9 @@
 
     document.getElementById('orderStatus').value = data.payment_status || 'pending';
     document.getElementById('orderNotes').value = data.admin_notes || '';
+    document.getElementById('orderSiteSlug').value = data.site_slug || '';
+    var editBtn = document.getElementById('editSiteBtn');
+    editBtn.style.display = data.site_slug ? 'inline-flex' : 'none';
     openModal('orderOverlay');
 
     loadOrderMessages(id);
@@ -686,13 +689,22 @@
       openSiteGenerator(currentOrderData);
     });
 
+    document.getElementById('editSiteBtn').addEventListener('click', function () {
+      var slug = document.getElementById('orderSiteSlug').value.trim();
+      if (!slug) { showToast('Bitte zuerst einen Slug eingeben und speichern.'); return; }
+      openFileEditor(slug);
+    });
+
     document.getElementById('saveOrderBtn').addEventListener('click', async function () {
       if (!currentOrderId) return;
+      var slug = document.getElementById('orderSiteSlug').value.trim() || null;
       var { error } = await sb.from('orders').update({
         payment_status: document.getElementById('orderStatus').value,
-        admin_notes: document.getElementById('orderNotes').value
+        admin_notes: document.getElementById('orderNotes').value,
+        site_slug: slug
       }).eq('id', currentOrderId);
       if (!error) {
+        document.getElementById('editSiteBtn').style.display = slug ? 'inline-flex' : 'none';
         closeModal('orderOverlay');
         showToast('저장되었습니다');
         loadOrders();
@@ -936,6 +948,82 @@
     if (!res.ok || data.error) throw new Error(data.error || 'Upload failed');
   }
 
+  // ── File Editor ───────────────────────────────────────────────────
+  var editingSlug = null;
+
+  async function openFileEditor(slug) {
+    editingSlug = slug;
+    var errEl = document.getElementById('fileEditorError');
+    var contentEl = document.getElementById('fileEditorContent');
+    var infoEl = document.getElementById('fileEditorInfo');
+    errEl.style.display = 'none';
+    contentEl.value = '⏳ Lade…';
+    infoEl.textContent = 'lokalonline.at/' + slug + '/data.js';
+    openModal('fileEditorOverlay');
+
+    try {
+      var session = (await sb.auth.getSession()).data.session;
+      var token = session ? session.access_token : '';
+      var res = await fetch(EDGE_FN, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ action: 'get-file', path: slug + '/data.js' })
+      });
+      var data = await res.json();
+      if (data.error) throw new Error(data.error);
+      contentEl.value = data.content;
+    } catch (e) {
+      contentEl.value = '';
+      errEl.textContent = 'Fehler beim Laden: ' + e.message;
+      errEl.style.display = 'block';
+    }
+  }
+
+  document.getElementById('fileEditorSave').addEventListener('click', async function () {
+    if (!editingSlug) return;
+    var content = document.getElementById('fileEditorContent').value;
+    var errEl = document.getElementById('fileEditorError');
+    var btn = document.getElementById('fileEditorSave');
+    errEl.style.display = 'none';
+    btn.disabled = true; btn.textContent = '⏳ Speichert…';
+
+    try {
+      await uploadFile(editingSlug + '/data.js', content);
+      closeModal('fileEditorOverlay');
+      showToast('✅ data.js gespeichert!');
+    } catch (e) {
+      errEl.textContent = 'Fehler: ' + e.message;
+      errEl.style.display = 'block';
+    }
+    btn.disabled = false; btn.textContent = '💾 Speichern & deployen';
+  });
+
+  // ── Copy photos from Supabase Storage to GitHub ───────────────────
+  async function copyPhotosToGitHub(slug, order) {
+    var session = (await sb.auth.getSession()).data.session;
+    var token = session ? session.access_token : '';
+
+    async function copyOne(sourceUrl, destPath) {
+      try {
+        await fetch(EDGE_FN, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify({ action: 'copy-from-url', source_url: sourceUrl, dest_path: destPath, message: 'Upload photo: ' + destPath })
+        });
+      } catch (e) { /* non-fatal */ }
+    }
+
+    if (order.logo_url) await copyOne(order.logo_url, slug + '/img/logo.png');
+
+    var photoUrls = [];
+    if (order.photo_urls) { try { photoUrls = JSON.parse(order.photo_urls); } catch (e) {} }
+    else if (order.photo_url) { photoUrls = [order.photo_url]; }
+
+    for (var i = 0; i < photoUrls.length && i < 6; i++) {
+      await copyOne(photoUrls[i], slug + '/img/slide' + (i + 1) + '.jpg');
+    }
+  }
+
   async function doGenerateSite() {
     var slug = document.getElementById('siteSlug').value.trim();
     var errEl = document.getElementById('siteGenError');
@@ -961,8 +1049,19 @@
       await uploadFile(slug + '/index.html', tplHtml);
       await uploadFile(slug + '/data.js', dataJs);
 
-      // 4. Update order with site URL
-      await sb.from('orders').update({ admin_notes: (currentOrderData.admin_notes ? currentOrderData.admin_notes + '\n' : '') + 'Site: lokalonline.at/' + slug + '/' }).eq('id', currentOrderData.id);
+      // 4. Copy photos from order to site folder
+      await copyPhotosToGitHub(slug, currentOrderData);
+
+      // 5. Save slug and site URL to order
+      await sb.from('orders').update({
+        site_slug: slug,
+        admin_notes: (currentOrderData.admin_notes ? currentOrderData.admin_notes + '\n' : '') + 'Site: lokalonline.at/' + slug + '/'
+      }).eq('id', currentOrderData.id);
+
+      // Update local reference so editBtn becomes visible
+      currentOrderData.site_slug = slug;
+      document.getElementById('orderSiteSlug').value = slug;
+      document.getElementById('editSiteBtn').style.display = 'inline-flex';
 
       closeModal('siteGenOverlay');
       showToast('✅ Website erstellt: lokalonline.at/' + slug + '/');

@@ -266,10 +266,18 @@
           <label>내부 메모</label>
           <textarea id="orderNotes" placeholder="내부 메모…"></textarea>
         </div>
+        <div class="form-group">
+          <label>Website Slug</label>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:12px;color:var(--text-muted)">lokalonline.at/</span>
+            <input type="text" id="orderSiteSlug" placeholder="z.B. cafe-central" style="flex:1" />
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-danger btn-sm" id="deleteOrderBtn">삭제</button>
         <button class="btn btn-outline" data-close="orderOverlay">취소</button>
+        <button class="btn btn-outline" id="editSiteBtn" style="display:none">📝 data.js</button>
         <button class="btn btn-outline" id="generateSiteBtn" style="color:#16a34a;border-color:#16a34a">🌐 Website erstellen</button>
         <button class="btn btn-primary" id="saveOrderBtn">저장</button>
       </div>
@@ -291,21 +299,25 @@
               <div class="tpl-icon">🍽</div>
               <div class="tpl-name">Restaurant</div>
               <div class="tpl-desc">Dramatisch, dunkel, serif</div>
+              <a class="tpl-preview" href="/templates/restaurant/" target="_blank" onclick="event.stopPropagation()">Vorschau →</a>
             </button>
             <button class="template-card" data-tpl="cafe">
               <div class="tpl-icon">☕</div>
               <div class="tpl-name">Café</div>
               <div class="tpl-desc">Warm, gemütlich, rund</div>
+              <a class="tpl-preview" href="/templates/cafe/" target="_blank" onclick="event.stopPropagation()">Vorschau →</a>
             </button>
             <button class="template-card" data-tpl="beauty">
               <div class="tpl-icon">✨</div>
               <div class="tpl-name">Beauty</div>
               <div class="tpl-desc">Clean, elegant, gold</div>
+              <a class="tpl-preview" href="/templates/beauty/" target="_blank" onclick="event.stopPropagation()">Vorschau →</a>
             </button>
             <button class="template-card" data-tpl="retail">
               <div class="tpl-icon">🛍</div>
               <div class="tpl-name">Einzelhandel</div>
               <div class="tpl-desc">Bold, modern, grid</div>
+              <a class="tpl-preview" href="/templates/retail/" target="_blank" onclick="event.stopPropagation()">Vorschau →</a>
             </button>
           </div>
         </div>
@@ -326,6 +338,25 @@
       <div class="modal-footer">
         <button class="btn btn-outline" data-close="siteGenOverlay">Abbrechen</button>
         <button class="btn btn-primary" id="siteGenSubmit">🚀 Website generieren</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- File Editor Modal -->
+  <div class="modal-overlay" id="fileEditorOverlay">
+    <div class="modal" style="max-width:680px">
+      <div class="modal-header">
+        <span class="modal-title">📝 data.js bearbeiten</span>
+        <button class="modal-close" data-close="fileEditorOverlay">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="fileEditorInfo" style="font-size:12px;color:var(--text-muted);margin-bottom:8px"></div>
+        <textarea id="fileEditorContent" style="width:100%;height:360px;font-family:monospace;font-size:12px;padding:12px;border:1px solid var(--border);border-radius:8px;resize:vertical;outline:none;line-height:1.5" spellcheck="false"></textarea>
+        <div id="fileEditorError" style="color:var(--danger);font-size:13px;margin-top:8px;display:none"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" data-close="fileEditorOverlay">Abbrechen</button>
+        <button class="btn btn-primary" id="fileEditorSave">💾 Speichern & deployen</button>
       </div>
     </div>
   </div>

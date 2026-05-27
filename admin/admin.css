@@ -382,3 +382,5 @@ input, select, textarea { font-family: inherit; }
 .tpl-icon { font-size: 22px; margin-bottom: 6px; }
 .tpl-name { font-size: 14px; font-weight: 700; color: var(--text); }
 .tpl-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.tpl-preview { display:block; font-size:11px; color:var(--primary); margin-top:6px; text-decoration:none; }
+.tpl-preview:hover { text-decoration:underline; }
