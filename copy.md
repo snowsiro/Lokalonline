@@ -154,7 +154,7 @@
 - Tagline: Websites für Wiener Kleinunternehmen.
 - Impressum: Angaben gemäß § 5 ECG
 - Address: lokalonline.at · Wien, Österreich
-- Email: hallo@lokalonline.at
+- Email: info@lokalonline.at
 - Privacy note: Diese Website verwendet keine Cookies. Kontaktformular-Daten werden über Supabase verarbeitet.
 - Link: Impressum & Datenschutz
 - Copyright: © 2025 lokalonline.at — Alle Rechte vorbehalten

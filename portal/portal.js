@@ -8,7 +8,7 @@
 
   var STRIPE_LINKS = (window.STRIPE_CONFIG && window.STRIPE_CONFIG.links) || {};
 
-  var ADMIN_EMAIL = 'snowsiro@gmail.com';
+  var ADMIN_EMAIL = 'info@lokalonline.at';
   var userEmail = '';
 
   // ── Auth ─────────────────────────────────────────────────────────
@@ -64,7 +64,7 @@
         '<div class="not-found">' +
         '<h2>Ihr Konto wird noch eingerichtet</h2>' +
         '<p>Wir bereiten Ihren Bereich vor. Sie erhalten eine Benachrichtigung, sobald alles bereit ist.</p>' +
-        '<p style="margin-top:8px"><a href="mailto:hallo@lokalonline.at" style="color:var(--primary)">hallo@lokalonline.at</a></p>' +
+        '<p style="margin-top:8px"><a href="mailto:info@lokalonline.at" style="color:var(--primary)">info@lokalonline.at</a></p>' +
         '</div>';
       return;
     }
