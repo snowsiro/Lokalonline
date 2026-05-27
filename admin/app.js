@@ -1024,6 +1024,87 @@
     }
   }
 
+  function generateMenuDataJs(type, slug, order) {
+    var services = [];
+    if (order.services) { try { services = JSON.parse(order.services); } catch(e) {} }
+
+    var categories = [];
+    if (services.length > 0) {
+      categories = [{ name: { de: 'Angebot', en: 'Offerings' }, items: services.map(function(s) {
+        return { name: { de: s.name || '', en: s.name || '' }, desc: { de: s.description || '', en: s.description || '' }, price: s.price || '' };
+      }) }];
+    }
+
+    var menuLabels = {
+      restaurant: { cat: { de: 'Speisekarte', en: 'Menu' }, hero: { de: 'Unsere Küche', en: 'Our Kitchen' } },
+      cafe:        { cat: { de: 'Karte', en: 'Menu' },       hero: { de: 'Genuss & Kaffee', en: 'Coffee & Treats' } },
+      beauty:      { cat: { de: 'Leistungen', en: 'Services' }, hero: { de: 'Unsere Leistungen', en: 'Our Services' } },
+      retail:      { cat: { de: 'Sortiment', en: 'Collections' }, hero: { de: 'Unser Sortiment', en: 'Our Collections' } }
+    };
+    var labels = menuLabels[type] || menuLabels.restaurant;
+    if (categories.length === 0) {
+      categories = [{ name: labels.cat, items: [] }];
+    }
+
+    return 'window.MENU_DATA = ' + JSON.stringify({ categories: categories }, null, 2) + ';\n';
+  }
+
+  function generateLinkPageHtml(slug, order) {
+    var name = order.business_name || '';
+    var phone = order.phone || '';
+    var instagram = order.instagram ? order.instagram.replace(/^@/, '') : '';
+    var address = order.address || '';
+    var mapsUrl = 'https://maps.google.com/?q=' + encodeURIComponent(address);
+
+    var links = [];
+    links.push({ icon: '🌐', label: 'Website', url: 'https://lokalonline.at/' + slug + '/' });
+    links.push({ icon: '📋', label: 'Speisekarte / Leistungen', url: 'https://lokalonline.at/' + slug + '/menu/' });
+    if (phone) links.push({ icon: '📞', label: phone, url: 'tel:' + phone.replace(/\s/g,'') });
+    if (instagram) links.push({ icon: '📸', label: '@' + instagram, url: 'https://instagram.com/' + instagram });
+    if (address) links.push({ icon: '📍', label: address, url: mapsUrl });
+
+    var linksHtml = links.map(function(l) {
+      return '<a href="' + l.url + '" class="link-btn" target="_blank"><span class="link-icon">' + l.icon + '</span><span>' + l.label + '</span></a>';
+    }).join('\n      ');
+
+    return '<!DOCTYPE html>\n<html lang="de">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>' + name + '</title>\n<style>\n*{box-sizing:border-box;margin:0;padding:0}\nbody{min-height:100vh;background:#0a0a0a;display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;padding:24px}\n.card{width:100%;max-width:400px}\n.logo{width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 16px;display:block;background:#222}\n.name{color:#fff;font-size:22px;font-weight:700;text-align:center;margin-bottom:4px}\n.sub{color:rgba(255,255,255,.45);font-size:14px;text-align:center;margin-bottom:32px}\n.link-btn{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;text-decoration:none;padding:16px 20px;border-radius:12px;margin-bottom:10px;font-size:15px;transition:background .2s,border-color .2s}\n.link-btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}\n.link-icon{font-size:20px;flex-shrink:0;width:28px;text-align:center}\n.footer{text-align:center;margin-top:28px;font-size:11px;color:rgba(255,255,255,.2)}\n</style>\n</head>\n<body>\n<div class="card">\n  <img class="logo" src="img/logo.png" onerror="this.style.display=\'none\'">\n  <div class="name">' + name + '</div>\n  <div class="sub" id="subtext">Wien</div>\n  <div id="links">\n      ' + linksHtml + '\n  </div>\n  <div class="footer">lokalonline.at</div>\n</div>\n<script>\nvar d=document.getElementById("subtext");\nif(d&&"' + address + '")d.textContent="' + address + '";\n<\/script>\n</body>\n</html>\n';
+  }
+
+  async function generateQrCode(slug) {
+    var menuUrl = 'https://lokalonline.at/' + slug + '/menu/';
+    var qrApiUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=' + encodeURIComponent(menuUrl) + '&bgcolor=ffffff&color=000000&margin=2&format=png';
+    var session = (await sb.auth.getSession()).data.session;
+    var token = session ? session.access_token : '';
+    try {
+      await fetch(EDGE_FN, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ action: 'copy-from-url', source_url: qrApiUrl, dest_path: slug + '/img/qr-menu.png', message: 'Add QR code for menu' })
+      });
+    } catch(e) { /* non-fatal */ }
+    return menuUrl;
+  }
+
+  function showQrResult(slug) {
+    var menuUrl = 'https://lokalonline.at/' + slug + '/menu/';
+    var qrImgUrl = 'https://lokalonline.at/' + slug + '/img/qr-menu.png';
+
+    var linksEl = document.getElementById('qrResultLinks');
+    linksEl.innerHTML = [
+      { label: '🌐 Website', url: 'https://lokalonline.at/' + slug + '/' },
+      { label: '📋 Menü', url: menuUrl },
+      { label: '🔗 Link Page', url: 'https://lokalonline.at/' + slug + '/link/' }
+    ].map(function(l) {
+      return '<a href="' + l.url + '" target="_blank" class="btn btn-outline btn-sm">' + l.label + '</a>';
+    }).join('');
+
+    document.getElementById('qrCodeImg').src = qrImgUrl + '?t=' + Date.now();
+    document.getElementById('qrCodeUrl').textContent = menuUrl;
+    document.getElementById('qrDownloadBtn').href = qrImgUrl;
+    document.getElementById('qrPrintBtn').href = 'https://lokalonline.at/' + slug + '/img/qr-menu.png';
+    openModal('qrResultOverlay');
+  }
+
   async function doGenerateSite() {
     var slug = document.getElementById('siteSlug').value.trim();
     var errEl = document.getElementById('siteGenError');
@@ -1034,37 +1115,50 @@
     if (!/^[a-z0-9-]+$/.test(slug)) { errEl.textContent = 'Nur Kleinbuchstaben, Zahlen und Bindestriche erlaubt.'; errEl.style.display = 'block'; return; }
 
     btn.disabled = true;
-    btn.textContent = '⏳ Wird generiert…';
+    btn.textContent = '⏳ 1/5 Hauptseite…';
 
     try {
-      // 1. Fetch template HTML
+      // 1. Main site
       var tplRes = await fetch('/templates/' + selectedTemplate + '/index.html');
       if (!tplRes.ok) throw new Error('Template nicht gefunden.');
       var tplHtml = await tplRes.text();
-
-      // 2. Generate data.js
       var dataJs = generateDataJs(selectedTemplate, slug, currentOrderData);
-
-      // 3. Upload both files
       await uploadFile(slug + '/index.html', tplHtml);
       await uploadFile(slug + '/data.js', dataJs);
 
-      // 4. Copy photos from order to site folder
-      await copyPhotosToGitHub(slug, currentOrderData);
+      // 2. Menu page
+      btn.textContent = '⏳ 2/5 Menüseite…';
+      var menuRes = await fetch('/templates/' + selectedTemplate + '/menu/index.html');
+      if (menuRes.ok) {
+        var menuHtml = await menuRes.text();
+        var menuDataJs = generateMenuDataJs(selectedTemplate, slug, currentOrderData);
+        await uploadFile(slug + '/menu/index.html', menuHtml);
+        await uploadFile(slug + '/menu/menu-data.js', menuDataJs);
+      }
 
-      // 5. Save slug and site URL to order
+      // 3. Link page
+      btn.textContent = '⏳ 3/5 Link-Seite…';
+      var linkHtml = generateLinkPageHtml(slug, currentOrderData);
+      await uploadFile(slug + '/link/index.html', linkHtml);
+
+      // 4. Photos + QR code
+      btn.textContent = '⏳ 4/5 Fotos & QR…';
+      await copyPhotosToGitHub(slug, currentOrderData);
+      await generateQrCode(slug);
+
+      // 5. Save to DB
+      btn.textContent = '⏳ 5/5 Speichert…';
       await sb.from('orders').update({
         site_slug: slug,
         admin_notes: (currentOrderData.admin_notes ? currentOrderData.admin_notes + '\n' : '') + 'Site: lokalonline.at/' + slug + '/'
       }).eq('id', currentOrderData.id);
 
-      // Update local reference so editBtn becomes visible
       currentOrderData.site_slug = slug;
       document.getElementById('orderSiteSlug').value = slug;
       document.getElementById('editSiteBtn').style.display = 'inline-flex';
 
       closeModal('siteGenOverlay');
-      showToast('✅ Website erstellt: lokalonline.at/' + slug + '/');
+      showQrResult(slug);
 
     } catch (e) {
       errEl.textContent = 'Fehler: ' + e.message;
