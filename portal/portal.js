@@ -42,7 +42,22 @@
     var content = document.getElementById('portalContent');
 
     if (!client) {
-      // 아직 관리자가 등록하지 않은 상태
+      // Check if they have an order (pre-payment customer)
+      var { data: order } = await sb
+        .from('orders')
+        .select('*')
+        .eq('email', userEmail)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (order) {
+        // Pre-payment: show order status + messaging
+        prePaymentView(order);
+        return;
+      }
+
+      // No client and no order — account not set up yet
       document.getElementById('heroTitle').textContent = 'Willkommen!';
       document.getElementById('heroSub').textContent = 'Ihr Konto wird eingerichtet.';
       content.innerHTML =
@@ -134,7 +149,30 @@
     // 후기 관리 카드
     var reviewCard = await buildReviewCard(client);
 
-    content.innerHTML = infoCard + requestForm + historyCard + reviewCard;
+    // Messaging card for full clients
+    var msgCard =
+      '<div class="info-card" id="msgCard">' +
+      '<h2>💬 Nachrichten</h2>' +
+      '<div id="portalMsgThread" style="max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:12px;padding:4px 0"></div>' +
+      '<div style="display:flex;gap:8px">' +
+      '<input type="text" id="portalMsgInput" placeholder="Nachricht schreiben…" style="flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;outline:none" />' +
+      '<button class="btn btn-primary" id="portalMsgSend">Senden</button>' +
+      '</div></div>';
+
+    // Find the most recent order for this client (for messaging)
+    var { data: clientOrder } = await sb
+      .from('orders')
+      .select('id')
+      .eq('email', userEmail)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    content.innerHTML = infoCard + requestForm + historyCard + reviewCard + (clientOrder ? msgCard : '');
+
+    if (clientOrder) {
+      bindPortalMsg(clientOrder.id, 'client');
+    }
 
     // 후기 삭제 이벤트
     content.querySelectorAll('.delete-review-btn').forEach(function (btn) {
@@ -173,6 +211,118 @@
       }
       btn.disabled = false; btn.textContent = 'Anfrage absenden';
     });
+  }
+
+  // ── Pre-payment view ─────────────────────────────────────────────
+  async function prePaymentView(order) {
+    var statusMap = {
+      pending: { label: 'Anfrage erhalten', desc: 'Wir erstellen Ihren kostenlosen Prototyp.', color: '#f59e0b' },
+      paid: { label: 'Zahlung eingegangen', desc: 'Ihre Website wird jetzt erstellt.', color: '#3b82f6' },
+      in_progress: { label: 'In Bearbeitung', desc: 'Wir arbeiten an Ihrer Website.', color: '#8b5cf6' },
+      done: { label: 'Abgeschlossen', desc: 'Ihre Website ist fertig.', color: '#16a34a' }
+    };
+    var st = statusMap[order.payment_status] || statusMap.pending;
+
+    document.getElementById('heroTitle').textContent = 'Willkommen, ' + order.business_name + '!';
+    document.getElementById('heroSub').textContent = 'Hier können Sie den Status Ihrer Anfrage verfolgen.';
+
+    var content = document.getElementById('portalContent');
+    content.innerHTML =
+      '<div class="info-card">' +
+      '<h2>Status Ihrer Anfrage</h2>' +
+      '<div style="display:flex;align-items:center;gap:12px;padding:12px 0">' +
+      '<div style="width:12px;height:12px;border-radius:50%;background:' + st.color + ';flex-shrink:0"></div>' +
+      '<div><div style="font-weight:700;font-size:15px">' + st.label + '</div>' +
+      '<div style="font-size:13px;color:var(--text-muted);margin-top:2px">' + st.desc + '</div></div>' +
+      '</div></div>' +
+      '<div class="info-card" id="msgCard">' +
+      '<h2>💬 Nachrichten</h2>' +
+      '<div id="portalMsgThread" style="max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:12px;padding:4px 0"></div>' +
+      '<div style="display:flex;gap:8px">' +
+      '<input type="text" id="portalMsgInput" placeholder="Nachricht schreiben…" style="flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;outline:none" />' +
+      '<button class="btn btn-primary" id="portalMsgSend">Senden</button>' +
+      '</div></div>';
+
+    bindPortalMsg(order.id, 'client');
+  }
+
+  // ── Portal messaging ──────────────────────────────────────────────
+  var portalMsgChannel = null;
+
+  function bindPortalMsg(orderId, senderType) {
+    loadPortalMessages(orderId, senderType);
+
+    var sendBtn = document.getElementById('portalMsgSend');
+    var msgInput = document.getElementById('portalMsgInput');
+    if (!sendBtn || !msgInput) return;
+
+    async function sendPortalMsg() {
+      var text = msgInput.value.trim();
+      if (!text) return;
+      msgInput.value = '';
+      await sb.from('messages').insert([{
+        order_id: orderId,
+        sender_type: senderType,
+        sender_name: userEmail,
+        content: text
+      }]);
+      loadPortalMessages(orderId, senderType);
+    }
+
+    sendBtn.addEventListener('click', sendPortalMsg);
+    msgInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') sendPortalMsg();
+    });
+
+    // Realtime subscription
+    if (portalMsgChannel) {
+      portalMsgChannel.unsubscribe();
+    }
+    portalMsgChannel = sb.channel('messages:' + orderId)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages',
+        filter: 'order_id=eq.' + orderId
+      }, function() {
+        loadPortalMessages(orderId, senderType);
+      })
+      .subscribe();
+  }
+
+  async function loadPortalMessages(orderId, senderType) {
+    var thread = document.getElementById('portalMsgThread');
+    if (!thread) return;
+
+    var { data: msgs } = await sb.from('messages')
+      .select('*')
+      .eq('order_id', orderId)
+      .order('created_at', { ascending: true });
+
+    renderPortalMsgThread(thread, msgs || [], senderType);
+    thread.scrollTop = thread.scrollHeight;
+
+    // Mark admin messages as read when client views them
+    var unread = (msgs || []).filter(function(m) { return m.sender_type === 'admin' && !m.read_at; });
+    if (unread.length > 0) {
+      await sb.from('messages').update({ read_at: new Date().toISOString() })
+        .in('id', unread.map(function(m) { return m.id; }));
+    }
+  }
+
+  function renderPortalMsgThread(container, msgs, viewerType) {
+    if (msgs.length === 0) {
+      container.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:16px 0">Noch keine Nachrichten</div>';
+      return;
+    }
+    container.innerHTML = msgs.map(function(m) {
+      var isOwn = m.sender_type === viewerType;
+      var time = new Date(m.created_at).toLocaleString('de-AT', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+      return '<div style="display:flex;flex-direction:column;align-items:' + (isOwn ? 'flex-end' : 'flex-start') + '">' +
+        '<div style="max-width:80%;background:' + (isOwn ? 'var(--primary)' : 'var(--surface)') + ';color:' + (isOwn ? '#fff' : 'var(--text)') + ';border:' + (isOwn ? 'none' : '1px solid var(--border)') + ';border-radius:12px;padding:8px 12px;font-size:13px;line-height:1.5">' + esc(m.content) + '</div>' +
+        '<span style="font-size:10px;color:var(--text-muted);margin-top:2px">' + time + '</span>' +
+        '</div>';
+    }).join('');
   }
 
   // ── 후기 관리 카드 ────────────────────────────────────────────────

@@ -526,12 +526,25 @@
     var tbody = document.getElementById('ordersBody');
     if (!tbody) return;
 
+    // Load unread message counts (client messages not yet read by admin)
+    var { data: unreadMsgs } = await sb.from('messages')
+      .select('order_id')
+      .eq('sender_type', 'client')
+      .is('read_at', null);
+
+    var unreadByOrder = {};
+    (unreadMsgs || []).forEach(function(m) {
+      unreadByOrder[m.order_id] = (unreadByOrder[m.order_id] || 0) + 1;
+    });
+
     if (!data || data.length === 0) {
       tbody.innerHTML = '<tr class="empty-row"><td colspan="7">주문 없음</td></tr>';
       return;
     }
 
     tbody.innerHTML = data.map(function (o) {
+      var unreadCount = unreadByOrder[o.id] || 0;
+      var unreadBadge = unreadCount ? ' <span class="badge-count">' + unreadCount + '</span>' : '';
       return '<tr>' +
         '<td>' + formatDate(o.created_at) + '</td>' +
         '<td><strong>' + esc(o.business_name) + '</strong></td>' +
@@ -539,7 +552,7 @@
         '<td><a href="mailto:' + esc(o.email) + '" style="color:var(--primary)">' + esc(o.email) + '</a></td>' +
         '<td>' + (o.phone ? esc(o.phone) : '—') + '</td>' +
         '<td>' + orderStatusBadge(o.payment_status) + '</td>' +
-        '<td><button class="btn btn-outline btn-sm" onclick="openOrder(\'' + o.id + '\')">상세</button></td>' +
+        '<td><button class="btn btn-outline btn-sm" onclick="openOrder(\'' + o.id + '\')">상세' + unreadBadge + '</button></td>' +
         '</tr>';
     }).join('');
   }
@@ -600,7 +613,70 @@
     document.getElementById('orderStatus').value = data.payment_status || 'pending';
     document.getElementById('orderNotes').value = data.admin_notes || '';
     openModal('orderOverlay');
+
+    loadOrderMessages(id);
+
+    // Bind send button (clone to remove old listeners)
+    var sendBtn = document.getElementById('orderMsgSend');
+    var msgInput = document.getElementById('orderMsgInput');
+    var newSendBtn = sendBtn.cloneNode(true);
+    sendBtn.parentNode.replaceChild(newSendBtn, sendBtn);
+    var newInput = msgInput.cloneNode(true);
+    msgInput.parentNode.replaceChild(newInput, msgInput);
+
+    async function sendAdminMsg() {
+      var text = document.getElementById('orderMsgInput').value.trim();
+      if (!text) return;
+      document.getElementById('orderMsgInput').value = '';
+      await sb.from('messages').insert([{
+        order_id: id,
+        sender_type: 'admin',
+        sender_name: 'lokalonline.at',
+        content: text
+      }]);
+      loadOrderMessages(id);
+    }
+
+    document.getElementById('orderMsgSend').addEventListener('click', sendAdminMsg);
+    document.getElementById('orderMsgInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') sendAdminMsg();
+    });
   };
+
+  async function loadOrderMessages(orderId) {
+    var thread = document.getElementById('orderMsgThread');
+    if (!thread) return;
+
+    var { data: msgs } = await sb.from('messages')
+      .select('*')
+      .eq('order_id', orderId)
+      .order('created_at', { ascending: true });
+
+    renderMsgThread(thread, msgs || [], 'admin');
+    thread.scrollTop = thread.scrollHeight;
+
+    // Mark client messages as read
+    var unread = (msgs || []).filter(function(m) { return m.sender_type === 'client' && !m.read_at; });
+    if (unread.length > 0) {
+      await sb.from('messages').update({ read_at: new Date().toISOString() })
+        .in('id', unread.map(function(m) { return m.id; }));
+    }
+  }
+
+  function renderMsgThread(container, msgs, viewerType) {
+    if (msgs.length === 0) {
+      container.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:16px 0">Noch keine Nachrichten</div>';
+      return;
+    }
+    container.innerHTML = msgs.map(function(m) {
+      var isOwn = m.sender_type === viewerType;
+      var time = new Date(m.created_at).toLocaleString('de-AT', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+      return '<div style="display:flex;flex-direction:column;align-items:' + (isOwn ? 'flex-end' : 'flex-start') + '">' +
+        '<div style="max-width:80%;background:' + (isOwn ? 'var(--primary)' : 'var(--surface)') + ';color:' + (isOwn ? '#fff' : 'var(--text)') + ';border:' + (isOwn ? 'none' : '1px solid var(--border)') + ';border-radius:12px;padding:8px 12px;font-size:13px;line-height:1.5">' + esc(m.content) + '</div>' +
+        '<span style="font-size:10px;color:var(--text-muted);margin-top:2px">' + time + '</span>' +
+        '</div>';
+    }).join('');
+  }
 
   function bindOrderForm() {
     document.getElementById('saveOrderBtn').addEventListener('click', async function () {
