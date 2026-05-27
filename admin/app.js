@@ -3,7 +3,7 @@
 
   var SUPABASE_URL = 'https://vhnourjddnlslgabrasb.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_y5l1cAZXoAj8xaSVXUkBfw_Pk9pxb6H';
-  var ADMIN_EMAIL = 'snowsiro@gmail.com';
+  var ADMIN_EMAIL = 'info@lokalonline.at';
   var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   var currentInquiryId = null;
@@ -177,7 +177,7 @@
         'Bei Fragen stehen wir Ihnen gerne zur Verfügung.\n\n' +
         'Beste Grüße / 감사합니다\n' +
         'lokalonline.at\n' +
-        'hallo@lokalonline.at'
+        'info@lokalonline.at'
       );
       window.open('mailto:' + encodeURIComponent(currentInquiryEmail) + '?subject=' + subject + '&body=' + body);
     });

@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  var ADMIN_EMAIL = 'snowsiro@gmail.com';
+  var ADMIN_EMAIL = 'info@lokalonline.at';
   var sbClient = window.supabase
     ? window.supabase.createClient(
         'https://vhnourjddnlslgabrasb.supabase.co',
