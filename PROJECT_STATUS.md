@@ -215,6 +215,23 @@ admin_notes, status
 
 ---
 
+## 완료 항목 (2026-05-27)
+
+### 이메일 알림 ✅
+- Edge Function 배포, Resend API 키, Database Webhooks, 도메인 인증, 발송 테스트 모두 완료
+- 발신: noreply@lokalonline.at / 수신: info@lokalonline.at
+
+### 어드민 계정 변경 ✅
+- info@lokalonline.at (snowsiro@gmail.com에서 변경)
+- Supabase Auth, RLS 정책, 코드 전체 반영 완료
+
+### 추가 보안 ✅
+- 주문 폼 Honeypot 스팸 방지 완료
+- Storage 버킷 정책 5MB 제한, MIME 타입 제한 (order/storage_policies.sql)
+- Supabase GRANT 정책 2026-10 변경 대응 완료
+
+---
+
 ## 미완료 / 진행 중
 
 ### 이메일 알림 (설정 중)
@@ -256,7 +273,6 @@ push to main + supabase/functions/** 변경 시 자동 배포:
 
 ## 다음 세션에서 할 일
 
-1. Resend 도메인 인증 완료 후 이메일 테스트
-2. 주문 폼 스팸 방지 추가
-3. Storage 버킷 업로드 정책 설정
-4. 사업자 허가 후 법적 필수 페이지 제작
+1. 사업자 허가 후 법적 필수 페이지 제작 (Impressum, DSGVO, AGB)
+2. 어드민 고객 사이트 목록 뷰
+3. Stripe 청구서 자동화 설정
