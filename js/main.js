@@ -104,7 +104,10 @@
       });
 
       if (error) {
-        errEl.textContent = currentLang === 'en' ? 'Error sending link. Please try again.' : 'Fehler beim Senden. Bitte erneut versuchen.';
+        var isRateLimit = error.status === 429 || (error.message && error.message.toLowerCase().includes('rate'));
+        errEl.textContent = isRateLimit
+          ? (currentLang === 'en' ? 'Please wait 1 minute before requesting another link.' : 'Bitte warten Sie 1 Minute, bevor Sie einen neuen Link anfordern.')
+          : (currentLang === 'en' ? 'Error sending link. Please try again.' : 'Fehler beim Senden. Bitte erneut versuchen.');
         errEl.classList.add('show');
         loginSubmitBtn.disabled = false;
         loginSubmitBtn.textContent = currentLang === 'en' ? 'Send login link' : 'Login-Link senden';

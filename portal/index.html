@@ -75,7 +75,10 @@
       var { error } = await sendMagicLink(email);
 
       if (error) {
-        errEl.textContent = 'Fehler beim Senden. Bitte versuchen Sie es erneut.';
+        var isRateLimit = error.status === 429 || (error.message && error.message.toLowerCase().includes('rate'));
+        errEl.textContent = isRateLimit
+          ? 'Bitte warten Sie 1 Minute, bevor Sie einen neuen Link anfordern.'
+          : 'Fehler beim Senden. Bitte versuchen Sie es erneut.';
         errEl.classList.add('show');
         btn.textContent = 'Login-Link senden'; btn.disabled = false;
       } else {
