@@ -232,6 +232,34 @@ admin_notes, status
 
 ---
 
+## 완료 항목 (2026-05-28)
+
+### 독일어 번역 ✅
+- admin/dashboard.html, admin/app.js 전체 한국어 → 독일어 번역
+
+### 보안 개선 ✅
+- portal/portal.js, admin/app.js XSS 취약점 수정 (esc() 적용)
+- send-email Edge Function: messages INSERT 시에만 이메일 발송 (UPDATE/DELETE 제외)
+
+### 매직링크 리디렉트 수정 ✅
+- 이메일 클릭 후 `/portal/dashboard.html`로 바로 이동 (이전: 메인 페이지)
+- js/main.js, portal/index.html 양쪽 수정
+
+### 주문 폼 개선 ✅
+- 파일 업로드 실패 시 non-blocking 경고 메시지 표시
+- 로고/사진 업로드 전 클라이언트 사이드 검증 (형식, 10MB 제한)
+
+### 포털 개선 ✅
+- 미읽은 어드민 메시지 수 배지 표시 (💬 Nachrichten 헤딩)
+- Realtime 채널 beforeunload 시 unsubscribe (메모리 누수 방지)
+
+### 어드민 개선 ✅
+- Webseiten 탭 업종별 필터 추가 (Restaurant/Bar, Café/Bäckerei, Beauty/Friseur, Einzelhandel)
+- 메시지 Realtime 구독 추가 (고객 메시지 실시간 수신)
+- 주문 모달 전환 시 이전 채널 자동 정리 (beforeunload 포함)
+
+---
+
 ## 미완료 / 진행 중
 
 ### 이메일 알림 (설정 중)
@@ -249,12 +277,7 @@ admin_notes, status
 - Cookie 동의 배너
 - AGB (이용약관)
 
-### 추가 보안
-- 주문 폼 스팸 방지 (reCAPTCHA 또는 honeypot) — 미구현
-- Storage 버킷 정책 (파일 크기 제한) — 미설정
-
 ### 기타 예정
-- 어드민 고객 사이트 목록 뷰
 - 청구서/영수증 자동화 (Stripe에서 설정 가능)
 
 ---
@@ -274,5 +297,4 @@ push to main + supabase/functions/** 변경 시 자동 배포:
 ## 다음 세션에서 할 일
 
 1. 사업자 허가 후 법적 필수 페이지 제작 (Impressum, DSGVO, AGB)
-2. 어드민 고객 사이트 목록 뷰
-3. Stripe 청구서 자동화 설정
+2. Stripe 청구서 자동화 설정
