@@ -68,10 +68,12 @@ Deno.serve(async (req) => {
       ? (table === 'orders' ? 'new-order' : table === 'messages' ? 'new-message' : null)
       : body.type;
 
-    // ── New order → notify admin ─────────────────────────────────────
+    // ── New order → notify admin + confirm to customer ───────────────
     if (type === "new-order") {
       const o = record;
-      const html = emailBase(`
+
+      // 1. Admin notification
+      const adminHtml = emailBase(`
         <h2>📋 Neue Bestellung eingegangen</h2>
         <div class="info-row"><span class="label">Betrieb</span><span class="value">${o.business_name || "—"}</span></div>
         <div class="info-row"><span class="label">Kontakt</span><span class="value">${o.contact_name || o.name || "—"}</span></div>
@@ -82,8 +84,24 @@ Deno.serve(async (req) => {
         <p style="margin-top:16px;color:#666;font-size:13px">${o.description || ""}</p>
         <a class="btn" href="https://lokalonline.at/admin/">Im Dashboard ansehen →</a>
       `);
-      const ok = await sendEmail(ADMIN_EMAIL, `Neue Bestellung: ${o.business_name || o.email}`, html);
-      return json({ ok });
+      await sendEmail(ADMIN_EMAIL, `Neue Bestellung: ${o.business_name || o.email}`, adminHtml);
+
+      // 2. Customer confirmation
+      if (o.email) {
+        const customerHtml = emailBase(`
+          <h2>✅ Ihre Anfrage ist bei uns eingegangen!</h2>
+          <p>Hallo ${o.contact_name || ""},</p>
+          <p>vielen Dank für Ihre Anfrage. Wir haben Ihre Bestellung erhalten und melden uns <strong>innerhalb von 24 Stunden</strong> bei Ihnen.</p>
+          <div class="info-row"><span class="label">Betrieb</span><span class="value">${o.business_name || "—"}</span></div>
+          <div class="info-row"><span class="label">Branche</span><span class="value">${o.business_type || "—"}</span></div>
+          <div class="info-row"><span class="label">Adresse</span><span class="value">${o.address || "—"}</span></div>
+          <p style="margin-top:20px;color:#666;font-size:13px">Bei Fragen können Sie uns jederzeit unter <a href="mailto:info@lokalonline.at" style="color:#C8302A">info@lokalonline.at</a> erreichen.</p>
+          <a class="btn" href="https://lokalonline.at/portal/">Bestellstatus ansehen →</a>
+        `);
+        await sendEmail(o.email, "Ihre Anfrage bei lokalonline.at — Bestätigung", customerHtml);
+      }
+
+      return json({ ok: true });
     }
 
     // ── New message → notify recipient ───────────────────────────────
