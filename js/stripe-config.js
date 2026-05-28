@@ -13,8 +13,8 @@ window.STRIPE_CONFIG = {
 
   // Payment Link URLs — Stripe 대시보드에서 생성 후 아래 값을 교체하세요
   links: {
-    basis_monthly:    'https://buy.stripe.com/00w3co2jBeC35iM1Agf3a00',
-    basis_yearly:     'https://buy.stripe.com/00w3co2jBeC35iM1Agf3a00',
+    basis_monthly:    'https://buy.stripe.com/00w6oA7DVeC3fXqbaQf3a01',
+    basis_yearly:     'https://buy.stripe.com/00w6oA7DVeC3fXqbaQf3a01',
     standard_monthly: null,
     standard_yearly:  null,
     premium_monthly:  null,

@@ -99,12 +99,12 @@
 ## PRICING
 
 - Section tag: Preise
-- Title: Alles inklusive — €29/Monat
+- Title: Alles inklusive — €19/Monat
 - Subtitle: Keine Einrichtungsgebühr. Keine versteckten Kosten. Jederzeit kündbar.
 
 ### Plan
 - Badge: Alles inklusive
-- Price: €29 /Monat
+- Price: €19 /Monat
 - Note: Keine Einrichtungsgebühr · Jederzeit kündbar
 - Features:
   - Professionelle Einzelseiten-Website
@@ -129,7 +129,7 @@
 - Betriebsname
 - E-Mail-Adresse *
 - Telefon (optional)
-- Interessierter Plan (Flat — €29/Monat / Noch nicht sicher)
+- Interessierter Plan (Flat — €19/Monat / Noch nicht sicher)
 - Ihre Nachricht
 - DSGVO checkbox: Ich stimme der Verarbeitung meiner Daten gemäß der Datenschutzerklärung zu. *
 - Submit: `Anfrage absenden`
@@ -142,7 +142,7 @@
 - Badge: 🎉 Early Bird
 - Title: Erster Monat gratis!
 - Text: Für die ersten 10 Kunden: starten Sie ohne Risiko — der erste Monat ist kostenlos.
-- Price note: Danach nur **€29/Monat**
+- Price note: Danach nur **€19/Monat**
 - CTA Primary: `Jetzt sichern`
 - CTA Dismiss: `Nein danke`
 

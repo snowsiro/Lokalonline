@@ -188,7 +188,7 @@ Deno.serve(async (req) => {
         <p>Ihre Website für <strong>${business_name || ""}</strong> ist fertig vorbereitet. Bitte schließen Sie jetzt die Zahlung ab, damit wir Ihren Auftritt freischalten können.</p>
         <div style="margin:24px 0;background:#f9f9f9;border-radius:8px;padding:20px;text-align:center">
           <p style="margin:0 0 4px;font-size:13px;color:#666">Monatlicher Betrag</p>
-          <p style="margin:0 0 16px;font-size:28px;font-weight:700;color:#111">€29 / Monat</p>
+          <p style="margin:0 0 16px;font-size:28px;font-weight:700;color:#111">€19 / Monat</p>
           <a class="btn" href="${payment_url}" style="display:inline-block">Jetzt bezahlen →</a>
         </div>
         <p style="color:#666;font-size:13px">Keine Einrichtungsgebühr · Jederzeit kündbar · Bei Fragen: <a href="mailto:info@lokalonline.at" style="color:#C8302A">info@lokalonline.at</a></p>

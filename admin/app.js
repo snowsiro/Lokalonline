@@ -162,7 +162,7 @@
     document.getElementById('sendPaymentLinkBtn').addEventListener('click', function () {
       if (!currentInquiryEmail) return;
       var name = currentInquiryName || '';
-      var stripeLink = 'https://buy.stripe.com/00w3co2jBeC35iM1Agf3a00';
+      var stripeLink = 'https://buy.stripe.com/00w6oA7DVeC3fXqbaQf3a01';
       var subject = encodeURIComponent('lokalonline.at — Ihre Website ist fertig! 웹사이트 준비 완료');
       var body = encodeURIComponent(
         'Guten Tag' + (name ? ' ' + name : '') + ',\n\n' +
