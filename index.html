@@ -75,61 +75,22 @@
         <span class="logo-dot"></span>
         lokalonline.at
       </div>
-      <div class="auth-tabs">
-        <button class="auth-tab active" data-panel="login" data-de="Anmelden" data-en="Sign in">Anmelden</button>
-        <button class="auth-tab" data-panel="signup" data-de="Registrieren" data-en="Sign up">Registrieren</button>
-      </div>
-      <!-- Login -->
-      <div class="auth-panel active" id="panelLogin">
+      <!-- Magic Link Login -->
+      <div id="panelLoginEmail">
+        <p style="font-size:13px;color:var(--text-muted);margin:0 0 20px;line-height:1.5" data-de="Geben Sie Ihre E-Mail-Adresse ein. Wir senden Ihnen einen Login-Link." data-en="Enter your email address. We'll send you a login link.">Geben Sie Ihre E-Mail-Adresse ein. Wir senden Ihnen einen Login-Link.</p>
         <div class="auth-form-group">
           <label data-de="E-Mail" data-en="Email">E-Mail</label>
           <input type="email" id="loginEmail" placeholder="ihre@email.at" autocomplete="email" />
         </div>
-        <div class="auth-form-group">
-          <label data-de="Passwort" data-en="Password">Passwort</label>
-          <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" />
-        </div>
-        <button class="btn btn-primary btn-full" id="loginSubmitBtn" data-de="Anmelden" data-en="Sign in">Anmelden</button>
+        <button class="btn btn-primary btn-full" id="loginSubmitBtn" data-de="Login-Link senden" data-en="Send login link">Login-Link senden</button>
         <div class="auth-error" id="loginError"></div>
       </div>
-      <!-- Signup -->
-      <div class="auth-panel" id="panelSignup">
-        <div class="auth-form-group">
-          <label data-de="Ihr Name *" data-en="Your name *">Ihr Name *</label>
-          <input type="text" id="signupName" placeholder="Maria Mustermann" autocomplete="name" />
-        </div>
-        <div class="auth-form-group">
-          <label data-de="E-Mail *" data-en="Email *">E-Mail *</label>
-          <input type="email" id="signupEmail" placeholder="ihre@email.at" autocomplete="email" />
-        </div>
-        <div class="auth-form-group">
-          <label data-de="Passwort * (min. 6 Zeichen)" data-en="Password * (min. 6 characters)">Passwort * (min. 6 Zeichen)</label>
-          <input type="password" id="signupPassword" placeholder="••••••••" autocomplete="new-password" />
-        </div>
-        <div class="auth-divider" data-de="Angaben zu Ihrem Betrieb (optional)" data-en="About your business (optional)">Angaben zu Ihrem Betrieb (optional)</div>
-        <div class="auth-form-group">
-          <label data-de="Betriebsname" data-en="Business name">Betriebsname</label>
-          <input type="text" id="signupBusiness" placeholder="Café Wien" autocomplete="organization" />
-        </div>
-        <div class="auth-form-group">
-          <label data-de="Telefon" data-en="Phone">Telefon</label>
-          <input type="tel" id="signupPhone" placeholder="+43 660 000 00 00" autocomplete="tel" />
-        </div>
-        <div class="auth-form-group">
-          <label data-de="Adresse" data-en="Address">Adresse</label>
-          <input type="text" id="signupAddress" placeholder="Mariahilfer Str. 1, 1060 Wien" autocomplete="street-address" />
-        </div>
-        <div class="auth-form-group">
-          <label data-de="Instagram" data-en="Instagram">Instagram</label>
-          <input type="text" id="signupInstagram" placeholder="@cafewien" />
-        </div>
-        <div class="auth-form-group">
-          <label data-de="Website / Sonstige Links" data-en="Website / Other links">Website / Sonstige Links</label>
-          <input type="text" id="signupWebsite" placeholder="www.cafewien.at" />
-        </div>
-        <button class="btn btn-primary btn-full" id="signupSubmitBtn" data-de="Konto erstellen" data-en="Create account">Konto erstellen</button>
-        <div class="auth-error" id="signupError"></div>
-        <div class="auth-success" id="signupSuccess" style="display:none">✓ Konto erstellt!</div>
+      <!-- Sent confirmation -->
+      <div id="panelLoginSent" style="display:none;text-align:center;padding:8px 0">
+        <div style="font-size:40px;margin-bottom:12px">📬</div>
+        <h3 style="margin:0 0 8px;font-size:17px" data-de="E-Mail gesendet!" data-en="Email sent!">E-Mail gesendet!</h3>
+        <p style="color:var(--text-muted);font-size:13px;line-height:1.6" data-de="Bitte überprüfen Sie Ihr Postfach und klicken Sie auf den Login-Link." data-en="Please check your inbox and click the login link.">Bitte überprüfen Sie Ihr Postfach und klicken Sie auf den Login-Link.</p>
+        <button id="resendAuthBtn" style="margin-top:16px;background:none;border:none;color:var(--primary);cursor:pointer;font-size:13px;text-decoration:underline" data-de="Erneut senden" data-en="Resend">Erneut senden</button>
       </div>
     </div>
   </div>

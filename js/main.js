@@ -88,85 +88,46 @@
     tab.addEventListener('click', function () { switchPanel(tab.getAttribute('data-panel')); });
   });
 
-  // Login
+  // Magic Link Login
   var loginSubmitBtn = document.getElementById('loginSubmitBtn');
   if (loginSubmitBtn) {
     loginSubmitBtn.addEventListener('click', async function () {
-      var email    = document.getElementById('loginEmail').value.trim();
-      var password = document.getElementById('loginPassword').value;
-      var errEl    = document.getElementById('loginError');
+      var email = document.getElementById('loginEmail').value.trim();
+      var errEl = document.getElementById('loginError');
       errEl.classList.remove('show');
+      if (!email) return;
       loginSubmitBtn.disabled = true; loginSubmitBtn.textContent = '…';
 
-      var { error } = await sbClient.auth.signInWithPassword({ email: email, password: password });
+      var { error } = await sbClient.auth.signInWithOtp({
+        email: email,
+        options: { emailRedirectTo: 'https://lokalonline.at/portal/dashboard.html' }
+      });
+
       if (error) {
-        errEl.textContent = 'E-Mail oder Passwort falsch.';
+        errEl.textContent = currentLang === 'en' ? 'Error sending link. Please try again.' : 'Fehler beim Senden. Bitte erneut versuchen.';
         errEl.classList.add('show');
         loginSubmitBtn.disabled = false;
-        loginSubmitBtn.textContent = currentLang === 'en' ? 'Sign in' : 'Anmelden';
+        loginSubmitBtn.textContent = currentLang === 'en' ? 'Send login link' : 'Login-Link senden';
       } else {
-        closeAuthModal();
-        var dest = email === ADMIN_EMAIL ? '/admin/dashboard.html' : '/portal/dashboard.html';
-        location.href = dest;
+        document.getElementById('panelLoginEmail').style.display = 'none';
+        document.getElementById('panelLoginSent').style.display = 'block';
       }
     });
   }
 
-  // Signup
-  var signupSubmitBtn = document.getElementById('signupSubmitBtn');
-  if (signupSubmitBtn) {
-    signupSubmitBtn.addEventListener('click', async function () {
-      var name     = document.getElementById('signupName').value.trim();
-      var email    = document.getElementById('signupEmail').value.trim();
-      var password = document.getElementById('signupPassword').value;
-      var errEl    = document.getElementById('signupError');
-      var okEl     = document.getElementById('signupSuccess');
-      errEl.classList.remove('show');
-      okEl.style.display = 'none';
-
-      if (!name || !email || password.length < 6) {
-        errEl.textContent = currentLang === 'en' ? 'Please fill all fields (min. 6 char password).' : 'Bitte alle Felder ausfüllen (Passwort mind. 6 Zeichen).';
-        errEl.classList.add('show'); return;
-      }
-
-      signupSubmitBtn.disabled = true; signupSubmitBtn.textContent = '…';
-      var meta = {
-        full_name: name,
-        business:  document.getElementById('signupBusiness').value.trim() || null,
-        phone:     document.getElementById('signupPhone').value.trim() || null,
-        address:   document.getElementById('signupAddress').value.trim() || null,
-        instagram: document.getElementById('signupInstagram').value.trim() || null,
-        website:   document.getElementById('signupWebsite').value.trim() || null
-      };
-      var { error } = await sbClient.auth.signUp({ email: email, password: password, options: { data: meta } });
-
-      if (error) {
-        errEl.textContent = error.message;
-        errEl.classList.add('show');
-      } else {
-        // signups 테이블에도 기록 (어드민 확인용, 오류 무시)
-        sbClient.from('signups').insert([{
-          email: email,
-          name: meta.full_name,
-          business: meta.business,
-          phone: meta.phone,
-          address: meta.address,
-          instagram: meta.instagram,
-          website: meta.website
-        }]).then(function () {});
-
-        okEl.style.display = 'block';
-        document.getElementById('signupName').value = '';
-        document.getElementById('signupEmail').value = '';
-        document.getElementById('signupPassword').value = '';
-        // 바로 로그인 후 포털로
-        setTimeout(function () {
-          closeAuthModal();
-          location.href = '/portal/dashboard.html';
-        }, 1200);
-      }
-      signupSubmitBtn.disabled = false;
-      signupSubmitBtn.textContent = currentLang === 'en' ? 'Create account' : 'Konto erstellen';
+  var resendAuthBtn = document.getElementById('resendAuthBtn');
+  if (resendAuthBtn) {
+    resendAuthBtn.addEventListener('click', async function () {
+      var email = document.getElementById('loginEmail').value.trim();
+      resendAuthBtn.textContent = '…';
+      await sbClient.auth.signInWithOtp({
+        email: email,
+        options: { emailRedirectTo: 'https://lokalonline.at/portal/dashboard.html' }
+      });
+      resendAuthBtn.textContent = currentLang === 'en' ? 'Sent ✓' : 'Gesendet ✓';
+      setTimeout(function () {
+        resendAuthBtn.textContent = currentLang === 'en' ? 'Resend' : 'Erneut senden';
+      }, 3000);
     });
   }
 
