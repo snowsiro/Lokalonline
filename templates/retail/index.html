@@ -673,7 +673,12 @@ function render() {
   document.getElementById('announce-text').textContent = t(D.announcementBar) || '';
 
   // Nav
-  document.getElementById('nav-logo').textContent = D.name;
+  var navLogoEl = document.getElementById('nav-logo');
+  if (D.logo) {
+    navLogoEl.innerHTML = '<img src="' + D.logo + '" alt="' + D.name + '" style="height:44px;width:auto;display:block">';
+  } else {
+    navLogoEl.textContent = D.name;
+  }
   document.getElementById('nav-center-links').innerHTML = navLinks.map(l =>
     `<li><a href="${l.href}">${t(l)}</a></li>`).join('');
   document.getElementById('nav-cta').textContent = lang === 'de' ? 'Kontakt' : 'Contact';

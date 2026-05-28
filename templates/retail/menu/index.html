@@ -658,7 +658,14 @@
     }
 
     function renderNav() {
-      setText('nav-logo', D.name);
+      const navLogoEl = document.getElementById('nav-logo');
+      if (navLogoEl) {
+        if (D.logo) {
+          navLogoEl.innerHTML = '<img src="../' + D.logo + '" alt="' + D.name + '" style="height:40px;width:auto;display:block">';
+        } else {
+          navLogoEl.textContent = D.name;
+        }
+      }
       setText('nav-back-text', lang === 'en' ? 'Back' : 'Zurück');
     }
 

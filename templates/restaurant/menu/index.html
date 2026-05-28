@@ -496,7 +496,13 @@
     /* ── NAV ── */
     function renderNav() {
       const logo = document.getElementById('nav-logo');
-      if (logo) logo.textContent = D.name;
+      if (logo) {
+        if (D.logo) {
+          logo.innerHTML = '<img src="../' + D.logo + '" alt="' + D.name + '" style="height:40px;width:auto;display:block">';
+        } else {
+          logo.textContent = D.name;
+        }
+      }
 
       const backText = document.getElementById('nav-back-text');
       if (backText) backText.textContent = lang === 'ko' ? '뒤로' : (lang === 'en' ? 'Back' : 'Zurück');
