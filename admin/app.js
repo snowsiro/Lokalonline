@@ -15,6 +15,8 @@
   var signupFilter = 'all';
   var reviewFilter = 'all';
   var orderFilter = 'all';
+  var siteTypeFilter = 'all';
+  var adminMsgChannel = null;
 
   // ── Auth ─────────────────────────────────────────────────────────
   sb.auth.getSession().then(function (ref) {
@@ -48,6 +50,7 @@
     bindOrderFilters();
     bindOrderForm();
     bindSiteGenerator();
+    bindSiteFilters();
   }
 
   // ── Stats ─────────────────────────────────────────────────────────
@@ -563,12 +566,27 @@
     var tbody = document.getElementById('sitesBody');
     if (!tbody) return;
 
-    if (!data || data.length === 0) {
+    var allData = data || [];
+    if (siteTypeFilter !== 'all') {
+      var typeGroups = {
+        gastronomie: ['restaurant', 'asiatisches', 'bar', 'schnellimbiss', 'pub'],
+        cafe: ['café', 'cafe', 'bäckerei', 'bakery'],
+        beauty: ['nagelstudio', 'beauty', 'friseur', 'hair'],
+        retail: ['einzelhandel', 'retail']
+      };
+      var terms = typeGroups[siteTypeFilter] || [];
+      allData = allData.filter(function(o) {
+        var bt = (o.business_type || '').toLowerCase();
+        return terms.some(function(t) { return bt.indexOf(t) !== -1; });
+      });
+    }
+
+    if (allData.length === 0) {
       tbody.innerHTML = '<tr class="empty-row"><td colspan="5">Keine Webseiten vorhanden.</td></tr>';
       return;
     }
 
-    tbody.innerHTML = data.map(function (o) {
+    tbody.innerHTML = allData.map(function (o) {
       var slug = esc(o.site_slug);
       var base = 'https://lokalonline.at/' + slug;
       return '<tr>' +
@@ -712,7 +730,27 @@
       await sb.from('messages').update({ read_at: new Date().toISOString() })
         .in('id', unread.map(function(m) { return m.id; }));
     }
+
+    // Realtime: clean up previous channel, then subscribe to this order
+    if (adminMsgChannel) {
+      adminMsgChannel.unsubscribe();
+      adminMsgChannel = null;
+    }
+    adminMsgChannel = sb.channel('admin-msg:' + orderId)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages',
+        filter: 'order_id=eq.' + orderId
+      }, function() {
+        loadOrderMessages(orderId);
+      })
+      .subscribe();
   }
+
+  window.addEventListener('beforeunload', function() {
+    if (adminMsgChannel) adminMsgChannel.unsubscribe();
+  });
 
   function renderMsgThread(container, msgs, viewerType) {
     if (msgs.length === 0) {
@@ -817,6 +855,17 @@
         btn.classList.add('active');
         orderFilter = btn.getAttribute('data-order-status');
         loadOrders();
+      });
+    });
+  }
+
+  function bindSiteFilters() {
+    document.querySelectorAll('[data-site-type]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('[data-site-type]').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        siteTypeFilter = btn.getAttribute('data-site-type');
+        loadSites();
       });
     });
   }

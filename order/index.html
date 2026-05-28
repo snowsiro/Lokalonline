@@ -903,6 +903,14 @@ So: Ruhetag"></textarea>
       input.addEventListener('change', function () {
         var file = input.files[0];
         if (!file) return;
+        if (!file.type.match(/^image\//)) {
+          alert(currentLang === 'en' ? 'Please select an image file (JPG, PNG, etc.).' : 'Bitte nur Bilddateien auswählen (JPG, PNG, etc.).');
+          input.value = ''; return;
+        }
+        if (file.size > 10 * 1024 * 1024) {
+          alert(currentLang === 'en' ? 'File too large (max. 10 MB).' : 'Datei zu groß (max. 10 MB).');
+          input.value = ''; return;
+        }
         var reader = new FileReader();
         reader.onload = function (e) {
           thumb.src = e.target.result;
@@ -940,7 +948,18 @@ So: Ruhetag"></textarea>
         document.getElementById('photoUploadLabel').style.display = photoFiles.length >= 5 ? 'none' : '';
       }
       input.addEventListener('change', function () {
-        Array.from(input.files).forEach(function (f) { if (photoFiles.length < 5) photoFiles.push(f); });
+        var rejected = 0;
+        Array.from(input.files).forEach(function (f) {
+          if (photoFiles.length >= 5) return;
+          if (!f.type.match(/^image\//)) { rejected++; return; }
+          if (f.size > 10 * 1024 * 1024) { rejected++; return; }
+          photoFiles.push(f);
+        });
+        if (rejected > 0) {
+          alert(rejected + (currentLang === 'en'
+            ? ' file(s) skipped (images only, max. 10 MB each).'
+            : ' Datei(en) übersprungen (nur Bilder bis max. 10 MB).'));
+        }
         input.value = '';
         renderGrid(); updateLabel();
       });

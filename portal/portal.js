@@ -328,6 +328,14 @@
       .eq('order_id', orderId)
       .order('created_at', { ascending: true });
 
+    // Show unread badge on card heading before marking as read
+    var unreadCount = (msgs || []).filter(function(m) { return m.sender_type === 'admin' && !m.read_at; }).length;
+    var msgCard = document.getElementById('msgCard');
+    if (msgCard) {
+      var h2 = msgCard.querySelector('h2');
+      if (h2) h2.innerHTML = '💬 Nachrichten' + (unreadCount > 0 ? ' <span class="badge-count" style="background:var(--primary);color:#fff;font-size:11px;padding:1px 6px;border-radius:10px;vertical-align:middle">' + unreadCount + '</span>' : '');
+    }
+
     renderPortalMsgThread(thread, msgs || [], senderType);
     thread.scrollTop = thread.scrollHeight;
 
