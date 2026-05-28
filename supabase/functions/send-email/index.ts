@@ -65,7 +65,9 @@ Deno.serve(async (req) => {
     // Supabase Webhooks send type="INSERT"/"UPDATE"/"DELETE" — derive notification type from table
     const isWebhookEvent = ['INSERT', 'UPDATE', 'DELETE'].includes(body.type);
     const type = isWebhookEvent
-      ? (table === 'orders' ? 'new-order' : table === 'messages' ? 'new-message' : null)
+      ? (table === 'orders' && body.type === 'INSERT' ? 'new-order'
+       : table === 'orders' && body.type === 'UPDATE' ? 'order-update'
+       : table === 'messages' ? 'new-message' : null)
       : body.type;
 
     // ── New order → notify admin + confirm to customer ───────────────
@@ -102,6 +104,33 @@ Deno.serve(async (req) => {
       }
 
       return json({ ok: true });
+    }
+
+    // ── Order status → "done": notify customer ───────────────────────
+    if (type === "order-update") {
+      const o = record;
+      const old = body.old_record;
+      // Only fire when payment_status changes to "done"
+      if (o.payment_status !== 'done' || old?.payment_status === 'done') {
+        return json({ ok: true, skipped: true });
+      }
+      if (!o.email) return json({ ok: false, error: "No customer email" });
+
+      const html = emailBase(`
+        <h2>🎉 Ihre Website ist fertig!</h2>
+        <p>Hallo ${o.contact_name || ""},</p>
+        <p>großartige Neuigkeiten — Ihre Website für <strong>${o.business_name || ""}</strong> ist jetzt live und einsatzbereit!</p>
+        ${o.site_slug ? `
+        <div style="margin:24px 0">
+          <div class="info-row"><span class="label">Website</span><span class="value"><a href="https://lokalonline.at/${o.site_slug}/" style="color:#C8302A">lokalonline.at/${o.site_slug}/</a></span></div>
+          <div class="info-row"><span class="label">Speisekarte</span><span class="value"><a href="https://lokalonline.at/${o.site_slug}/menu/" style="color:#C8302A">lokalonline.at/${o.site_slug}/menu/</a></span></div>
+          <div class="info-row"><span class="label">Linkseite</span><span class="value"><a href="https://lokalonline.at/${o.site_slug}/link/" style="color:#C8302A">lokalonline.at/${o.site_slug}/link/</a></span></div>
+        </div>` : ""}
+        <p style="color:#666;font-size:13px">Bei Fragen oder Änderungswünschen stehen wir Ihnen jederzeit zur Verfügung.</p>
+        <a class="btn" href="https://lokalonline.at/portal/">Im Kundenportal ansehen →</a>
+      `);
+      const ok = await sendEmail(o.email, `Ihre Website ist live — ${o.business_name || "lokalonline.at"}`, html);
+      return json({ ok });
     }
 
     // ── New message → notify recipient ───────────────────────────────
