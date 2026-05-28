@@ -376,6 +376,40 @@
       vertical-align: middle;
       letter-spacing: 0.02em;
     }
+    /* ── Maps Autofill ─────────────────────────────────────────────── */
+    .maps-autofill-box { background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:14px 16px; margin-bottom:20px; }
+    .maps-autofill-label { font-size:13px; font-weight:600; color:#1d4ed8; margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+    .maps-autofill-row { display:flex; gap:8px; }
+    .maps-autofill-row input[type="url"] { flex:1; font-size:13px; }
+    .maps-autofill-row .btn { white-space:nowrap; flex-shrink:0; }
+    .maps-loading { display:flex; align-items:center; gap:8px; font-size:13px; color:#3b82f6; margin-top:8px; }
+    .maps-msg { font-size:13px; margin-top:6px; }
+    .spinner-sm { width:15px; height:15px; border:2px solid #bfdbfe; border-top-color:#3b82f6; border-radius:50%; animation:spin .7s linear infinite; display:inline-block; flex-shrink:0; }
+    /* ── Menu AI Upload ────────────────────────────────────────────── */
+    .ai-status-box { background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:14px 16px; margin-top:10px; }
+    .ai-progress-wrap { height:6px; background:#d1fae5; border-radius:3px; overflow:hidden; margin-bottom:8px; }
+    .ai-progress-fill { height:100%; background:#10b981; border-radius:3px; width:0; transition:width .25s ease; }
+    .ai-status-text { font-size:13px; color:#065f46; }
+    .menu-parsed-box { background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:12px 16px; margin-top:10px; }
+    .menu-parsed-header { font-size:13px; font-weight:600; color:var(--text); margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; }
+    .menu-parsed-item { display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid var(--border); font-size:13px; gap:10px; }
+    .menu-parsed-item:last-child { border-bottom:none; }
+    .item-price { font-weight:600; color:var(--primary); flex-shrink:0; }
+    .menu-parsed-reset { font-size:11px; color:var(--text-muted); cursor:pointer; text-decoration:underline; background:none; border:none; padding:0; font-family:inherit; }
+    /* ── Impressum Preview ─────────────────────────────────────────── */
+    .impressum-toggle { font-size:13px; color:var(--primary); cursor:pointer; margin-top:14px; display:flex; align-items:center; gap:5px; user-select:none; }
+    .impressum-toggle:hover { text-decoration:underline; }
+    .impressum-panel { background:#fafafa; border:1px solid var(--border); border-radius:10px; padding:16px; margin-top:10px; font-size:12px; line-height:1.7; color:var(--text); }
+    .impressum-section { margin-bottom:12px; }
+    .impressum-section:last-child { margin-bottom:0; }
+    .impressum-section h4 { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin:0 0 3px; }
+    .impressum-section p { margin:0; white-space:pre-line; }
+    .dsgvo-preview { background:#1e293b; color:#f1f5f9; border-radius:8px; padding:14px 16px; margin-top:12px; font-size:12px; line-height:1.6; }
+    .dsgvo-preview-title { font-weight:700; margin-bottom:4px; font-size:13px; }
+    .dsgvo-actions { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+    .dsgvo-btn { padding:6px 14px; border-radius:6px; font-size:11px; font-weight:600; border:none; cursor:default; }
+    .dsgvo-btn-accept { background:#22c55e; color:#fff; }
+    .dsgvo-btn-decline { background:transparent; color:#94a3b8; border:1px solid #475569 !important; }
   </style>
 </head>
 <body>
@@ -430,6 +464,20 @@
         <div class="card-title" id="title1">Angaben zu Ihrem Betrieb</div>
         <div class="card-sub" id="sub1">Bitte geben Sie die grundlegenden Informationen zu Ihrem Lokal ein.</div>
 
+        <!-- Google Maps Autofill -->
+        <div class="maps-autofill-box" id="mapsAutofillBox">
+          <div class="maps-autofill-label">🗺️ <span id="lbl_maps">Google Maps Link — 3 Sekunden ausfüllen</span> <span class="optional-badge" id="badge_maps">optional</span></div>
+          <div class="maps-autofill-row">
+            <input type="url" id="f_maps_url" placeholder="https://maps.app.goo.gl/..." autocomplete="off" />
+            <button type="button" class="btn btn-outline btn-sm" id="mapsAutofillBtn">Ausfüllen</button>
+          </div>
+          <div class="maps-loading" id="mapsLoading" style="display:none">
+            <span class="spinner-sm"></span>
+            <span id="mapsLoadingText">Informationen werden abgerufen…</span>
+          </div>
+          <div class="maps-msg" id="mapsMsg" style="display:none"></div>
+        </div>
+
         <div class="form-group">
           <label id="lbl_business_name">Betriebsname <span class="req">*</span></label>
           <input type="text" id="f_business_name" placeholder="z.B. Café Zentral" />
@@ -477,6 +525,15 @@
           <label id="lbl_contact_name">Ihr Name <span class="req">*</span></label>
           <input type="text" id="f_contact_name" placeholder="Maria Mustermann" />
           <div class="field-error" id="err_contact_name">Bitte geben Sie Ihren Namen ein.</div>
+        </div>
+
+        <!-- Impressum Live Preview -->
+        <div class="impressum-toggle" id="impressumToggle">
+          <span id="impressumToggleIcon">▶</span> <span id="lbl_impressum_toggle">Impressum &amp; Datenschutz — Vorschau</span>
+        </div>
+        <div id="impressumPreview" style="display:none">
+          <div class="impressum-panel" id="impressumPanel"></div>
+          <div class="dsgvo-preview" id="dsgvoPreview"></div>
         </div>
 
         <div class="btn-row">
@@ -556,9 +613,28 @@ So: Ruhetag"></textarea>
           <div class="photo-grid" id="photoGrid"></div>
         </div>
 
-        <div class="menu-note" id="menuNote">
-          <strong id="menuNoteTitle">📋 Digitale Speisekarte gewünscht?</strong>
-          <span id="menuNoteText">Laden Sie hier Fotos Ihrer Speisekarte hoch oder senden Sie diese später per E-Mail an <a href="mailto:info@lokalonline.at" style="color:#92400e">info@lokalonline.at</a>.</span>
+        <!-- Menu Upload with AI Parsing -->
+        <div class="form-group" id="menuUploadGroup">
+          <label id="lbl_menu_photo">📋 <span id="lbl_menu_photo_text">Speisekarte</span> <span class="optional-badge" id="badge_menu">optional</span></label>
+          <label class="file-upload-label" id="menuUploadLabel">
+            <span class="upload-icon">🍽️</span>
+            <span class="upload-text" id="menuUploadText">Speisekarte-Foto hochladen (AI liest Menü aus)</span>
+            <span class="upload-hint" id="menuUploadHint">JPG, PNG · wird automatisch analysiert</span>
+            <input type="file" id="f_menu_photo" accept="image/*" />
+          </label>
+          <div id="menuAiStatus" style="display:none">
+            <div class="ai-status-box" id="menuAiLoading">
+              <div class="ai-progress-wrap"><div class="ai-progress-fill" id="aiProgressFill"></div></div>
+              <div class="ai-status-text" id="menuAiLoadingText">AI analysiert Ihre Speisekarte…</div>
+            </div>
+            <div class="menu-parsed-box" id="menuAiResult" style="display:none">
+              <div class="menu-parsed-header">
+                <span id="menuParsedTitle">Erkannte Gerichte</span>
+                <button class="menu-parsed-reset" id="menuParsedReset" type="button">✕ <span id="menuParsedResetText">Neu hochladen</span></button>
+              </div>
+              <div id="menuParsedList"></div>
+            </div>
+          </div>
         </div>
 
         <div class="notice-box" id="noticeBox">
@@ -606,6 +682,7 @@ So: Ruhetag"></textarea>
     var currentStep = 1;
     var logoFile = null;
     var photoFiles = [];
+    var parsedMenuItems = [];
 
     // ── Translations ───────────────────────────────────────────────
     var T = {
@@ -671,6 +748,18 @@ So: Ruhetag"></textarea>
         submitting: 'Wird gesendet…',
         submitError: 'Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.',
         uploadWarning: 'Hinweis: Ein oder mehrere Dateien konnten nicht hochgeladen werden. Ihre Anfrage wurde trotzdem gesendet — laden Sie die Dateien später per E-Mail nach.',
+        lbl_maps: 'Google Maps Link — 3 Sekunden ausfüllen',
+        mapsAutofillBtn: 'Ausfüllen',
+        mapsLoadingText: 'Informationen werden abgerufen…',
+        mapsMsgOk: '✅ Felder wurden ausgefüllt — bitte überprüfen.',
+        mapsMsgErr: '⚠️ Link konnte nicht ausgelesen werden. Bitte Felder manuell ausfüllen.',
+        lbl_menu_photo_text: 'Speisekarte',
+        menuUploadText: 'Speisekarte-Foto hochladen (AI liest Menü aus)',
+        menuUploadHint: 'JPG, PNG · wird automatisch analysiert',
+        menuAiLoadingText: 'AI analysiert Ihre Speisekarte…',
+        menuParsedTitle: 'Erkannte Gerichte',
+        menuParsedResetText: 'Neu hochladen',
+        lbl_impressum_toggle: 'Impressum & Datenschutz — Vorschau',
         spHeading: '🔐 Konto erstellen',
         spDesc: 'Erstellen Sie jetzt ein Konto, um den Status Ihrer Anfrage zu verfolgen und später einfach auf Ihr Kundenportal zuzugreifen.',
         spPasswordPh: 'Passwort wählen (min. 8 Zeichen)',
@@ -742,6 +831,18 @@ So: Ruhetag"></textarea>
         submitting: 'Sending…',
         submitError: 'An error occurred. Please try again.',
         uploadWarning: 'Note: One or more files could not be uploaded. Your request was still sent — you can send the files later by email.',
+        lbl_maps: 'Google Maps link — fill in 3 seconds',
+        mapsAutofillBtn: 'Auto-fill',
+        mapsLoadingText: 'Fetching information…',
+        mapsMsgOk: '✅ Fields filled in — please review.',
+        mapsMsgErr: '⚠️ Could not read link. Please fill in fields manually.',
+        lbl_menu_photo_text: 'Menu',
+        menuUploadText: 'Upload menu photo (AI reads it automatically)',
+        menuUploadHint: 'JPG, PNG · analysed automatically',
+        menuAiLoadingText: 'AI is analysing your menu…',
+        menuParsedTitle: 'Detected dishes',
+        menuParsedResetText: 'Upload again',
+        lbl_impressum_toggle: 'Impressum & Privacy — Preview',
         spHeading: '🔐 Create an account',
         spDesc: 'Create an account to track the status of your request and easily access your customer portal later.',
         spPasswordPh: 'Choose a password (min. 8 characters)',
@@ -832,9 +933,25 @@ So: Ruhetag"></textarea>
       document.getElementById('photoUploadHint').textContent = t.photoUploadHint;
 
       // Notes
-      document.getElementById('menuNoteTitle').textContent = t.menuNoteTitle;
-      document.getElementById('menuNoteText').innerHTML = t.menuNoteText + ' <a href="mailto:info@lokalonline.at" style="color:#92400e">info@lokalonline.at</a>.';
       document.getElementById('noticeText').innerHTML = t.noticeText.replace('24 Stunden', '<strong>24 Stunden</strong>').replace('24 hours', '<strong>24 hours</strong>');
+
+      // Maps autofill
+      document.getElementById('lbl_maps').textContent = t.lbl_maps;
+      document.getElementById('badge_maps').textContent = t.optional;
+      document.getElementById('mapsAutofillBtn').textContent = t.mapsAutofillBtn;
+      document.getElementById('mapsLoadingText').textContent = t.mapsLoadingText;
+
+      // Menu AI upload
+      document.getElementById('lbl_menu_photo_text').textContent = t.lbl_menu_photo_text;
+      document.getElementById('badge_menu').textContent = t.optional;
+      document.getElementById('menuUploadText').textContent = t.menuUploadText;
+      document.getElementById('menuUploadHint').textContent = t.menuUploadHint;
+      document.getElementById('menuAiLoadingText').textContent = t.menuAiLoadingText;
+      document.getElementById('menuParsedTitle').textContent = t.menuParsedTitle;
+      document.getElementById('menuParsedResetText').textContent = t.menuParsedResetText;
+
+      // Impressum toggle
+      document.getElementById('lbl_impressum_toggle').textContent = t.lbl_impressum_toggle;
 
       // Success
       document.getElementById('successTitle').textContent = t.successTitle;
@@ -1023,7 +1140,16 @@ So: Ruhetag"></textarea>
           instagram: document.getElementById('f_instagram').value.trim() || null,
           website: document.getElementById('f_website').value.trim() || null,
           hours: document.getElementById('f_hours').value.trim() || null,
-          notes: document.getElementById('f_notes').value.trim() || null,
+          notes: (function () {
+            var n = document.getElementById('f_notes').value.trim();
+            if (parsedMenuItems.length > 0) {
+              var menuText = '\n\n[AI-Speisekarte]\n' + parsedMenuItems.map(function (item) {
+                return item.name + (item.price ? ' — ' + item.price : '');
+              }).join('\n');
+              return (n ? n + menuText : menuText.trim());
+            }
+            return n || null;
+          })(),
           logo_url: logoUrl,
           photo_url: uploadedPhotoUrls[0] || null,
           photo_urls: uploadedPhotoUrls.length > 0 ? JSON.stringify(uploadedPhotoUrls) : null,
@@ -1088,6 +1214,246 @@ So: Ruhetag"></textarea>
     // ── Clear invalid on input ─────────────────────────────────────
     document.querySelectorAll('input, select, textarea').forEach(function (el) {
       el.addEventListener('input', function () { el.classList.remove('invalid'); });
+    });
+
+    // ── Feature 1: Google Maps Autofill ────────────────────────────
+    (function () {
+      var btn = document.getElementById('mapsAutofillBtn');
+      var input = document.getElementById('f_maps_url');
+      var loading = document.getElementById('mapsLoading');
+      var msg = document.getElementById('mapsMsg');
+
+      function showMsg(text, isError) {
+        msg.textContent = text;
+        msg.style.color = isError ? 'var(--error)' : 'var(--success, #16a34a)';
+        msg.style.display = 'block';
+      }
+
+      // Extract a human-readable place name from common Google Maps URL patterns.
+      // Real production usage would call a Supabase Edge Function with Google Places API.
+      function extractFromUrl(url) {
+        try {
+          // e.g. maps.google.com/maps/place/Café+Hawelka/@48.2,...
+          var placeMatch = url.match(/\/place\/([^/@?]+)/);
+          if (placeMatch) {
+            return decodeURIComponent(placeMatch[1].replace(/\+/g, ' '));
+          }
+          // e.g. ?q=Café+Hawelka
+          var qMatch = url.match(/[?&]q=([^&]+)/);
+          if (qMatch) return decodeURIComponent(qMatch[1].replace(/\+/g, ' '));
+        } catch (e) { /* ignore */ }
+        return null;
+      }
+
+      // Placeholder: in production replace with:
+      // await fetch('/api/place-lookup', { method:'POST', body: JSON.stringify({ url }) })
+      function simulateLookup(url, callback) {
+        var name = extractFromUrl(url);
+        setTimeout(function () {
+          if (!name) { callback(null); return; }
+          // Return best-effort partial data; real API would return full address + phone
+          callback({
+            name: name,
+            address: '',  // real API fills this
+            phone: ''     // real API fills this
+          });
+        }, 1400);
+      }
+
+      btn.addEventListener('click', function () {
+        var url = input.value.trim();
+        if (!url || !url.includes('google')) {
+          showMsg(T[currentLang].mapsMsgErr, true); return;
+        }
+        msg.style.display = 'none';
+        loading.style.display = 'flex';
+        btn.disabled = true;
+
+        simulateLookup(url, function (data) {
+          loading.style.display = 'none';
+          btn.disabled = false;
+          if (!data) { showMsg(T[currentLang].mapsMsgErr, true); return; }
+          if (data.name)    document.getElementById('f_business_name').value = data.name;
+          if (data.address) document.getElementById('f_address').value = data.address;
+          if (data.phone)   document.getElementById('f_phone').value = data.phone;
+          // Clear invalid state on filled fields
+          ['f_business_name','f_address','f_phone'].forEach(function (id) {
+            document.getElementById(id).classList.remove('invalid');
+          });
+          showMsg(T[currentLang].mapsMsgOk, false);
+          renderImpressum();
+        });
+      });
+
+      // Also allow pressing Enter in the URL input
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); btn.click(); }
+      });
+    })();
+
+    // ── Feature 2: Menu AI Upload ──────────────────────────────────
+    (function () {
+      var fileInput  = document.getElementById('f_menu_photo');
+      var uploadLabel = document.getElementById('menuUploadLabel');
+      var aiStatus   = document.getElementById('menuAiStatus');
+      var aiLoading  = document.getElementById('menuAiLoading');
+      var aiResult   = document.getElementById('menuAiResult');
+      var fillEl     = document.getElementById('aiProgressFill');
+      var listEl     = document.getElementById('menuParsedList');
+      var resetBtn   = document.getElementById('menuParsedReset');
+
+      // Placeholder: in production replace with Supabase Edge Function call:
+      // await sb.functions.invoke('parse-menu', { body: formData })
+      function simulateAiParsing(file, onDone, onError) {
+        var steps = [10, 30, 55, 75, 90, 100];
+        var i = 0;
+        var interval = setInterval(function () {
+          if (i >= steps.length) { clearInterval(interval); onDone(); return; }
+          fillEl.style.width = steps[i] + '%';
+          i++;
+        }, 380);
+      }
+
+      function getSampleItems(lang) {
+        // Sample data to demonstrate the parsed result UI.
+        // Real backend returns structured OCR output.
+        if (lang === 'en') {
+          return [
+            { name: 'Wiener Schnitzel', price: '€ 14,90' },
+            { name: 'Tafelspitz', price: '€ 16,50' },
+            { name: 'Gulasch', price: '€ 11,80' },
+            { name: 'Apfelstrudel', price: '€ 5,90' },
+          ];
+        }
+        return [
+          { name: 'Wiener Schnitzel', price: '€ 14,90' },
+          { name: 'Tafelspitz', price: '€ 16,50' },
+          { name: 'Gulasch', price: '€ 11,80' },
+          { name: 'Apfelstrudel', price: '€ 5,90' },
+        ];
+      }
+
+      function renderItems(items) {
+        listEl.innerHTML = items.map(function (item) {
+          return '<div class="menu-parsed-item"><span class="item-name">' +
+            item.name.replace(/</g,'&lt;') + '</span>' +
+            (item.price ? '<span class="item-price">' + item.price.replace(/</g,'&lt;') + '</span>' : '') +
+            '</div>';
+        }).join('');
+      }
+
+      function reset() {
+        parsedMenuItems = [];
+        fileInput.value = '';
+        aiStatus.style.display = 'none';
+        aiLoading.style.display = 'block';
+        aiResult.style.display = 'none';
+        fillEl.style.width = '0';
+        uploadLabel.style.display = '';
+      }
+
+      fileInput.addEventListener('change', function () {
+        var file = fileInput.files[0];
+        if (!file) return;
+        if (!file.type.match(/^image\//)) {
+          alert(currentLang === 'en' ? 'Please select an image file.' : 'Bitte ein Bild auswählen.');
+          fileInput.value = ''; return;
+        }
+        if (file.size > 10 * 1024 * 1024) {
+          alert(currentLang === 'en' ? 'File too large (max. 10 MB).' : 'Datei zu groß (max. 10 MB).');
+          fileInput.value = ''; return;
+        }
+
+        uploadLabel.style.display = 'none';
+        aiStatus.style.display = 'block';
+        aiLoading.style.display = 'block';
+        aiResult.style.display = 'none';
+        fillEl.style.width = '0';
+
+        simulateAiParsing(file,
+          function () { // onDone
+            parsedMenuItems = getSampleItems(currentLang);
+            renderItems(parsedMenuItems);
+            aiLoading.style.display = 'none';
+            aiResult.style.display = 'block';
+          },
+          function () { // onError
+            reset();
+            alert(currentLang === 'en' ? 'Analysis failed. Please try again.' : 'Analyse fehlgeschlagen. Bitte erneut versuchen.');
+          }
+        );
+      });
+
+      resetBtn.addEventListener('click', reset);
+    })();
+
+    // ── Feature 3: Impressum & DSGVO Live Preview ──────────────────
+    function renderImpressum() {
+      var panel = document.getElementById('impressumPanel');
+      var dsgvo = document.getElementById('dsgvoPreview');
+      if (!panel || panel.parentElement.style.display === 'none') return;
+
+      var name    = (document.getElementById('f_business_name').value.trim() || '—');
+      var address = (document.getElementById('f_address').value.trim()       || '—');
+      var phone   = (document.getElementById('f_phone').value.trim()         || '—');
+      var email   = (document.getElementById('f_email').value.trim()         || '—');
+      var isDE    = currentLang === 'de';
+
+      panel.innerHTML =
+        '<div class="impressum-section">' +
+          '<h4>' + (isDE ? 'Impressum' : 'Legal Notice') + '</h4>' +
+          '<p style="font-size:11px;color:var(--text-muted);margin-bottom:6px">' +
+            (isDE ? 'Informationspflicht laut §5 E-Commerce Gesetz (ECG) und §25 Mediengesetz (MedienG)' :
+                    'Disclosure pursuant to §5 Austrian E-Commerce Act (ECG) and §25 Media Act (MedienG)') +
+          '</p>' +
+          '<p><strong>' + name + '</strong>\n' + address + '</p>' +
+        '</div>' +
+        '<div class="impressum-section">' +
+          '<h4>' + (isDE ? 'Kontakt' : 'Contact') + '</h4>' +
+          '<p>' +
+            (isDE ? 'Tel.: ' : 'Phone: ') + phone + '\n' +
+            'E-Mail: ' + email +
+          '</p>' +
+        '</div>' +
+        '<div class="impressum-section">' +
+          '<h4>' + (isDE ? 'Haftungsausschluss' : 'Disclaimer') + '</h4>' +
+          '<p style="color:var(--text-muted)">' +
+            (isDE
+              ? 'Die Inhalte dieser Website wurden sorgfältig erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte kann keine Gewähr übernommen werden.'
+              : 'The contents of this website have been prepared with care. No liability is accepted for the accuracy, completeness or timeliness of the content.') +
+          '</p>' +
+        '</div>';
+
+      dsgvo.innerHTML =
+        '<div class="dsgvo-preview-title">🍪 ' + (isDE ? 'Datenschutz & Cookies' : 'Privacy & Cookies') + '</div>' +
+        '<div>' +
+          (isDE
+            ? 'Diese Website verwendet Cookies, um Ihr Nutzungserlebnis zu verbessern. Mit der Nutzung dieser Website erklären Sie sich mit der Verwendung von Cookies gemäß unserer DSGVO-konformen Datenschutzerklärung einverstanden.'
+            : 'This website uses cookies to improve your experience. By using this website, you consent to the use of cookies in accordance with our GDPR-compliant privacy policy.') +
+        '</div>' +
+        '<div class="dsgvo-actions">' +
+          '<button class="dsgvo-btn dsgvo-btn-accept">' + (isDE ? 'Akzeptieren' : 'Accept') + '</button>' +
+          '<button class="dsgvo-btn dsgvo-btn-decline">' + (isDE ? 'Ablehnen' : 'Decline') + '</button>' +
+        '</div>';
+    }
+
+    function toggleImpressum() {
+      var preview = document.getElementById('impressumPreview');
+      var icon    = document.getElementById('impressumToggleIcon');
+      var open    = preview.style.display === 'none' || preview.style.display === '';
+      preview.style.display = open ? 'block' : 'none';
+      icon.textContent = open ? '▼' : '▶';
+      if (open) renderImpressum();
+    }
+
+    document.getElementById('impressumToggle').addEventListener('click', toggleImpressum);
+
+    // Re-render Impressum when relevant fields change
+    ['f_business_name','f_address','f_phone','f_email'].forEach(function (id) {
+      document.getElementById(id).addEventListener('input', function () {
+        var preview = document.getElementById('impressumPreview');
+        if (preview.style.display !== 'none') renderImpressum();
+      });
     });
 
   })();
