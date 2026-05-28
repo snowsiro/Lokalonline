@@ -558,6 +558,37 @@
     }).join('');
   }
 
+  async function loadSites() {
+    var { data } = await sb.from('orders')
+      .select('id, business_name, business_type, site_slug, payment_status, status')
+      .not('site_slug', 'is', null)
+      .order('created_at', { ascending: false });
+
+    var tbody = document.getElementById('sitesBody');
+    if (!tbody) return;
+
+    if (!data || data.length === 0) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="5">생성된 사이트 없음</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = data.map(function (o) {
+      var slug = esc(o.site_slug);
+      var base = 'https://lokalonline.at/' + slug;
+      return '<tr>' +
+        '<td><strong>' + esc(o.business_name) + '</strong><br><span style="font-size:11px;color:var(--text-muted)">' + (o.business_type || '') + '</span></td>' +
+        '<td><code style="font-size:12px;background:var(--bg);padding:2px 6px;border-radius:4px">' + slug + '</code></td>' +
+        '<td>' + orderStatusBadge(o.payment_status) + '</td>' +
+        '<td style="display:flex;gap:6px;flex-wrap:wrap">' +
+          '<a href="' + base + '/" target="_blank" class="btn btn-outline btn-sm">🏠 홈</a>' +
+          '<a href="' + base + '/menu/" target="_blank" class="btn btn-outline btn-sm">📋 메뉴</a>' +
+          '<a href="' + base + '/link/" target="_blank" class="btn btn-outline btn-sm">🔗 링크</a>' +
+        '</td>' +
+        '<td><button class="btn btn-outline btn-sm" onclick="openOrder(\'' + o.id + '\')">✏️ 상세</button></td>' +
+        '</tr>';
+    }).join('');
+  }
+
   function orderStatusBadge(status) {
     var map = { pending: 'badge-new', paid: 'badge-contacted', in_progress: 'badge-contacted', done: 'badge-active' };
     var labels = { pending: '결제대기', paid: '결제완료', in_progress: '작업중', done: '완료' };
@@ -776,6 +807,7 @@
         if (tab === 'signups') loadSignups();
         if (tab === 'reviews') loadReviews();
         if (tab === 'orders') loadOrders();
+        if (tab === 'sites') loadSites();
       });
     });
   }
