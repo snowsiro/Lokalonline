@@ -2,8 +2,8 @@ window.MENU_DATA = {
   "categories": [
     {
       "name": {
-        "de": "Sortiment",
-        "en": "Collections"
+        "de": "Speisekarte",
+        "en": "Menu"
       },
       "items": []
     }
