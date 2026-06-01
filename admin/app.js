@@ -524,7 +524,7 @@
 
   async function loadSites() {
     var { data } = await sb.from('orders')
-      .select('id, business_name, business_type, site_slug, payment_status, status')
+      .select('id, business_name, business_type, site_slug, payment_status')
       .not('site_slug', 'is', null)
       .order('created_at', { ascending: false });
 
@@ -563,7 +563,10 @@
           '<a href="' + base + '/menu/" target="_blank" class="btn btn-outline btn-sm">📋 Menü</a>' +
           '<a href="' + base + '/link/" target="_blank" class="btn btn-outline btn-sm">🔗 Links</a>' +
         '</td>' +
-        '<td><button class="btn btn-outline btn-sm" onclick="openOrder(\'' + o.id + '\')">✏️ Details</button></td>' +
+        '<td style="display:flex;gap:6px">' +
+          '<button class="btn btn-outline btn-sm" onclick="openOrder(\'' + o.id + '\')">✏️ Details</button>' +
+          '<button class="btn btn-sm" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5" onclick="deleteSite(\'' + o.id + '\',\'' + slug + '\')">🗑️</button>' +
+        '</td>' +
         '</tr>';
     }).join('');
   }
@@ -1211,30 +1214,29 @@
 
   async function generateQrCode(slug) {
     var menuUrl = 'https://lokalonline.at/' + slug + '/menu/';
-    return new Promise(function(resolve) {
-      var canvas = document.createElement('canvas');
-      QRCode.toCanvas(canvas, menuUrl, { width: 400, margin: 2, color: { dark: '#000000', light: '#ffffff' } }, async function(err) {
-        if (!err) {
-          canvas.toBlob(async function(blob) {
-            var reader = new FileReader();
-            reader.onloadend = async function() {
-              var base64 = reader.result.split(',')[1];
-              try {
-                var session = (await sb.auth.getSession()).data.session;
-                var token = session ? session.access_token : '';
-                await fetch(EDGE_FN, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-                  body: JSON.stringify({ action: 'put-file', path: slug + '/img/qr-menu.png', content: base64, message: 'Add QR code for menu' })
-                });
-              } catch(e) { /* non-fatal */ }
-              resolve();
-            };
-            reader.readAsDataURL(blob);
-          }, 'image/png');
-        } else { resolve(); }
+    try {
+      var qrApiUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=10&data=' + encodeURIComponent(menuUrl);
+      var res = await fetch(qrApiUrl);
+      if (!res.ok) return;
+      var blob = await res.blob();
+      var reader = new FileReader();
+      await new Promise(function(resolve) {
+        reader.onloadend = async function() {
+          var base64 = reader.result.split(',')[1];
+          try {
+            var session = (await sb.auth.getSession()).data.session;
+            var token = session ? session.access_token : '';
+            await fetch(EDGE_FN, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+              body: JSON.stringify({ action: 'put-file', path: slug + '/img/qr-menu.png', content: base64, message: 'Add QR code for menu' })
+            });
+          } catch(e) { /* non-fatal */ }
+          resolve();
+        };
+        reader.readAsDataURL(blob);
       });
-    });
+    } catch(e) { /* non-fatal */ }
   }
 
   function showQrResult(slug) {
@@ -1251,15 +1253,9 @@
 
     document.getElementById('qrCodeUrl').textContent = menuUrl;
 
-    // Render QR directly into the img element via canvas
-    var canvas = document.createElement('canvas');
-    QRCode.toCanvas(canvas, menuUrl, { width: 200, margin: 2, color: { dark: '#000000', light: '#ffffff' } }, function(err) {
-      if (!err) {
-        var dataUrl = canvas.toDataURL('image/png');
-        document.getElementById('qrCodeImg').src = dataUrl;
-        document.getElementById('qrDownloadBtn').href = dataUrl;
-      }
-    });
+    var qrImgUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=' + encodeURIComponent(menuUrl);
+    document.getElementById('qrCodeImg').src = qrImgUrl;
+    document.getElementById('qrDownloadBtn').href = qrImgUrl;
 
     openModal('qrResultOverlay');
   }
@@ -1274,10 +1270,12 @@
     if (!/^[a-z0-9-]+$/.test(slug)) { errEl.textContent = 'Nur Kleinbuchstaben, Zahlen und Bindestriche erlaubt.'; errEl.style.display = 'block'; return; }
 
     btn.disabled = true;
-    btn.textContent = '⏳ 1/5 Hauptseite…';
+    btn.textContent = '⏳ 1/7 Hauptseite…';
 
+    var currentStep = '';
     try {
       // 1. Main site
+      currentStep = 'Hauptseite';
       var tplRes = await fetch('/templates/' + selectedTemplate + '/index.html');
       if (!tplRes.ok) throw new Error('Template nicht gefunden.');
       var tplHtml = await tplRes.text();
@@ -1286,7 +1284,8 @@
       await uploadFile(slug + '/data.js', dataJs);
 
       // 2. Menu page
-      btn.textContent = '⏳ 2/5 Menüseite…';
+      currentStep = 'Menüseite';
+      btn.textContent = '⏳ 2/7 Menüseite…';
       var menuRes = await fetch('/templates/' + selectedTemplate + '/menu/index.html');
       if (menuRes.ok) {
         var menuHtml = await menuRes.text();
@@ -1296,17 +1295,30 @@
       }
 
       // 3. Link page
-      btn.textContent = '⏳ 3/5 Link-Seite…';
+      currentStep = 'Link-Seite';
+      btn.textContent = '⏳ 3/7 Link-Seite…';
       var linkHtml = generateLinkPageHtml(slug, currentOrderData);
       await uploadFile(slug + '/link/index.html', linkHtml);
 
-      // 4. Photos + QR code
-      btn.textContent = '⏳ 4/5 Fotos & QR…';
+      // 4. Impressum
+      currentStep = 'Impressum';
+      btn.textContent = '⏳ 4/7 Impressum…';
+      await uploadFile(slug + '/impressum/index.html', generateImpressumHtml(slug, currentOrderData));
+
+      // 5. Datenschutz
+      currentStep = 'Datenschutz';
+      btn.textContent = '⏳ 5/7 Datenschutz…';
+      await uploadFile(slug + '/datenschutz/index.html', generateDatenschutzHtml(slug, currentOrderData));
+
+      // 6. Photos + QR code
+      currentStep = 'Fotos & QR';
+      btn.textContent = '⏳ 6/7 Fotos & QR…';
       await copyPhotosToGitHub(slug, currentOrderData);
       await generateQrCode(slug);
 
-      // 5. Save to DB
-      btn.textContent = '⏳ 5/5 Speichert…';
+      // 7. Save to DB
+      currentStep = 'Datenbank';
+      btn.textContent = '⏳ 7/7 Speichert…';
       await sb.from('orders').update({
         site_slug: slug,
         admin_notes: (currentOrderData.admin_notes ? currentOrderData.admin_notes + '\n' : '') + 'Site: lokalonline.at/' + slug + '/'
@@ -1320,12 +1332,63 @@
       showQrResult(slug);
 
     } catch (e) {
-      errEl.textContent = 'Fehler: ' + e.message;
+      errEl.textContent = 'Fehler bei Schritt "' + currentStep + '": ' + e.message;
       errEl.style.display = 'block';
     }
 
     btn.disabled = false;
     btn.textContent = '🚀 Website generieren';
+  }
+
+  window.deleteSite = async function(orderId, slug) {
+    if (!confirm('Website "' + slug + '" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) return;
+    try {
+      var session = (await sb.auth.getSession()).data.session;
+      var token = session ? session.access_token : '';
+      var res = await fetch(EDGE_FN, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ action: 'delete-folder', path: slug, message: 'Delete site: ' + slug })
+      });
+      if (!res.ok) { var d = await res.json().catch(function(){return{};}); throw new Error(d.error || res.status); }
+      await sb.from('orders').update({ site_slug: null }).eq('id', orderId);
+      showToast('Website gelöscht.');
+      loadSites();
+    } catch(e) {
+      alert('Fehler beim Löschen: ' + e.message);
+    }
+  };
+
+  function generateImpressumHtml(slug, order) {
+    var name = order.business_name || '';
+    var address = order.address || '';
+    var phone = order.phone || '';
+    var email = order.email || '';
+    var legalType = order.legal_type || 'einzelunternehmer';
+    var uid = order.uid_number || '';
+    var gisa = order.gisa_number || '';
+    var legalName = order.legal_name || name;
+    var legalForm = order.legal_form || '';
+    var fn = order.fn_number || '';
+    var gf = order.geschaeftsfuehrer || '';
+
+    var legalBlock = '';
+    if (legalType === 'gesellschaft') {
+      legalBlock = '<p><strong>Firma:</strong> ' + legalName + ' ' + legalForm + '</p>' +
+        (fn ? '<p><strong>Firmenbuchnummer:</strong> ' + fn + '</p>' : '') +
+        (gf ? '<p><strong>Geschäftsführer:</strong> ' + gf + '</p>' : '');
+    } else {
+      legalBlock = (gisa ? '<p><strong>GISA-Zahl:</strong> ' + gisa + '</p>' : '');
+    }
+
+    return '<!DOCTYPE html>\n<html lang="de">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>Impressum – ' + name + '</title>\n<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:system-ui,sans-serif;background:#fff;color:#111;padding:40px 24px;max-width:720px;margin:0 auto}h1{font-size:1.8rem;font-weight:800;margin-bottom:8px}h2{font-size:1.1rem;font-weight:700;margin:32px 0 12px;padding-bottom:8px;border-bottom:2px solid #eee}p{font-size:15px;color:#444;line-height:1.7;margin-bottom:8px}a{color:#2563eb;text-decoration:underline}.back{display:inline-block;margin-bottom:32px;color:#2563eb;font-size:14px;font-weight:600;text-decoration:none}</style>\n</head>\n<body>\n<a class="back" href="../">← Zurück zur Website</a>\n<h1>Impressum</h1>\n<h2>Angaben gemäß § 5 ECG</h2>\n<p><strong>' + name + '</strong></p>\n<p>' + address + '</p>\n' + legalBlock + (uid ? '<p><strong>UID-Nummer:</strong> ' + uid + '</p>' : '') + (phone ? '<p><strong>Tel:</strong> <a href="tel:' + phone.replace(/\s/g,'') + '">' + phone + '</a></p>' : '') + (email ? '<p><strong>E-Mail:</strong> <a href="mailto:' + email + '">' + email + '</a></p>' : '') + '\n<h2>Haftungsausschluss</h2>\n<p>Trotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine Haftung für die Inhalte externer Links. Für den Inhalt der verlinkten Seiten sind ausschließlich deren Betreiber verantwortlich.</p>\n</body>\n</html>\n';
+  }
+
+  function generateDatenschutzHtml(slug, order) {
+    var name = order.business_name || '';
+    var email = order.email || '';
+
+    return '<!DOCTYPE html>\n<html lang="de">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>Datenschutz – ' + name + '</title>\n<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:system-ui,sans-serif;background:#fff;color:#111;padding:40px 24px;max-width:720px;margin:0 auto}h1{font-size:1.8rem;font-weight:800;margin-bottom:8px}h2{font-size:1.1rem;font-weight:700;margin:32px 0 12px;padding-bottom:8px;border-bottom:2px solid #eee}p{font-size:15px;color:#444;line-height:1.7;margin-bottom:8px}a{color:#2563eb;text-decoration:underline}.back{display:inline-block;margin-bottom:32px;color:#2563eb;font-size:14px;font-weight:600;text-decoration:none}</style>\n</head>\n<body>\n<a class="back" href="../">← Zurück zur Website</a>\n<h1>Datenschutzerklärung</h1>\n<h2>Verantwortlicher</h2>\n<p><strong>' + name + '</strong>' + (email ? '<br><a href="mailto:' + email + '">' + email + '</a>' : '') + '</p>\n<h2>Erhebung und Verarbeitung personenbezogener Daten</h2>\n<p>Diese Website erhebt keine personenbezogenen Daten automatisch. Es werden keine Cookies gesetzt und kein Tracking-Dienst verwendet.</p>\n<h2>Hosting</h2>\n<p>Diese Website wird über GitHub Pages gehostet. Es gelten die Datenschutzbestimmungen von GitHub (github.com/privacy).</p>\n<h2>Kontakt</h2>\n<p>Bei Fragen zum Datenschutz wenden Sie sich bitte an: ' + (email ? '<a href="mailto:' + email + '">' + email + '</a>' : name) + '</p>\n<h2>Ihre Rechte</h2>\n<p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung und Einschränkung der Verarbeitung Ihrer Daten gemäß DSGVO.</p>\n</body>\n</html>\n';
   }
 
   function esc(str) {
