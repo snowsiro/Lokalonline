@@ -321,6 +321,42 @@
       justify-content: center;
       cursor: pointer;
     }
+    /* Photo usage hint */
+    .photo-usage-hint {
+      display: flex;
+      gap: 0;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .photo-usage-slot {
+      flex: 1;
+      padding: 10px 8px;
+      text-align: center;
+      border-right: 1px solid var(--border);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+    .photo-usage-slot:last-child { border-right: none; }
+    .photo-usage-slot .slot-num {
+      display: inline-block;
+      width: 20px; height: 20px;
+      background: var(--orange);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 20px;
+      margin-bottom: 4px;
+    }
+    .photo-usage-slot .slot-num.slot-extra {
+      background: var(--border);
+      color: var(--text-muted);
+    }
+    .photo-usage-slot .slot-label { font-weight: 600; color: var(--text); display: block; }
+    .photo-usage-slot .slot-desc { color: var(--text-muted); display: block; }
     .menu-note {
       background: #fefce8;
       border: 1px solid #fef08a;
@@ -660,7 +696,24 @@ So: Ruhetag"></textarea>
         </div>
 
         <div class="form-group">
-          <label id="lbl_photos">Fotos Ihres Betriebs <span class="optional-badge" id="badge_photos">optional</span></label>
+          <label id="lbl_photos">🎞️ <span id="lbl_photos_text">Bilder für den Slider</span> <span class="optional-badge" id="badge_photos">optional</span></label>
+          <div class="photo-usage-hint" id="photoUsageHint">
+            <div class="photo-usage-slot">
+              <span class="slot-num">1</span>
+              <span class="slot-label" id="slotLabel1">Titelbild</span>
+              <span class="slot-desc" id="slotDesc1">Hero-Bereich Startseite</span>
+            </div>
+            <div class="photo-usage-slot">
+              <span class="slot-num">2</span>
+              <span class="slot-label" id="slotLabel2">Über uns</span>
+              <span class="slot-desc" id="slotDesc2">Über-uns-Abschnitt</span>
+            </div>
+            <div class="photo-usage-slot">
+              <span class="slot-num slot-extra">3+</span>
+              <span class="slot-label" id="slotLabel3">Galerie</span>
+              <span class="slot-desc" id="slotDesc3">Foto-Galerie unten</span>
+            </div>
+          </div>
           <label class="file-upload-label" id="photoUploadLabel">
             <span class="upload-icon">📷</span>
             <span class="upload-text" id="photoUploadText">Fotos auswählen (mehrere möglich)</span>
@@ -673,6 +726,7 @@ So: Ruhetag"></textarea>
         <!-- Menu Upload with AI Parsing -->
         <div class="form-group" id="menuUploadGroup">
           <label id="lbl_menu_photo">📋 <span id="lbl_menu_photo_text">Speisekarte</span> <span class="optional-badge" id="badge_menu">optional</span></label>
+          <p style="font-size:12px;color:var(--text-muted);margin:-4px 0 8px" id="menuPhotoHint">Foto Ihrer Speisekarte hochladen — AI liest die Gerichte automatisch aus und erstellt die Menü-Seite.</p>
           <label class="file-upload-label" id="menuUploadLabel">
             <span class="upload-icon">🍽️</span>
             <span class="upload-text" id="menuUploadText">Speisekarte-Foto hochladen (AI liest Menü aus)</span>
@@ -779,7 +833,11 @@ So: Ruhetag"></textarea>
         lbl_hours: 'Öffnungszeiten',
         lbl_notes: 'Besondere Wünsche',
         lbl_logo: 'Logo',
-        lbl_photos: 'Fotos Ihres Betriebs',
+        lbl_photos_text: 'Bilder für den Slider',
+        slotLabel1: 'Titelbild', slotDesc1: 'Hero der Startseite',
+        slotLabel2: 'Über uns', slotDesc2: 'Über-uns-Abschnitt',
+        slotLabel3: 'Galerie', slotDesc3: 'Foto-Galerie',
+        menuPhotoHint: 'Foto Ihrer Speisekarte hochladen — AI liest die Gerichte automatisch aus und erstellt die Menü-Seite.',
         optional: 'optional',
         ph_business_name: 'z.B. Café Zentral',
         ph_address: 'Mariahilfer Str. 1, 1060 Wien',
@@ -859,7 +917,11 @@ So: Ruhetag"></textarea>
         lbl_hours: 'Opening hours',
         lbl_notes: 'Special requests',
         lbl_logo: 'Logo',
-        lbl_photos: 'Photos of your business',
+        lbl_photos_text: 'Images for the Slider',
+        slotLabel1: 'Hero image', slotDesc1: 'Homepage hero area',
+        slotLabel2: 'About us', slotDesc2: 'About section',
+        slotLabel3: 'Gallery', slotDesc3: 'Photo gallery',
+        menuPhotoHint: 'Upload a photo of your menu — AI automatically reads the items and builds the menu page.',
         optional: 'optional',
         ph_business_name: 'e.g. Café Central',
         ph_address: 'Mariahilfer Str. 1, 1060 Vienna',
@@ -939,7 +1001,7 @@ So: Ruhetag"></textarea>
 
       // Labels
       ['business_name','business_type','address','phone','email','contact_name',
-       'description','instagram','website','hours','notes','logo','photos'].forEach(function(k) {
+       'description','instagram','website','hours','notes','logo'].forEach(function(k) {
         var el = document.getElementById('lbl_' + k);
         if (!el) return;
         var req = el.querySelector('.req');
@@ -991,8 +1053,17 @@ So: Ruhetag"></textarea>
 
       // Upload labels
       document.getElementById('logoUploadText').textContent = t.logoUploadText;
+      document.getElementById('lbl_photos_text').textContent = t.lbl_photos_text;
       document.getElementById('photoUploadText').textContent = t.photoUploadText;
       document.getElementById('photoUploadHint').textContent = t.photoUploadHint;
+      ['1','2','3'].forEach(function(n) {
+        var lbl = document.getElementById('slotLabel' + n);
+        var desc = document.getElementById('slotDesc' + n);
+        if (lbl) lbl.textContent = t['slotLabel' + n];
+        if (desc) desc.textContent = t['slotDesc' + n];
+      });
+      var menuPhotoHintEl = document.getElementById('menuPhotoHint');
+      if (menuPhotoHintEl) menuPhotoHintEl.textContent = t.menuPhotoHint;
 
       // Notes
       document.getElementById('noticeText').innerHTML = t.noticeText.replace('24 Stunden', '<strong>24 Stunden</strong>').replace('24 hours', '<strong>24 hours</strong>');
