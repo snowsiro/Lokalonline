@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="page-title">Leistungen & Preise</title>
+  <meta name="description" id="page-desc" content="">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #1E6FA8;
+      --accent:  #1E6FA8;
+      --bg:      #F6F8FB;
+      --dark:    #0B1C2C;
+      --mid:     #6B7E90;
+      --dim:     #4A6070;
+      --line:    #D8E2EC;
+      --font-heading: 'Outfit', sans-serif;
+      --font-body:    'Inter', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--dark);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    #main-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 68px;
+      background: rgba(246,248,251,.97);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav-logo {
+      font-family: var(--font-heading);
+      font-size: 20px;
+      color: var(--dark);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .nav-back {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--mid);
+      text-decoration: none;
+      font-size: 13px;
+      letter-spacing: .04em;
+      transition: color .2s;
+    }
+    .nav-back:hover { color: var(--primary); }
+
+    .lang-bar {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .lang-btn {
+      background: none;
+      border: none;
+      color: var(--mid);
+      font-family: var(--font-body);
+      font-size: 11px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 4px 7px;
+      transition: color .2s;
+    }
+    .lang-btn.active { color: var(--dark); font-weight: 500; }
+    .lang-btn:hover  { color: var(--primary); }
+    .lang-sep { color: var(--line); font-size: 12px; }
+
+    /* ── HERO ── */
+    #hero {
+      padding-top: 68px;
+      background: var(--dark);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-inner {
+      padding: 88px 10vw 80px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-label {
+      font-size: 11px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 24px;
+      font-weight: 500;
+    }
+
+    .hero-title {
+      font-family: var(--font-heading);
+      font-size: clamp(44px, 5.5vw, 72px);
+      font-weight: 600;
+      line-height: 1.1;
+      color: #fff;
+      margin-bottom: 28px;
+    }
+    .hero-title em { font-style: normal; color: var(--primary); }
+
+    .hero-sub {
+      font-size: 15px;
+      color: rgba(255,255,255,.45);
+      max-width: 480px;
+      font-weight: 300;
+      line-height: 1.75;
+    }
+
+    .hero-line {
+      position: absolute;
+      right: 10vw;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1px;
+      height: 200px;
+      background: linear-gradient(to bottom, transparent, rgba(30,111,168,.4), transparent);
+      pointer-events: none;
+    }
+
+    /* ── CTA STRIP ── */
+    #cta-strip {
+      background: var(--primary);
+      padding: 20px 10vw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .cta-strip-text {
+      font-size: 14px;
+      color: #fff;
+      font-weight: 300;
+    }
+
+    .cta-strip-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #fff;
+      color: var(--dark);
+      text-decoration: none;
+      padding: 12px 28px;
+      font-size: 12px;
+      letter-spacing: .08em;
+      font-family: var(--font-body);
+      font-weight: 500;
+      border-radius: 6px;
+      white-space: nowrap;
+      transition: background .2s, transform .2s;
+    }
+    .cta-strip-btn:hover { background: rgba(255,255,255,.9); transform: translateY(-1px); }
+
+    /* ── CAT NAV ── */
+    #cat-nav {
+      position: sticky;
+      top: 68px;
+      z-index: 90;
+      background: var(--bg);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: stretch;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 0 10vw;
+    }
+    #cat-nav::-webkit-scrollbar { display: none; }
+
+    .cat-nav-link {
+      flex-shrink: 0;
+      padding: 16px 22px;
+      color: var(--mid);
+      text-decoration: none;
+      font-size: 12px;
+      letter-spacing: .08em;
+      transition: color .2s;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+    }
+    .cat-nav-link:hover { color: var(--dark); }
+    .cat-nav-link.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    /* ── MAIN ── */
+    #menu-content {
+      padding: 0 10vw 100px;
+    }
+
+    /* ── PRICE LIST CATEGORY ── */
+    .menu-category {
+      padding-top: 80px;
+    }
+
+    .cat-header {
+      margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .cat-icon {
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(30,111,168,.25);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 18px;
+    }
+
+    .cat-title {
+      font-family: var(--font-heading);
+      font-size: clamp(26px, 3vw, 38px);
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    /* ── PRICE TABLE ── */
+    .price-table {
+      width: 100%;
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 24px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--line);
+      transition: background .15s;
+    }
+    .price-row:last-child { border-bottom: none; }
+
+    .price-row-left { flex: 1; min-width: 0; }
+
+    .price-name {
+      font-size: 15px;
+      color: var(--dark);
+      margin-bottom: 4px;
+      font-weight: 400;
+    }
+
+    .price-duration {
+      font-size: 12px;
+      color: var(--mid);
+      letter-spacing: .04em;
+    }
+
+    .price-value {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--primary);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* ── SERVICES GRID ── */
+    #services-section {
+      padding: 80px 10vw 100px;
+      background: var(--dark);
+    }
+
+    .services-eyebrow {
+      font-size: 11px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    .services-title {
+      font-family: var(--font-heading);
+      font-size: clamp(30px, 3.8vw, 48px);
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 56px;
+      line-height: 1.12;
+    }
+    .services-title em { font-style: normal; color: var(--primary); }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .service-card {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 10px;
+      padding: 32px 28px;
+      transition: background .25s, border-color .25s;
+    }
+    .service-card:hover {
+      background: rgba(255,255,255,.08);
+      border-color: rgba(30,111,168,.35);
+    }
+
+    .service-card-name {
+      font-family: var(--font-heading);
+      font-size: 20px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .service-card-desc {
+      font-size: 13px;
+      color: rgba(255,255,255,.45);
+      line-height: 1.7;
+      margin-bottom: 20px;
+      font-weight: 300;
+    }
+
+    .service-card-price {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    /* ── BOOKING CTA ── */
+    #booking-cta {
+      padding: 80px 10vw;
+      text-align: center;
+      background: var(--bg);
+      border-top: 1px solid var(--line);
+    }
+
+    .booking-cta-title {
+      font-family: var(--font-heading);
+      font-size: clamp(30px, 3.8vw, 48px);
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 16px;
+    }
+    .booking-cta-title em { font-style: normal; color: var(--primary); }
+
+    .booking-cta-sub {
+      font-size: 15px;
+      color: var(--mid);
+      max-width: 440px;
+      margin: 0 auto 36px;
+      font-weight: 300;
+    }
+
+    .booking-cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--primary);
+      color: #fff;
+      text-decoration: none;
+      padding: 16px 36px;
+      font-size: 13px;
+      letter-spacing: .06em;
+      font-family: var(--font-body);
+      font-weight: 500;
+      border-radius: 6px;
+      transition: background .2s, transform .2s;
+    }
+    .booking-cta-btn:hover { background: var(--dark); transform: translateY(-2px); }
+
+    .booking-cta-phone {
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--mid);
+    }
+    .booking-cta-phone a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    /* ── FOOTER ── */
+    #menu-footer {
+      padding: 32px 10vw;
+      background: var(--dark);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-name {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .footer-copy {
+      font-size: 12px;
+      color: rgba(255,255,255,.25);
+      margin-top: 2px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+    .footer-links a {
+      color: rgba(255,255,255,.3);
+      text-decoration: none;
+      font-size: 12px;
+      transition: color .2s;
+    }
+    .footer-links a:hover { color: rgba(255,255,255,.6); }
+
+    /* ── REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      #main-nav { padding: 0 20px; }
+      .hero-inner { padding: 64px 6vw 60px; }
+      .hero-line { display: none; }
+      #cta-strip { padding: 16px 6vw; }
+      #cat-nav { padding: 0 6vw; }
+      #menu-content { padding: 0 6vw 80px; }
+      #services-section { padding: 64px 6vw 80px; }
+      #booking-cta { padding: 64px 6vw; }
+      #menu-footer { padding: 28px 6vw; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="main-nav">
+    <a href="../" class="nav-logo" id="nav-logo">Service</a>
+    <div class="nav-right">
+      <div class="lang-bar">
+        <button class="lang-btn" data-lang="de" onclick="setLang('de')">DE</button>
+        <span class="lang-sep">/</span>
+        <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+      </div>
+      <a href="../" class="nav-back" id="nav-back">
+        <span>←</span>
+        <span id="nav-back-text">Zurück</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header id="hero">
+    <div class="hero-line"></div>
+    <div class="hero-inner">
+      <p class="hero-label" id="hero-label">Leistungen & Preise</p>
+      <h1 class="hero-title" id="hero-title">Professionelle<br><em>Leistungen</em></h1>
+      <p class="hero-sub" id="hero-sub"></p>
+    </div>
+  </header>
+
+  <!-- CTA STRIP -->
+  <div id="cta-strip">
+    <p class="cta-strip-text" id="cta-strip-text"></p>
+    <a href="../#booking" class="cta-strip-btn" id="cta-strip-btn">
+      <span id="cta-btn-text">Termin buchen</span>
+      <span>→</span>
+    </a>
+  </div>
+
+  <!-- CATEGORY NAV -->
+  <nav id="cat-nav" aria-label="Kategorien"></nav>
+
+  <!-- PRICE LIST CONTENT -->
+  <main id="menu-content"></main>
+
+  <!-- SERVICES GRID -->
+  <section id="services-section">
+    <p class="services-eyebrow" id="services-eyebrow"></p>
+    <h2 class="services-title" id="services-title">Unsere<br><em>Leistungen</em></h2>
+    <div class="services-grid" id="services-grid"></div>
+  </section>
+
+  <!-- BOOKING CTA -->
+  <section id="booking-cta" class="reveal">
+    <h2 class="booking-cta-title" id="booking-title">Ihren Termin<br><em>buchen</em></h2>
+    <p class="booking-cta-sub" id="booking-sub"></p>
+    <a href="../#booking" class="booking-cta-btn" id="booking-btn">
+      <span id="booking-btn-text">Termin vereinbaren</span>
+      <span>→</span>
+    </a>
+    <p class="booking-cta-phone" id="booking-phone"></p>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="menu-footer">
+    <div>
+      <div class="footer-name" id="footer-name"></div>
+      <div class="footer-copy" id="footer-copy"></div>
+    </div>
+    <div class="footer-links">
+      <a href="../impressum/">Impressum</a>
+      <a href="../datenschutz/">Datenschutz</a>
+    </div>
+  </footer>
+
+  <script src="../data.js"></script>
+  <script src="menu-data.js"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    const D  = window.SITE_DATA;
+    const MD = window.MENU_DATA;
+    let lang = localStorage.getItem('lang') || 'de';
+
+    function t(obj) {
+      if (!obj) return '';
+      return obj[lang] || obj.de || '';
+    }
+    function setText(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
+    function setHTML(id, val) { const el = document.getElementById(id); if (el) el.innerHTML = val; }
+
+    function setLang(l) {
+      lang = l;
+      localStorage.setItem('lang', l);
+      document.documentElement.lang = l;
+      document.querySelectorAll('.lang-btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.lang === l)
+      );
+      renderAll();
+    }
+    window.setLang = setLang;
+
+    function applyCSSVars() {
+      const r = document.documentElement;
+      const c = D.colors;
+      r.style.setProperty('--primary', c.primary);
+      r.style.setProperty('--accent',  c.accent);
+      r.style.setProperty('--bg',      c.bg);
+      r.style.setProperty('--dark',    c.dark);
+      r.style.setProperty('--mid',     c.mid);
+      r.style.setProperty('--dim',     c.dim);
+      r.style.setProperty('--line',    c.line);
+      r.style.setProperty('--font-heading', `'${D.fonts.heading}', sans-serif`);
+      r.style.setProperty('--font-body',    `'${D.fonts.body}', system-ui, sans-serif`);
+    }
+
+    function renderNav() {
+      const navLogoEl = document.getElementById('nav-logo');
+      if (navLogoEl) {
+        if (D.logo) {
+          navLogoEl.innerHTML = '<img src="../' + D.logo + '" alt="' + D.name + '" style="height:40px;width:auto;display:block">';
+        } else { navLogoEl.textContent = D.name; }
+      }
+      setText('nav-back-text', lang === 'en' ? 'Back' : 'Zurück');
+    }
+
+    function renderHero() {
+      document.title = (lang === 'en' ? 'Services & Prices' : 'Leistungen & Preise') + ' — ' + D.name;
+      setText('hero-label', lang === 'en' ? 'Services & Prices' : 'Leistungen & Preise');
+      setHTML('hero-title',
+        lang === 'en' ? 'Professional<br><em>Services</em>' : 'Professionelle<br><em>Leistungen</em>'
+      );
+      setText('hero-sub', t(D.tagline));
+    }
+
+    function renderCtaStrip() {
+      const bar = D.announcementBar || { de: 'Jetzt Termin buchen — schnell & einfach online', en: 'Book your appointment now — quick & easy online' };
+      setText('cta-strip-text', t(bar));
+      setText('cta-btn-text', lang === 'en' ? 'Book appointment' : 'Termin buchen');
+    }
+
+    function getPriceList() {
+      if (D.priceList && D.priceList.length) return D.priceList;
+      if (MD.priceList && MD.priceList.length) return MD.priceList;
+      return [];
+    }
+
+    function renderCatNav() {
+      const nav  = document.getElementById('cat-nav');
+      const list = getPriceList();
+      if (!nav || !list.length) return;
+      nav.innerHTML = list.map((cat, i) =>
+        `<a class="cat-nav-link${i === 0 ? ' active' : ''}" href="#cat-${i}" data-idx="${i}">${t(cat.category)}</a>`
+      ).join('');
+    }
+
+    function renderPriceList() {
+      const content = document.getElementById('menu-content');
+      const list    = getPriceList();
+      if (!content || !list.length) return;
+
+      const catIcons = ['🔹', '✦', '⚡', '🎯'];
+
+      content.innerHTML = list.map((cat, i) => {
+        const rows = cat.items.map(item => `
+          <div class="price-row reveal">
+            <div class="price-row-left">
+              <div class="price-name">${t(item.name)}</div>
+              ${item.duration ? `<div class="price-duration">⏱ ${t(item.duration)}</div>` : ''}
+            </div>
+            <div class="price-value">${item.price}</div>
+          </div>`).join('');
+
+        return `
+          <section class="menu-category" id="cat-${i}">
+            <div class="cat-header reveal">
+              <div class="cat-icon">${catIcons[i] || '✦'}</div>
+              <h2 class="cat-title">${t(cat.category)}</h2>
+            </div>
+            <div class="price-table">${rows}</div>
+          </section>`;
+      }).join('');
+    }
+
+    function renderServices() {
+      setText('services-eyebrow', lang === 'en' ? 'Highlights' : 'Highlights');
+      setHTML('services-title',
+        lang === 'en' ? 'Our<br><em>Services</em>' : 'Unsere<br><em>Leistungen</em>'
+      );
+
+      const grid = document.getElementById('services-grid');
+      if (!grid || !D.services) return;
+
+      grid.innerHTML = D.services.map(s => `
+        <div class="service-card reveal">
+          <div class="service-card-name">${t(s.name)}</div>
+          <div class="service-card-desc">${t(s.desc)}</div>
+          <div class="service-card-price">${s.price}</div>
+        </div>`).join('');
+    }
+
+    function renderBookingCta() {
+      setHTML('booking-title',
+        lang === 'en' ? 'Book your<br><em>appointment</em>' : 'Ihren Termin<br><em>buchen</em>'
+      );
+      setText('booking-sub', lang === 'en'
+        ? 'We look forward to welcoming you. Book easily online or call us directly.'
+        : 'Wir freuen uns auf Ihren Besuch. Buchen Sie einfach online oder rufen Sie uns an.'
+      );
+      setText('booking-btn-text', lang === 'en' ? 'Book appointment' : 'Termin vereinbaren');
+      setHTML('booking-phone', lang === 'en'
+        ? `Or call: <a href="tel:${D.phone}">${D.phone}</a>`
+        : `Oder anrufen: <a href="tel:${D.phone}">${D.phone}</a>`
+      );
+    }
+
+    function renderFooter() {
+      setText('footer-name', D.name);
+      setText('footer-copy', '© ' + new Date().getFullYear() + ' ' + D.name);
+    }
+
+    function initScrollSpy() {
+      const priceList = getPriceList();
+      if (!priceList.length) return;
+      const sections = document.querySelectorAll('.menu-category');
+      const links    = document.querySelectorAll('.cat-nav-link');
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const idx = entry.target.id.replace('cat-', '');
+            links.forEach(l => l.classList.toggle('active', l.dataset.idx === idx));
+          }
+        });
+      }, { rootMargin: '-25% 0px -65% 0px' });
+      sections.forEach(s => observer.observe(s));
+    }
+
+    function initReveal() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+      }, { threshold: 0.06 });
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    }
+
+    function renderAll() {
+      renderNav();
+      renderHero();
+      renderCtaStrip();
+      renderCatNav();
+      renderPriceList();
+      renderServices();
+      renderBookingCta();
+      renderFooter();
+      setTimeout(() => { initReveal(); initScrollSpy(); }, 50);
+    }
+
+    function init() {
+      applyCSSVars();
+      document.querySelectorAll('.lang-btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.lang === lang)
+      );
+      document.documentElement.lang = lang;
+      renderAll();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+  </script>
+</body>
+</html>

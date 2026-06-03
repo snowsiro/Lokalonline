@@ -974,7 +974,7 @@
     // Reset template selection
     document.querySelectorAll('.template-card').forEach(function (c) { c.classList.remove('active'); });
     var defaultTpl = 'restaurant';
-    var typeMap = { 'café': 'cafe', 'cafe': 'cafe', 'coffee': 'cafe', 'nagelstudio': 'beauty', 'nail': 'beauty', 'friseur': 'beauty', 'hairstudio': 'beauty', 'beauty': 'beauty', 'einzelhandel': 'retail', 'retail': 'retail', 'boutique': 'retail' };
+    var typeMap = { 'café': 'cafe', 'cafe': 'cafe', 'coffee': 'cafe', 'nagelstudio': 'beauty', 'nail': 'beauty', 'friseur': 'beauty', 'hairstudio': 'beauty', 'beauty': 'beauty', 'einzelhandel': 'retail', 'retail': 'retail', 'boutique': 'retail', 'physiotherapeut': 'service', 'physio': 'service', 'yoga': 'service', 'pilates': 'service', 'fitness': 'service', 'massage': 'service', 'wellness': 'service', 'spa': 'service', 'arzt': 'service', 'zahnarzt': 'service', 'rechtsanwalt': 'service', 'anwalt': 'service', 'steuerberater': 'service', 'steuer': 'service', 'reinigung': 'service', 'fahrschule': 'service', 'fotograf': 'service', 'tierarzt': 'service', 'praxis': 'service', 'klinik': 'service', 'sonstiges': 'service', 'other': 'service', 'dienstleistung': 'service', 'service': 'service' };
     if (order.business_type) {
       var bt = order.business_type.toLowerCase();
       for (var key in typeMap) {
@@ -1011,13 +1011,15 @@
       restaurant: { primary:'#C8302A', accent:'#C8302A', bg:'#F8F7F4', dark:'#111110', mid:'#9B9893', dim:'#5C5A57', line:'#DDDAD4' },
       cafe:        { primary:'#B8763A', accent:'#B8763A', bg:'#FAF7F2', dark:'#1C1208', mid:'#8C7B6B', dim:'#6B5C4E', line:'#E8DDD0' },
       beauty:      { primary:'#C9A96E', accent:'#C9A96E', bg:'#FAF9F7', dark:'#1A1A1A', mid:'#8A8480', dim:'#6B6865', line:'#E8E4DF' },
-      retail:      { primary:'#E85D26', accent:'#E85D26', bg:'#FFFFFF', dark:'#0A0A0A', mid:'#6B6B6B', dim:'#9A9A9A', line:'#E8E8E8' }
+      retail:      { primary:'#E85D26', accent:'#E85D26', bg:'#FFFFFF', dark:'#0A0A0A', mid:'#6B6B6B', dim:'#9A9A9A', line:'#E8E8E8' },
+      service:     { primary:'#1E6FA8', accent:'#1E6FA8', bg:'#F6F8FB', dark:'#0B1C2C', mid:'#6B7E90', dim:'#4A6070', line:'#D8E2EC' }
     };
     var fontDefaults = {
       restaurant: { heading:'DM Serif Display', body:'DM Sans' },
       cafe:        { heading:'Playfair Display',  body:'Inter' },
       beauty:      { heading:'Cormorant Garamond', body:'DM Sans' },
-      retail:      { heading:'Space Grotesk',      body:'Inter' }
+      retail:      { heading:'Space Grotesk',      body:'Inter' },
+      service:     { heading:'Outfit',             body:'Inter' }
     };
 
     var D = {
@@ -1058,7 +1060,8 @@
             restaurant: [{ de: 'Täglich frisch', en: 'Daily fresh' }, { de: 'Authentische Küche', en: 'Authentic cuisine' }, { de: 'Im Herzen Wiens', en: 'In the heart of Vienna' }],
             cafe:        [{ de: 'Hausgemachte Backwaren', en: 'Homemade pastries' }, { de: 'Premium Kaffee', en: 'Premium coffee' }, { de: 'Gemütliche Atmosphäre', en: 'Cosy atmosphere' }],
             beauty:      [{ de: 'Erfahrene Experten', en: 'Experienced experts' }, { de: 'Nur beste Produkte', en: 'Only the best products' }, { de: 'Entspannende Atmosphäre', en: 'Relaxing atmosphere' }],
-            retail:      [{ de: 'Kuratierte Auswahl', en: 'Curated selection' }, { de: 'Persönliche Beratung', en: 'Personal advice' }, { de: 'Faire Preise', en: 'Fair prices' }]
+            retail:      [{ de: 'Kuratierte Auswahl', en: 'Curated selection' }, { de: 'Persönliche Beratung', en: 'Personal advice' }, { de: 'Faire Preise', en: 'Fair prices' }],
+            service:     [{ de: 'Professionelles Team', en: 'Professional team' }, { de: 'Individuelle Betreuung', en: 'Individual care' }, { de: 'Terminbuchung Online', en: 'Online booking' }]
           };
           return (byType[type] || byType.restaurant);
         })()
@@ -1069,7 +1072,8 @@
           restaurant: { headline: { de: 'Unsere<br><em>Speisekarte</em>', en: 'Our<br><em>Menu</em>' }, cta: { de: 'Speisekarte ansehen →', en: 'View menu →' } },
           cafe:        { headline: { de: 'Unsere<br><em>Karte</em>', en: 'Our<br><em>Menu</em>' }, cta: { de: 'Karte ansehen →', en: 'View menu →' } },
           beauty:      { headline: { de: 'Unsere<br><em>Leistungen</em>', en: 'Our<br><em>Services</em>' }, cta: { de: 'Leistungen ansehen →', en: 'View services →' } },
-          retail:      { headline: { de: 'Unser<br><em>Sortiment</em>', en: 'Our<br><em>Collections</em>' }, cta: { de: 'Sortiment ansehen →', en: 'View collections →' } }
+          retail:      { headline: { de: 'Unser<br><em>Sortiment</em>', en: 'Our<br><em>Collections</em>' }, cta: { de: 'Sortiment ansehen →', en: 'View collections →' } },
+          service:     { headline: { de: 'Unsere<br><em>Leistungen</em>', en: 'Our<br><em>Services</em>' }, cta: { de: 'Leistungen ansehen →', en: 'View services →' } }
         };
         var m = byType[type] || byType.restaurant;
         return { headline: m.headline, sub: { de: '', en: '' }, cta: m.cta };
@@ -1097,6 +1101,11 @@
             { icon: '🛍️', title: { de: 'Kuratiertes Sortiment', en: 'Curated selection' }, desc: { de: order.description || 'Hochwertige Produkte', en: order.description || 'High-quality products' } },
             { icon: '💬', title: { de: 'Persönliche Beratung', en: 'Personal advice' }, desc: { de: 'Wir helfen Ihnen gerne weiter', en: 'We are happy to help' } },
             { icon: '📍', title: { de: 'Im Herzen Wiens', en: 'In the heart of Vienna' }, desc: { de: order.address || 'Wien', en: order.address || 'Vienna' } }
+          ],
+          service: [
+            { icon: '🎯', title: { de: 'Professionelle Leistungen', en: 'Professional services' }, desc: { de: order.description || 'Kompetenz und Erfahrung', en: order.description || 'Competence and experience' } },
+            { icon: '👥', title: { de: 'Persönliche Betreuung', en: 'Personal care' }, desc: { de: 'Individuelle Lösungen für Sie', en: 'Individual solutions for you' } },
+            { icon: '📞', title: { de: 'Jetzt Termin buchen', en: 'Book appointment now' }, desc: { de: order.phone || 'Rufen Sie uns an', en: order.phone || 'Give us a call' } }
           ]
         };
         return byType[type] || byType.restaurant;
@@ -1106,7 +1115,8 @@
           restaurant: { de: 'Jetzt Tisch reservieren — ' + (order.phone || 'Tel. auf der Website'), en: 'Reserve a table now — ' + (order.phone || 'see phone on website') },
           cafe:        { de: 'Willkommen — Täglich frisch für Sie', en: 'Welcome — Fresh for you every day' },
           beauty:      { de: 'Jetzt Termin buchen — ' + (order.phone || 'Tel. auf der Website'), en: 'Book your appointment — ' + (order.phone || 'see phone on website') },
-          retail:      { de: 'Besuchen Sie uns — ' + (order.address || 'Wien'), en: 'Visit us — ' + (order.address || 'Vienna') }
+          retail:      { de: 'Besuchen Sie uns — ' + (order.address || 'Wien'), en: 'Visit us — ' + (order.address || 'Vienna') },
+          service:     { de: 'Jetzt Termin buchen — ' + (order.phone || 'Tel. auf der Website'), en: 'Book your appointment — ' + (order.phone || 'see phone on website') }
         };
         return byType[type] || byType.restaurant;
       })(),
