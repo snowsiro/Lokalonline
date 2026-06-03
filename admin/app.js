@@ -1033,7 +1033,7 @@
       email:   order.email   || '',
       instagram: order.instagram ? order.instagram.replace(/^@/, '') : '',
       googleMapsUrl:   'https://maps.google.com/?q=' + encodeURIComponent(order.address || ''),
-      googleMapsEmbed: '',
+      googleMapsEmbed: order.address ? 'https://maps.google.com/maps?q=' + encodeURIComponent(order.address) + '&output=embed&hl=de' : '',
       hours: (function() {
         if (!order.hours || !order.hours.trim()) {
           return [
