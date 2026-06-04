@@ -988,6 +988,26 @@
     openModal('siteGenOverlay');
   };
 
+  // Extracts { name, price }[] from the [AI-Speisekarte] section written into order.notes
+  function parseMenuFromNotes(notes) {
+    if (!notes) return [];
+    var idx = notes.indexOf('[AI-Speisekarte]');
+    if (idx === -1) return [];
+    var section = notes.slice(idx + '[AI-Speisekarte]'.length).trim();
+    var items = [];
+    section.split('\n').forEach(function(line) {
+      line = line.trim();
+      if (!line) return;
+      var m = line.match(/^(.+?)\s*[—\-–]\s*(€?\s*\d.*)$/);
+      if (m) {
+        items.push({ name: m[1].trim(), price: m[2].trim() });
+      } else if (line.length >= 2) {
+        items.push({ name: line, price: '' });
+      }
+    });
+    return items;
+  }
+
   function generateDataJs(type, slug, order) {
     var photoUrls = [];
     if (order.photo_urls) { try { photoUrls = JSON.parse(order.photo_urls); } catch (e) {} }
@@ -1053,7 +1073,9 @@
       })(),
       slides: slides,
       about: {
-        img: imgs[1] || imgs[0] || 'img/iroom.jpg',
+        img:  imgs[1] || imgs[0] || 'img/iroom.jpg',
+        img1: imgs[1] || imgs[0] || 'img/slide2.jpg',
+        img2: imgs[2] || imgs[1] || imgs[0] || 'img/slide3.jpg',
         text: { de: order.description || '', en: '' },
         highlights: (function() {
           var byType = {
@@ -1078,8 +1100,43 @@
         var m = byType[type] || byType.restaurant;
         return { headline: m.headline, sub: { de: '', en: '' }, cta: m.cta };
       })(),
-      services: [],
-      categories: [],
+      services: (function() {
+        var items = parseMenuFromNotes(order.notes);
+        return items.map(function(item) {
+          return { name: { de: item.name, en: item.name }, desc: { de: '', en: '' }, price: item.price, img: '' };
+        });
+      })(),
+      priceList: (function() {
+        var items = parseMenuFromNotes(order.notes);
+        if (!items.length) return [];
+        var catNames = { restaurant: { de: 'Speisekarte', en: 'Menu' }, cafe: { de: 'Karte', en: 'Menu' }, beauty: { de: 'Leistungen', en: 'Services' }, retail: { de: 'Sortiment', en: 'Collections' }, service: { de: 'Leistungen', en: 'Services' } };
+        return [{ category: catNames[type] || catNames.restaurant, items: items.map(function(item) {
+          return { name: { de: item.name, en: item.name }, price: item.price };
+        }) }];
+      })(),
+      team: [],
+      categories: (function() {
+        var items = parseMenuFromNotes(order.notes);
+        if (!items.length) return [];
+        return [{ name: { de: 'Angebot', en: 'Offerings' }, img: '' }];
+      })(),
+      hero: {
+        img: imgs[0] || 'img/slide1.jpg',
+        headline: { de: '<em>' + (order.business_name || '') + '</em>', en: '<em>' + (order.business_name || '') + '</em>' },
+        sub: { de: order.description || '', en: '' }
+      },
+      specials: (function() {
+        var items = parseMenuFromNotes(order.notes);
+        return items.slice(0, 3).map(function(item) {
+          return { name: { de: item.name, en: item.name }, desc: { de: '', en: '' }, icon: '⭐', img: '' };
+        });
+      })(),
+      drinks: (function() {
+        var items = parseMenuFromNotes(order.notes);
+        return items.slice(3, 6).map(function(item) {
+          return { name: { de: item.name, en: item.name }, desc: { de: '', en: '' }, price: item.price, img: '' };
+        });
+      })(),
       highlights: (function() {
         var byType = {
           restaurant: [
@@ -1229,28 +1286,26 @@
   }
 
   function generateMenuDataJs(type, slug, order) {
-    var services = [];
-    if (order.services) { try { services = JSON.parse(order.services); } catch(e) {} }
-
-    var categories = [];
-    if (services.length > 0) {
-      categories = [{ name: { de: 'Angebot', en: 'Offerings' }, items: services.map(function(s) {
-        return { name: { de: s.name || '', en: s.name || '' }, desc: { de: s.description || '', en: s.description || '' }, price: s.price || '' };
-      }) }];
-    }
-
     var menuLabels = {
-      restaurant: { cat: { de: 'Speisekarte', en: 'Menu' }, hero: { de: 'Unsere Küche', en: 'Our Kitchen' } },
-      cafe:        { cat: { de: 'Karte', en: 'Menu' },       hero: { de: 'Genuss & Kaffee', en: 'Coffee & Treats' } },
-      beauty:      { cat: { de: 'Leistungen', en: 'Services' }, hero: { de: 'Unsere Leistungen', en: 'Our Services' } },
-      retail:      { cat: { de: 'Sortiment', en: 'Collections' }, hero: { de: 'Unser Sortiment', en: 'Our Collections' } }
+      restaurant: { cat: { de: 'Speisekarte', en: 'Menu' } },
+      cafe:        { cat: { de: 'Karte', en: 'Menu' } },
+      beauty:      { cat: { de: 'Leistungen', en: 'Services' } },
+      retail:      { cat: { de: 'Sortiment', en: 'Collections' } },
+      service:     { cat: { de: 'Leistungen', en: 'Services' } }
     };
     var labels = menuLabels[type] || menuLabels.restaurant;
-    if (categories.length === 0) {
-      categories = [{ name: labels.cat, items: [] }];
-    }
-
-    return 'window.MENU_DATA = ' + JSON.stringify({ categories: categories }, null, 2) + ';\n';
+    var items = parseMenuFromNotes(order.notes);
+    var mappedItems = items.map(function(item) {
+      return { name: { de: item.name, en: item.name }, price: item.price };
+    });
+    // Output both keys so all templates find what they need:
+    // restaurant/cafe/retail menus read MD.categories
+    // beauty/service menus read MD.priceList (fallback: D.priceList)
+    var data = {
+      categories: [{ name: labels.cat, items: mappedItems }],
+      priceList:  [{ category: labels.cat, items: mappedItems }]
+    };
+    return 'window.MENU_DATA = ' + JSON.stringify(data, null, 2) + ';\n';
   }
 
   function generateLinkPageHtml(slug, order) {
