@@ -113,8 +113,15 @@ body.admin-mode .admin-photo-zone{display:block}
 .legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .dot-scharf{background:var(--tag-spicy)}.dot-pikant{background:var(--tag-hot)}.dot-veg{background:#4CAF50}.dot-vegan{background:#2d7a2d}
 
+/* ALLERGEN SECTION */
+.allergen-section{margin-top:24px;padding:24px 0;border-top:1px solid var(--border)}
+.allergen-title{font-size:0.68rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+.allergen-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:7px 24px}
+.allergen-row{display:flex;align-items:center;gap:9px;font-size:0.75rem;color:var(--muted)}
+.allergen-code{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;font-size:0.65rem;font-weight:700;background:rgba(212,43,43,.08);color:var(--accent);border:1px solid rgba(212,43,43,.2);border-radius:4px;flex-shrink:0}
+
 /* FOOTER */
-.footer{text-align:center;font-size:0.75rem;color:var(--muted);line-height:1.8;padding:32px 0 0;border-top:1px solid var(--border);margin-top:48px}
+.footer{text-align:center;font-size:0.75rem;color:var(--muted);line-height:1.8;padding:32px 0 0;border-top:1px solid var(--border);margin-top:24px}
 
 /* LANG */
 [data-lang]{display:none}
@@ -478,10 +485,34 @@ body.admin-mode .menu-item{position:relative;border:1px dashed rgba(212,43,43,0.
   <div class="legend-item"><div class="legend-dot dot-veg"></div><span data-lang="de">Vegetarisch</span><span data-lang="en">Vegetarian</span><span data-lang="ko">채식</span></div>
   <div class="legend-item"><div class="legend-dot dot-vegan"></div>Vegan</div>
 </div>
+
+<!-- ALLERGEN TABLE -->
+<div class="allergen-section">
+  <div class="allergen-title">
+    <span data-lang="de">Allergeninformation</span><span data-lang="en">Allergen Information</span><span data-lang="ko">알레르기 정보</span>
+  </div>
+  <div class="allergen-grid">
+    <div class="allergen-row"><span class="allergen-code">A</span><span data-lang="de">Glutenhaltiges Getreide</span><span data-lang="en">Gluten</span><span data-lang="ko">글루텐 함유 곡물</span></div>
+    <div class="allergen-row"><span class="allergen-code">B</span><span data-lang="de">Krebstiere</span><span data-lang="en">Crustaceans</span><span data-lang="ko">갑각류</span></div>
+    <div class="allergen-row"><span class="allergen-code">C</span><span data-lang="de">Eier</span><span data-lang="en">Eggs</span><span data-lang="ko">달걀</span></div>
+    <div class="allergen-row"><span class="allergen-code">D</span><span data-lang="de">Fisch</span><span data-lang="en">Fish</span><span data-lang="ko">생선</span></div>
+    <div class="allergen-row"><span class="allergen-code">E</span><span data-lang="de">Erdnüsse</span><span data-lang="en">Peanuts</span><span data-lang="ko">땅콩</span></div>
+    <div class="allergen-row"><span class="allergen-code">F</span><span data-lang="de">Soja</span><span data-lang="en">Soy</span><span data-lang="ko">대두</span></div>
+    <div class="allergen-row"><span class="allergen-code">G</span><span data-lang="de">Milch / Laktose</span><span data-lang="en">Milk / Lactose</span><span data-lang="ko">우유 / 유당</span></div>
+    <div class="allergen-row"><span class="allergen-code">H</span><span data-lang="de">Schalenfrüchte</span><span data-lang="en">Tree Nuts</span><span data-lang="ko">견과류</span></div>
+    <div class="allergen-row"><span class="allergen-code">L</span><span data-lang="de">Sellerie</span><span data-lang="en">Celery</span><span data-lang="ko">셀러리</span></div>
+    <div class="allergen-row"><span class="allergen-code">M</span><span data-lang="de">Senf</span><span data-lang="en">Mustard</span><span data-lang="ko">겨자</span></div>
+    <div class="allergen-row"><span class="allergen-code">N</span><span data-lang="de">Sesam</span><span data-lang="en">Sesame</span><span data-lang="ko">참깨</span></div>
+    <div class="allergen-row"><span class="allergen-code">O</span><span data-lang="de">Schwefeldioxid / Sulfite</span><span data-lang="en">Sulphites</span><span data-lang="ko">이산화황 / 아황산염</span></div>
+    <div class="allergen-row"><span class="allergen-code">P</span><span data-lang="de">Lupinen</span><span data-lang="en">Lupin</span><span data-lang="ko">루핀</span></div>
+    <div class="allergen-row"><span class="allergen-code">R</span><span data-lang="de">Weichtiere</span><span data-lang="en">Molluscs</span><span data-lang="ko">연체동물</span></div>
+  </div>
+</div>
+
 <div class="footer">
-  <span data-lang="de">Preise in EUR, inklusive aller Steuern und Abgaben.<br>Eine Kopie der kompletten Allergenliste ist beim Servicepersonal erhältlich.</span>
-  <span data-lang="en">Prices in EUR, including all taxes and fees.<br>A complete allergen list is available from our service staff.</span>
-  <span data-lang="ko">모든 가격은 부가세 포함입니다.<br>알레르기 정보는 직원에게 문의해 주세요.</span>
+  <span data-lang="de">Preise in EUR, inklusive aller Steuern und Abgaben. Irrtümer und Änderungen vorbehalten.<br>Detaillierte Allergeninformationen erhalten Sie auf Anfrage beim Personal.</span>
+  <span data-lang="en">Prices in EUR including all taxes. Subject to change without notice.<br>For detailed allergen information please ask our staff.</span>
+  <span data-lang="ko">모든 가격은 부가세 포함입니다. 가격은 변동될 수 있습니다.<br>알레르기에 관한 자세한 정보는 직원에게 문의해 주세요.</span>
 </div>
 </div>
 
