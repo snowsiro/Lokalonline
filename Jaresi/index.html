@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jaresi - Restaurant Reservation & Table Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .scrolled {
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        select {
+            appearance: none;
+            background-color: transparent;
+            border: none;
+            padding: 0 1rem 0 0;
+            margin: 0;
+            font-family: inherit;
+            font-size: inherit;
+            cursor: pointer;
+            line-height: inherit;
+            outline: none;
+            color: #4b5563;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+
+    <header id="navbar" class="fixed top-0 w-full z-50 transition-all duration-300 bg-transparent py-4">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <div class="text-2xl font-bold text-gray-900 tracking-tight">Jaresi</div>
+            
+            <div class="flex items-center space-x-6">
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#features" data-i18n="nav_features" class="text-gray-600 hover:text-gray-900 font-medium">Features</a>
+                    <a href="#pricing" data-i18n="nav_pricing" class="text-gray-600 hover:text-gray-900 font-medium">Pricing</a>
+                </nav>
+                
+                <div class="relative flex items-center border-l border-gray-300 pl-6">
+                    <span class="mr-1 text-gray-500">🌐</span>
+                    <select id="lang-switch" onchange="changeLanguage(this.value)" class="hover:text-gray-900">
+                        <option value="en" selected>EN</option>
+                        <option value="de">DE</option>
+                        <option value="ko">KR</option>
+                    </select>
+                </div>
+
+                <a href="https://jaresi.lokalonline.at/" data-i18n="nav_cta" class="bg-gray-900 text-white px-5 py-2 rounded-full font-medium hover:bg-gray-800 transition">Try it for free</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="pt-32 pb-20 md:pt-48 md:pb-32 px-6">
+        <div class="container mx-auto text-center max-w-4xl fade-in">
+            <h1 data-i18n="hero_title" class="text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight mb-6">
+                From reservations to table management,<br><span class="text-blue-600">3 seconds is all you need.</span>
+            </h1>
+            <p data-i18n="hero_desc" class="text-lg md:text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
+                Say goodbye to paper logbooks. Manage your venue perfectly with an intuitive timeline and floor plan. The easiest system for restaurant owners and managers.
+            </p>
+            <a href="https://jaresi.lokalonline.at/" data-i18n="cta_button" class="inline-block bg-blue-600 text-white text-lg px-8 py-4 rounded-full font-bold shadow-lg hover:bg-blue-700 hover:shadow-xl transition transform hover:-translate-y-1">
+                Try it for free
+            </a>
+        </div>
+    </section>
+
+    <section id="features" class="py-20 bg-white px-6">
+        <div class="container mx-auto max-w-5xl">
+            <h2 data-i18n="feat_title" class="text-3xl font-bold text-center mb-16 fade-in">Core features for busy restaurants</h2>
+            <div class="grid md:grid-cols-2 gap-10">
+                
+                <div class="bg-gray-50 p-8 rounded-2xl shadow-sm hover:shadow-md transition fade-in">
+                    <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-2xl mb-6">📅</div>
+                    <h3 data-i18n="feat1_title" class="text-xl font-bold mb-3">At-a-glance Timeline</h3>
+                    <p data-i18n="feat1_desc" class="text-gray-600">Manage your daily reservations seamlessly with a clear, time-based grid. Tap an empty slot to fill a reservation instantly.</p>
+                </div>
+
+                <div class="bg-gray-50 p-8 rounded-2xl shadow-sm hover:shadow-md transition fade-in">
+                    <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-2xl mb-6">🗺️</div>
+                    <h3 data-i18n="feat2_title" class="text-xl font-bold mb-3">Interactive Floor Plan</h3>
+                    <p data-i18n="feat2_desc" class="text-gray-600">Visualize your dining room and assign guests to tables with an easy drag-and-drop interface for intuitive table management.</p>
+                </div>
+
+                <div class="bg-gray-50 p-8 rounded-2xl shadow-sm hover:shadow-md transition fade-in">
+                    <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-2xl mb-6">📊</div>
+                    <h3 data-i18n="feat3_title" class="text-xl font-bold mb-3">HQ Dashboard & Analytics</h3>
+                    <p data-i18n="feat3_desc" class="text-gray-600">Track cancellations, covers, and peak times with real-time statistics in the HQ Dashboard to optimize your operations.</p>
+                </div>
+
+                <div class="bg-gray-50 p-8 rounded-2xl shadow-sm hover:shadow-md transition fade-in">
+                    <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-2xl mb-6">⚙️</div>
+                    <h3 data-i18n="feat4_title" class="text-xl font-bold mb-3">Fast & Flexible Settings</h3>
+                    <p data-i18n="feat4_desc" class="text-gray-600">Conveniently configure your service hours, pacing, and shifts in seconds to match your exact workflow.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="py-20 bg-gray-50 px-6">
+        <div class="container mx-auto max-w-4xl">
+            <h2 data-i18n="price_title" class="text-3xl font-bold text-center mb-16 fade-in">Choose the right plan for your venue</h2>
+            
+            <div class="grid md:grid-cols-2 gap-8 mb-16">
+                
+                <div class="bg-white p-8 rounded-3xl border border-gray-200 shadow-sm fade-in">
+                    <h3 class="text-xl font-semibold text-gray-500 mb-2">Free</h3>
+                    <div class="text-4xl font-bold mb-6">€0<span data-i18n="price_month" class="text-lg text-gray-500 font-normal"> / mo</span></div>
+                    <ul class="space-y-4 text-gray-600">
+                        <li data-i18n="price1_f1">✔️ Reservation management</li>
+                        <li data-i18n="price1_f2">✔️ Floor plan (max 5)</li>
+                        <li data-i18n="price1_f3">✔️ Email notifications</li>
+                        <li data-i18n="price1_f4">✔️ HQ dashboard</li>
+                    </ul>
+                </div>
+
+                <div class="bg-gray-900 text-white p-8 rounded-3xl shadow-xl transform md:-translate-y-4 relative fade-in border-2 border-blue-500">
+                    <div data-i18n="price_popular" class="absolute top-0 right-8 transform -translate-y-1/2 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold">Popular</div>
+                    <h3 class="text-xl font-semibold text-gray-400 mb-2">Pro</h3>
+                    <div class="text-4xl font-bold mb-6">€19<span data-i18n="price_month" class="text-lg text-gray-400 font-normal"> / mo</span></div>
+                    <ul class="space-y-4 text-gray-300">
+                        <li data-i18n="price2_f0" class="font-semibold text-blue-300">Everything in Free, plus:</li>
+                        <li data-i18n="price2_f1">✔️ 200 tables</li>
+                        <li data-i18n="price2_f2">✔️ Email notifications</li>
+                        <li data-i18n="price2_f3">✔️ HQ dashboard</li>
+                        <li data-i18n="price2_f4">✔️ Priority support</li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="text-center fade-in pt-4">
+                <a href="https://jaresi.lokalonline.at/" data-i18n="price_cta_btn" class="inline-block bg-blue-600 text-white text-lg px-10 py-4 rounded-full font-bold shadow-lg hover:bg-blue-700 hover:shadow-xl transition transform hover:-translate-y-1">
+                    Try it for free
+                </a>
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="bg-white border-t border-gray-200 py-10 text-center">
+        <div class="container mx-auto px-6 text-gray-500">
+            <p class="font-medium text-lg mb-2">Jaresi</p>
+            <p data-i18n="footer_desc" class="text-sm">A new standard for restaurant operations.</p>
+            <p class="mt-8 text-xs font-bold tracking-widest text-gray-400">A PRODUCT BY <span class="text-gray-800 border-2 border-gray-800 px-1 ml-1 rounded-sm">LO</span></p>
+            <p class="mt-2 text-xs">© 2026 Lokal Online. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- 언어 번역 데이터 ---
+        const translations = {
+            en: {
+                nav_features: "Features",
+                nav_pricing: "Pricing",
+                nav_cta: "Try it for free",
+                hero_title: "From reservations to table management,<br><span class='text-blue-600'>3 seconds is all you need.</span>",
+                hero_desc: "Say goodbye to paper logbooks. Manage your venue perfectly with an intuitive timeline and floor plan. The easiest system for restaurant owners and managers.",
+                cta_button: "Try it for free",
+                feat_title: "Core features for busy restaurants",
+                feat1_title: "At-a-glance Timeline",
+                feat1_desc: "Manage your daily reservations seamlessly with a clear, time-based grid. Tap an empty slot to fill a reservation instantly.",
+                feat2_title: "Interactive Floor Plan",
+                feat2_desc: "Visualize your dining room and assign guests to tables with an easy drag-and-drop interface for intuitive table management.",
+                feat3_title: "HQ Dashboard & Analytics",
+                feat3_desc: "Track cancellations, covers, and peak times with real-time statistics in the HQ Dashboard to optimize your operations.",
+                feat4_title: "Fast & Flexible Settings",
+                feat4_desc: "Conveniently configure your service hours, pacing, and shifts in seconds to match your exact workflow.",
+                price_title: "Choose the right plan for your venue",
+                price_month: " / mo",
+                price_popular: "Popular",
+                price1_f1: "✔️ Reservation management",
+                price1_f2: "✔️ Floor plan (max 5)",
+                price1_f3: "✔️ Email notifications",
+                price1_f4: "✔️ HQ dashboard",
+                price2_f0: "Everything in Free, plus:",
+                price2_f1: "✔️ 200 tables",
+                price2_f2: "✔️ Email notifications",
+                price2_f3: "✔️ HQ dashboard",
+                price2_f4: "✔️ Priority support",
+                price_cta_btn: "Try it for free",
+                footer_desc: "A new standard for restaurant operations."
+            },
+            de: {
+                nav_features: "Funktionen",
+                nav_pricing: "Preise",
+                nav_cta: "Kostenlos testen",
+                hero_title: "Von der Reservierung bis zur Tischverwaltung,<br><span class='text-blue-600'>3 Sekunden genügen.</span>",
+                hero_desc: "Verabschieden Sie sich von Papierbüchern. Verwalten Sie Ihr Restaurant perfekt mit einer intuitiven Zeitleiste und einem Raumplan. Das einfachste System für Gastronomen.",
+                cta_button: "Kostenlos testen",
+                feat_title: "Kernfunktionen für belebte Restaurants",
+                feat1_title: "Übersichtliche Zeitleiste",
+                feat1_desc: "Verwalten Sie Ihre täglichen Reservierungen nahtlos mit einem übersichtlichen, zeitbasierten Raster. Tippen Sie auf einen leeren Platz für eine sofortige Reservierung.",
+                feat2_title: "Interaktiver Raumplan",
+                feat2_desc: "Visualisieren Sie Ihren Gastraum und weisen Sie Gästen Tische mit einer einfachen Drag-and-Drop-Oberfläche intuitiv zu.",
+                feat3_title: "HQ-Dashboard & Analysen",
+                feat3_desc: "Verfolgen Sie Stornierungen, Gedecke und Stoßzeiten mit Echtzeit-Statistiken im HQ-Dashboard, um Ihre Abläufe zu optimieren.",
+                feat4_title: "Schnelle & flexible Einstellungen",
+                feat4_desc: "Konfigurieren Sie bequem Ihre Servicezeiten, Taktung und Schichten in Sekundenschnelle passend zu Ihrem Workflow.",
+                price_title: "Wählen Sie den passenden Tarif",
+                price_month: " / Monat",
+                price_popular: "Beliebt",
+                price1_f1: "✔️ Reservierungsmanagement",
+                price1_f2: "✔️ Raumplan (max. 5)",
+                price1_f3: "✔️ E-Mail-Benachrichtigungen",
+                price1_f4: "✔️ HQ-Dashboard",
+                price2_f0: "Alles aus Free, plus:",
+                price2_f1: "✔️ 200 Tische",
+                price2_f2: "✔️ E-Mail-Benachrichtigungen",
+                price2_f3: "✔️ HQ-Dashboard",
+                price2_f4: "✔️ Bevorzugter Support",
+                price_cta_btn: "Kostenlos testen",
+                footer_desc: "Ein neuer Standard für den Restaurantbetrieb."
+            },
+            ko: {
+                nav_features: "주요 기능",
+                nav_pricing: "요금제",
+                nav_cta: "무료로 사용해보기",
+                hero_title: "예약부터 테이블 관리까지,<br><span class='text-blue-600'>3초면 충분합니다.</span>",
+                hero_desc: "종이 장부는 이제 그만. 직관적인 타임라인과 도면으로 매장을 완벽하게 관리하세요. 식당 사장님과 매니저를 위한 가장 쉬운 시스템.",
+                cta_button: "무료로 사용해보기",
+                feat_title: "바쁜 매장을 위한 핵심 기능",
+                feat1_title: "직관적인 타임라인",
+                feat1_desc: "한눈에 들어오는 시간표로 시간대별 예약을 겹침 없이 완벽하게 관리하세요. 빈자리를 터치해 바로 예약을 추가할 수 있습니다.",
+                feat2_title: "인터랙티브 플로어 맵",
+                feat2_desc: "실제 매장과 똑같은 도면 위에서 직관적으로 빈자리를 확인하고 간편한 드래그 앤 드롭으로 손님을 배정하세요.",
+                feat3_title: "본사(HQ) 대시보드 및 통계",
+                feat3_desc: "헤드쿼터 대시보드에서 취소율, 방문객 수, 피크 타임 등 매장의 핵심 통계를 실시간으로 분석하고 운영을 최적화하세요.",
+                feat4_title: "편리하고 빠른 예약 설정",
+                feat4_desc: "매장 상황에 맞게 런치/디너 영업시간과 예약 제한, 교대 근무를 놀랍도록 쉽고 빠르게 설정하세요.",
+                price_title: "우리 매장에 맞는 요금제를 선택하세요",
+                price_month: " / 월",
+                price_popular: "인기",
+                price1_f1: "✔️ 예약 관리",
+                price1_f2: "✔️ 매장 도면 (최대 5개)",
+                price1_f3: "✔️ 이메일 알림",
+                price1_f4: "✔️ 본사(HQ) 대시보드",
+                price2_f0: "Free 요금제의 모든 기능, 추가로:",
+                price2_f1: "✔️ 200개 테이블",
+                price2_f2: "✔️ 이메일 알림",
+                price2_f3: "✔️ 본사(HQ) 대시보드",
+                price2_f4: "✔️ 우선 지원",
+                price_cta_btn: "무료로 사용해보기",
+                footer_desc: "레스토랑 운영의 새로운 기준."
+            }
+        };
+
+        function changeLanguage(lang) {
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.innerHTML = translations[lang][key];
+                }
+            });
+            document.documentElement.lang = lang;
+        }
+
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.15
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(element => {
+            observer.observe(element);
+        });
+    </script>
+</body>
+</html>
