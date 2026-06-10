@@ -1264,15 +1264,14 @@
   // ── File Editor ───────────────────────────────────────────────────
   var editingSlug = null;
 
-  async function openFileEditor(slug) {
-    editingSlug = slug;
+  async function loadEditorFile() {
+    var file = document.getElementById('fileEditorSelect').value;
     var errEl = document.getElementById('fileEditorError');
     var contentEl = document.getElementById('fileEditorContent');
     var infoEl = document.getElementById('fileEditorInfo');
     errEl.style.display = 'none';
     contentEl.value = '⏳ Lade…';
-    infoEl.textContent = 'lokalonline.at/' + slug + '/data.js';
-    openModal('fileEditorOverlay');
+    infoEl.textContent = 'lokalonline.at/' + editingSlug + '/' + file;
 
     try {
       var session = (await sb.auth.getSession()).data.session;
@@ -1280,7 +1279,7 @@
       var res = await fetch(EDGE_FN, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-        body: JSON.stringify({ action: 'get-file', path: slug + '/data.js' })
+        body: JSON.stringify({ action: 'get-file', path: editingSlug + '/' + file })
       });
       var data = await res.json();
       if (data.error) throw new Error(data.error);
@@ -1292,8 +1291,20 @@
     }
   }
 
+  function openFileEditor(slug) {
+    editingSlug = slug;
+    document.getElementById('fileEditorSelect').value = 'data.js';
+    openModal('fileEditorOverlay');
+    loadEditorFile();
+  }
+
+  document.getElementById('fileEditorSelect').addEventListener('change', function () {
+    if (editingSlug) loadEditorFile();
+  });
+
   document.getElementById('fileEditorSave').addEventListener('click', async function () {
     if (!editingSlug) return;
+    var file = document.getElementById('fileEditorSelect').value;
     var content = document.getElementById('fileEditorContent').value;
     var errEl = document.getElementById('fileEditorError');
     var btn = document.getElementById('fileEditorSave');
@@ -1301,9 +1312,9 @@
     btn.disabled = true; btn.textContent = '⏳ Speichert…';
 
     try {
-      await uploadFile(editingSlug + '/data.js', content);
+      await uploadFile(editingSlug + '/' + file, content);
       closeModal('fileEditorOverlay');
-      showToast('✅ data.js gespeichert!');
+      showToast('✅ ' + file + ' gespeichert!');
     } catch (e) {
       errEl.textContent = 'Fehler: ' + e.message;
       errEl.style.display = 'block';
